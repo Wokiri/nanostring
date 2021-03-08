@@ -16,6 +16,12 @@ venv_path.txt
 nanostring_hackathon.docx
 nanostring_hackathon.pdf
 
+/KidneyDataset/*.csv
+/KidneyDataset/*.txt
+/KidneyDataset/*.docx
+
+*.vscode
+
 */graphics/
 */prod/
 */nairobiconstituenciesmap/
