@@ -1,0 +1,34 @@
+{% extends 'pages/base_template.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container">
+    <div class="p-sm-4 my-sm-2">
+        <button type="button" class="btn btn-outline-light text-secondary" data-toggle="collapse" data-target="#about_nanostring">
+            About Nanostring GeoMx®
+        </button>
+        <div id="about_nanostring" class="collapse my-2 bg-light p-sm-4 rounded-lg">
+            <p>
+                GeoMx® DSP stands at the powerful intersection of tissue imaging technology and
+                genomic sciences.  It enables investigators to finely dissect the fundamental features
+                of any tissue and ask critical questions concerning tissue organization,
+                cellular interactions, and disease pathology.
+            </p>
+
+            <p>
+                In the Spatial
+                Omics Hackathon, data enthusiasts will use data from the GeoMx platform with choice
+                favorite dev tools to build smarter solutions to develop insights into kidney disease. 
+                You might create a graphical representation of data through visual components such
+                as maps, graphs, or other visual formats <strong>
+                    (e.g. tools that display trends or patterns).
+                You could create data analysis solutions that collect, interpret, and present data (e.g.
+                tools that identify relationships or detect anomalies).
+                </strong>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

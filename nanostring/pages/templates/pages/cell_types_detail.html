@@ -1,0 +1,86 @@
+{% extends 'pages/base_template.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block docmeta %}
+    <link rel="stylesheet" type="text/css" href="{% static 'pages/bokeh/bokeh-1.0.4.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'pages/bokeh/bokeh-widgets-1.0.4.min.css' %}">
+    {{ script|safe }}
+    {{ script2|safe }}
+{% endblock %}
+
+
+{% block content %}
+    {% if cell_types %}
+        <div class="container shadow-sm p-sm-4">
+            <div class="my-4">
+                <div class="py-sm-2">
+                    <h3 class="text-center text-success">Detailed Analysis of Cell Types data</h3>
+                </div>
+
+                <div class="py-2 py-sm-4">
+                    <form class="form-inline my-2 my-lg-0">
+                        {{ search_cell_types_form }}
+                        <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+
+                <div class="table-responsive border" style="max-height: 40vh;">
+                    <table class="table table-bordered table-striped">
+                        <thead class="text-center text-success">
+                            <tr>
+                                <th>#</th>
+                                <th>Cluster ID</th>
+                                <th>Alias</th>
+                                <th>Dataset</th>
+                                <th>Number of Cells</th>
+                                <th>Cell Type 1</th>
+                                <th>Cell Type 2</th>
+                                <th>Cell Type 3</th>
+                                <th>Cell Type Specific</th>
+                                <th>Cell Type General</th>
+                                <th>Cluster Name</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            
+                            {% for data in cell_types %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ data.clusterID }}</td>
+                                    <td>{{ data.alias }}</td>
+                                    <td>{{ data.data_set }}</td>
+                                    <td>{{ data.number_of_cells }}</td>
+                                    <td>{{ data.cell_type1 }}</td>
+                                    <td>{{ data.cell_type2 }}</td>
+                                    <td>{{ data.cell_type3 }}</td>
+                                    <td>{{ data.cell_type_specific }}</td>
+                                    <td>{{ data.cell_type_general }}</td>
+                                    <td>{{ data.cluster_name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 mx-auto my-sm-5" style="overflow: auto;">
+                    {{ div1|safe }}
+                </div>
+
+                <div class="col-5 mx-auto my-sm-5" style="overflow: auto;">
+                    {{ div2|safe }}
+                </div>
+            </div>
+
+            <div class="my-5">
+                {{ cells_type_df }}
+            </div>
+        </div>
+    {% endif %}
+
+    <script src="{% static 'pages/bokeh/bokeh-2.3.0.min.js' %}"></script>
+    <script src="{% static 'pages/bokeh/bokeh-widgets-2.3.0.min.js' %}"></script>
+{% endblock %}

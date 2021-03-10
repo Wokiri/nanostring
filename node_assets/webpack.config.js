@@ -9,14 +9,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: {
     bootstrapStyling: "./src/js/bootstrapStyling.js",
-    mapStyling: "./src/js/mapStyling.js",
-    issuesMap: "./src/js/issuesMap.js",
   },
   output: {
     publicPath: "",
     path: path.resolve(__dirname, "prod"),
-    // filename: "jsFiles/[name].[contenthash].js",
-    filename: "jsFiles/[name].js",
+    filename: "js/[name].js",
   },
   devServer: {
     port: 2040,

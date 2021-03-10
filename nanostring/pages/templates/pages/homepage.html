@@ -1,0 +1,60 @@
+{% extends 'pages/base_template.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+    {% if cell_types %}
+        <div class="container shadow-sm p-4 mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-success">Subset of Cell Types data</h3>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <thead class="text-center text-success">
+                        <tr>
+                            <th>#</th>
+                            <th>Cluster ID</th>
+                            <th>Alias</th>
+                            <th>Dataset</th>
+                            <th>Number of Cells</th>
+                            <th>Cell Type 1</th>
+                            <th>Cell Type 2</th>
+                            <th>Cell Type 3</th>
+                            <th>Cell Type Specific</th>
+                            <th>Cell Type General</th>
+                            <th>Cluster Name</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        
+                        {% for data in cell_types %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ data.clusterID }}</td>
+                                <td>{{ data.alias }}</td>
+                                <td>{{ data.data_set }}</td>
+                                <td>{{ data.number_of_cells }}</td>
+                                <td>{{ data.cell_type1 }}</td>
+                                <td>{{ data.cell_type2 }}</td>
+                                <td>{{ data.cell_type3 }}</td>
+                                <td>{{ data.cell_type_specific }}</td>
+                                <td>{{ data.cell_type_general }}</td>
+                                <td>{{ data.cluster_name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-success" href="{% url 'pages:cell_types_detail_page' %}">
+                    Cell Types detailed statistical analysis
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}
+

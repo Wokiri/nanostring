@@ -1,0 +1,562 @@
+[
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 1,
+ "fields": {
+  "clusterID": "N0",
+  "alias": "H",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 1138,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Loop_of_Henle",
+  "cell_type3": "-",
+  "cell_type_specific": "Loop_of_Henle",
+  "cell_type_general": "Loop_of_Henle",
+  "cluster_name": "Loop_of_Henle_H"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 2,
+ "fields": {
+  "clusterID": "N1",
+  "alias": "N1",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 904,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "-",
+  "cell_type3": "-",
+  "cell_type_specific": "Nephron_epithelium",
+  "cell_type_general": "Nephron_epithelium",
+  "cluster_name": "Nephron_epithelium_N1"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 3,
+ "fields": {
+  "clusterID": "N2",
+  "alias": "AV1",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 896,
+  "cell_type1": "Endothelium",
+  "cell_type2": "Ascending_vasa_recta",
+  "cell_type3": "VCAM1-",
+  "cell_type_specific": "Ascending_vasa_recta",
+  "cell_type_general": "Endothelium",
+  "cluster_name": "Ascending_vasa_recta_AV1"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 4,
+ "fields": {
+  "clusterID": "N3",
+  "alias": "N3",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 789,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "-",
+  "cell_type3": "-",
+  "cell_type_specific": "Nephron_epithelium",
+  "cell_type_general": "Nephron_epithelium",
+  "cluster_name": "Nephron_epithelium_N3"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 5,
+ "fields": {
+  "clusterID": "N4",
+  "alias": "DV",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 731,
+  "cell_type1": "Endothelium",
+  "cell_type2": "Descending_vasa_recta",
+  "cell_type3": "-",
+  "cell_type_specific": "Descending_vasa_recta",
+  "cell_type_general": "Endothelium",
+  "cluster_name": "Descending_vasa_recta_DV"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 6,
+ "fields": {
+  "clusterID": "N5",
+  "alias": "N5",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 649,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "-",
+  "cell_type3": "-",
+  "cell_type_specific": "Nephron_epithelium",
+  "cell_type_general": "Nephron_epithelium",
+  "cluster_name": "Nephron_epithelium_N5"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 7,
+ "fields": {
+  "clusterID": "N6",
+  "alias": "N6",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 504,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "-",
+  "cell_type3": "-",
+  "cell_type_specific": "Nephron_epithelium",
+  "cell_type_general": "Nephron_epithelium",
+  "cluster_name": "Nephron_epithelium_N6"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 8,
+ "fields": {
+  "clusterID": "N7",
+  "alias": "GE",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 373,
+  "cell_type1": "Endothelium",
+  "cell_type2": "Nephron_epithelium",
+  "cell_type3": "-",
+  "cell_type_specific": "Nephron_epithelium",
+  "cell_type_general": "Nephron_epithelium",
+  "cluster_name": "Nephron_epithelium_GE"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 9,
+ "fields": {
+  "clusterID": "N8",
+  "alias": "N8",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 360,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Loop_of_Henle",
+  "cell_type3": "-",
+  "cell_type_specific": "Loop_of_Henle",
+  "cell_type_general": "Loop_of_Henle",
+  "cluster_name": "Loop_of_Henle_N8"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 10,
+ "fields": {
+  "clusterID": "N9",
+  "alias": "AV2",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 305,
+  "cell_type1": "Endothelium",
+  "cell_type2": "Ascending_vasa_recta",
+  "cell_type3": "VCAM1+",
+  "cell_type_specific": "Ascending_vasa_recta",
+  "cell_type_general": "Endothelium",
+  "cluster_name": "Ascending_vasa_recta_AV2"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 11,
+ "fields": {
+  "clusterID": "N11",
+  "alias": "G",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 259,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Glomerular_epithelium",
+  "cell_type3": "Podocytes",
+  "cell_type_specific": "Podocytes",
+  "cell_type_general": "Podocytes",
+  "cluster_name": "Podocytes_G"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 12,
+ "fields": {
+  "clusterID": "N12",
+  "alias": "PT3",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 227,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Proximal_tubular_cells",
+  "cell_type3": "Convoluted_and_straight",
+  "cell_type_specific": "Proximal_tubular_cells",
+  "cell_type_general": "Proximal_tubular_cells",
+  "cluster_name": "Proximal_tubular_cells_PT3"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 13,
+ "fields": {
+  "clusterID": "N13",
+  "alias": "PT1",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 196,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Proximal_tubular_cells",
+  "cell_type3": "VCAM1+ proximal convoluted tubular cells",
+  "cell_type_specific": "Proximal_tubular_cells",
+  "cell_type_general": "Proximal_tubular_cells",
+  "cluster_name": "Proximal_tubular_cells_PT1"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 14,
+ "fields": {
+  "clusterID": "N14",
+  "alias": "D",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 176,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Distal_tubules_and_collecting_duct",
+  "cell_type3": "Distal_tubules_and_principal_cells",
+  "cell_type_specific": "Distal_tubules_and_collecting_duct",
+  "cell_type_general": "Distal_tubules_and_collecting_duct",
+  "cluster_name": "Distal_tubules_and_collecting_duct_D"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 15,
+ "fields": {
+  "clusterID": "N16",
+  "alias": "C1",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 140,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Collecting_duct",
+  "cell_type3": "Type_A_cells",
+  "cell_type_specific": "Collecting_duct_Type_A_cells",
+  "cell_type_general": "Distal_tubules_and_collecting_duct",
+  "cluster_name": "Collecting_duct_Type_A_cells_C1"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 16,
+ "fields": {
+  "clusterID": "N17",
+  "alias": "C2",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 128,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Collecting_duct",
+  "cell_type3": "Type_B_cells",
+  "cell_type_specific": "Collecting_duct_Type_B_cells",
+  "cell_type_general": "Distal_tubules_and_collecting_duct",
+  "cluster_name": "Collecting_duct_Type_B_cells_C2"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 17,
+ "fields": {
+  "clusterID": "N18",
+  "alias": "M",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 118,
+  "cell_type1": "Nephron_others",
+  "cell_type2": "Mesangial_cells",
+  "cell_type3": "-",
+  "cell_type_specific": "Mesangial_cells",
+  "cell_type_general": "Mesangial_cells",
+  "cluster_name": "Mesangial_cells_M"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 18,
+ "fields": {
+  "clusterID": "N20",
+  "alias": "P",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 73,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Pelvis",
+  "cell_type3": "Pelvic_epithelium",
+  "cell_type_specific": "Pelvic_epithelium",
+  "cell_type_general": "Nephron_epithelium",
+  "cluster_name": "Pelvic_epithelium_P"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 19,
+ "fields": {
+  "clusterID": "N22",
+  "alias": "PT2",
+  "data_set": "barcodeLevelGroup_normalEpitheliumAndVascularWithoutProximalTubularV2",
+  "number_of_cells": 60,
+  "cell_type1": "Nephron_epithelium",
+  "cell_type2": "Proximal_tubular_cells",
+  "cell_type3": "Convoluted_and_straight",
+  "cell_type_specific": "Proximal_tubular_cells",
+  "cell_type_general": "Proximal_tubular_cells",
+  "cluster_name": "Proximal_tubular_cells_PT2"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 20,
+ "fields": {
+  "clusterID": "IN0",
+  "alias": "NK1",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 730,
+  "cell_type1": "NK cell",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "NK cell",
+  "cell_type_general": "NK cell",
+  "cluster_name": "NK cell_NK1"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 21,
+ "fields": {
+  "clusterID": "IN1",
+  "alias": "NKT1",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 640,
+  "cell_type1": "NKT cell",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "NKT cell",
+  "cell_type_general": "NKT cell",
+  "cluster_name": "NKT cell_NKT1"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 22,
+ "fields": {
+  "clusterID": "IN2",
+  "alias": "IN2",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 503,
+  "cell_type1": "Private",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "Private",
+  "cell_type_general": "Private",
+  "cluster_name": "Private_IN2"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 23,
+ "fields": {
+  "clusterID": "IN4",
+  "alias": "Th",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 435,
+  "cell_type1": "Th cell",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "Th cell",
+  "cell_type_general": "Th cell",
+  "cluster_name": "Th cell_Th"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 24,
+ "fields": {
+  "clusterID": "IN5",
+  "alias": "IN5",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 428,
+  "cell_type1": "Private",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "Private",
+  "cell_type_general": "Private",
+  "cluster_name": "Private_IN5"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 25,
+ "fields": {
+  "clusterID": "IN6",
+  "alias": "MNP1",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 415,
+  "cell_type1": "MNP1",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "MNP1",
+  "cell_type_general": "MNP",
+  "cluster_name": "MNP1_MNP1"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 26,
+ "fields": {
+  "clusterID": "IN7",
+  "alias": "MNP2",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 307,
+  "cell_type1": "MNP2",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "MNP2",
+  "cell_type_general": "MNP",
+  "cluster_name": "MNP2_MNP2"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 27,
+ "fields": {
+  "clusterID": "IN8",
+  "alias": "MNP3",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 188,
+  "cell_type1": "MNP3",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "MNP3",
+  "cell_type_general": "MNP",
+  "cluster_name": "MNP3_MNP3"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 28,
+ "fields": {
+  "clusterID": "IN9",
+  "alias": "NKT2",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 156,
+  "cell_type1": "NKT cell",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "NKT cell",
+  "cell_type_general": "NKT cell",
+  "cluster_name": "NKT cell_NKT2"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 29,
+ "fields": {
+  "clusterID": "IN10",
+  "alias": "8T",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 155,
+  "cell_type1": "CD8 T cell",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "CD8 T cell",
+  "cell_type_general": "CD8 T cell",
+  "cluster_name": "CD8 T cell_8T"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 30,
+ "fields": {
+  "clusterID": "IN11",
+  "alias": "NP",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 138,
+  "cell_type1": "Neutrophil",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "Neutrophil",
+  "cell_type_general": "Neutrophil",
+  "cluster_name": "Neutrophil_NP"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 31,
+ "fields": {
+  "clusterID": "IN12",
+  "alias": "IN12",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 79,
+  "cell_type1": "Private",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "Private",
+  "cell_type_general": "Private",
+  "cluster_name": "Private_IN12"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 32,
+ "fields": {
+  "clusterID": "IN13",
+  "alias": "B",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 74,
+  "cell_type1": "B cell",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "B cell",
+  "cell_type_general": "B cell",
+  "cluster_name": "B cell_B"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 33,
+ "fields": {
+  "clusterID": "IN14",
+  "alias": "NK2",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 37,
+  "cell_type1": "Proliferating NK cell",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "Proliferating NK cell",
+  "cell_type_general": "NK cell",
+  "cluster_name": "Proliferating NK cell_NK2"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 34,
+ "fields": {
+  "clusterID": "IN15",
+  "alias": "MST",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 26,
+  "cell_type1": "Mast cell",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "Mast cell",
+  "cell_type_general": "Mast cell",
+  "cluster_name": "Mast cell_MST"
+ }
+},
+{
+ "model": "data.cell_types_for_spatial_decon",
+ "pk": 35,
+ "fields": {
+  "clusterID": "IN16",
+  "alias": "PDC",
+  "data_set": "barcodeLevelGroup_normalImmune",
+  "number_of_cells": 23,
+  "cell_type1": "Plasmacytoid DC",
+  "cell_type2": "",
+  "cell_type3": "",
+  "cell_type_specific": "Plasmacytoid DC",
+  "cell_type_general": "DC",
+  "cluster_name": "Plasmacytoid DC_PDC"
+ }
+}
+]
