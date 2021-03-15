@@ -16,4 +16,6 @@ class Cell_Types_for_Spatial_Decon(models.Model):
     class Meta:
         ordering = ['cluster_id', 'number_of_cells']
 
+    # def update_celltype(self): return f'update-cell-type/{self.cluster_id}'
+
     def __str__(self): return self.cluster_id

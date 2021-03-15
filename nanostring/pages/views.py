@@ -1,15 +1,22 @@
 import csv, io
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib  import messages
 from django.contrib.gis.db.models import Q
 from django.db import connection
+from django.views.generic import ListView
 
-# from bokeh.plotting import figure, output_file, show
-# from bokeh.embed import components
+from math import pi
 
 
 from pandas import DataFrame
 import pandas
+
+from bokeh.plotting import figure
+from bokeh.embed import components
+from bokeh.models import ColumnDataSource, DataTable, TableColumn
+from bokeh.transform import cumsum
+
+from bokeh.palettes import Category10_10
 
 
 from data.models import (
@@ -19,6 +26,7 @@ from data.models import (
 from .forms import (
     UploadCellTypesForm,
     SearchCellTypesForm,
+    UpdateCellsTypeCSVsForm,
     )
 
 all_cell_types = Cell_Types_for_Spatial_Decon.objects.all()
@@ -36,7 +44,7 @@ def home_page_view(request):
     return render(request, template_name, context)
 
 
-def messages_view(request, prev_name):
+def messages_view(request, prev_name=None):
     template_name = 'pages/messages.html'
 
     context = {
@@ -52,6 +60,36 @@ def about_page_view(request):
 
     context = {
         'page_name': 'About',
+    }
+
+    return render(request, template_name, context)
+
+
+
+class CellTypeList(ListView):
+    model = Cell_Types_for_Spatial_Decon
+
+
+
+def update_cell_type_view(request, clusterid):
+    template_name = 'pages/update_cell_type.html'
+
+    cell_type = get_object_or_404(Cell_Types_for_Spatial_Decon, cluster_id=clusterid)
+    update_cells_type_csv_form = UpdateCellsTypeCSVsForm(instance=cell_type)
+
+    if request.method == 'POST':
+        update_cells_type_csv_form = UpdateCellsTypeCSVsForm(request.POST)
+        if update_cells_type_csv_form.is_valid():
+            Cell_Types_for_Spatial_Decon.objects.filter(cluster_id=clusterid).delete()
+            cd_celltype = update_cells_type_csv_form.cleaned_data
+            update_cells_type_csv_form.save()
+            messages.success(request, f'Cell Type {cd_celltype["cluster_id"]} successfully updated.')
+            return redirect('pages:messages_page', 'update-cell-type')
+
+    context = {
+        'page_name': f'Update {cell_type.cluster_id}',
+        'update_cells_type_csv_form': update_cells_type_csv_form,
+        'cell_type': cell_type,
     }
 
     return render(request, template_name, context)
@@ -107,12 +145,9 @@ def cell_types_for_spatial_decon_uploader_view(request):
 
 
 def cell_types_detail_view(request):
-    template_name = 'pages/cell_types_detail.html'
+    template_name = 'pages/cell_types_analysis.html'
 
-    from bokeh.plotting import figure
-    from bokeh.embed import components
-
-    cell_types = Cell_Types_for_Spatial_Decon.objects.order_by('cluster_id')
+    cell_types = Cell_Types_for_Spatial_Decon.objects.order_by('-number_of_cells')
 
     # cells_type_data = pandas.read_sql_query('''
     #     SELECT * FROM data_cell_types_for_spatial_decon
@@ -124,7 +159,17 @@ def cell_types_detail_view(request):
         connection
         )
 
-    cells_type_DF = DataFrame(cells_type_data, columns=['cluster_id', 'number_of_cells'])
+    DF_columns=[
+        'cluster_id',
+        'number_of_cells',
+        'alias',
+        'data_set',
+        'cell_type_specific',
+        'cell_type_general',
+        ]
+
+    cells_type_DF = DataFrame(cells_type_data, columns=DF_columns)
+    
 
     search_cell_types_form = SearchCellTypesForm(request.GET or None)
     if search_cell_types_form.is_valid():
@@ -157,59 +202,168 @@ def cell_types_detail_view(request):
         cluster_name ILIKE %(search_value)s
         '''
         search_cells_type_data = pandas.read_sql_query(sql_search_query, connection, params={'search_value':f'%{search_value}%'})
-        cells_type_DF = DataFrame(search_cells_type_data, columns=['cluster_id', 'number_of_cells'])
-        print(cells_type_DF)
+        cells_type_DF = DataFrame(search_cells_type_data, columns=DF_columns)
 
         if cell_types.count() == 0:
             messages.error(request, f'No Cell Types matches: "{search_value}".')
             return redirect('pages:messages_page', 'cell-types')
             
 
+
+
+
     cluster_id = cells_type_DF['cluster_id']
+    number_of_cells = cells_type_DF['number_of_cells']
+    data_set = cells_type_DF['data_set']
+    cell_type_specific = cells_type_DF['cell_type_specific']
+    cell_type_general = cells_type_DF['cell_type_general']
+
+
     cluster_id_list = []
     for item in cluster_id:
         cluster_id_list.append(item)
+        
 
-    number_of_cells = cells_type_DF['number_of_cells']
     number_of_cells_list = []
     for item in number_of_cells:
         number_of_cells_list.append(item)
+        
     
+    cells_type_CDS = ColumnDataSource(cells_type_DF)
+    columns = [
+        TableColumn(field="cluster_id", title="cluster_id"),
+        TableColumn(field="number_of_cells", title="number_of_cells"),
+    ]
+    data_table = DataTable(source=cells_type_CDS, columns=columns, width=400, height=280)
 
     # fig1: Bar Graph showing the Number of Cells against Cell cluster_id
+    fig1_tooltips= [
+            ('Cluster ID', '@cluster_id'),
+            ('Number of Cells', '@number_of_cells'),
+            ('Specific Cell Type', '@cell_type_specific'),
+            ('General Cell Type', '@cell_type_general'),
+        ]
     fig1=figure(
-        title="Bar Graph showing the Number of Cells against Cell cluster_id",
-        x_axis_label='Cell cluster_id',
+        title="Bar Graph showing Number of Cells against Cell clusterID",
+        x_axis_label='Cell clusterID',
         y_axis_label='Number of Cells',
-        x_range=sorted(cluster_id_list),
+        x_range=sorted(cluster_id_list, key=lambda x: number_of_cells_list[cluster_id_list.index(x)], reverse=True),
         plot_width=1200,
         plot_height=360,
+        tooltips=fig1_tooltips,
+        toolbar_location='below',
         )
+        
+    fig1.toolbar.active_drag = None
     fig1.title.align = "center"
     fig1.title.text_color = "darkgreen"
     fig1.title.text_font_size = "18px"
-    fig1.vbar(x=cluster_id_list, top=number_of_cells_list, width=0.5)
-
-    # fig2: Pie Chart showing Cells Types categories by Dataset
-    fig2 = figure(
-        title="Pie Chart showing Cells Types categories by Dataset",
-        # plot_width=250,
-        plot_height=400
+    fig1.xaxis.major_label_text_color = 'green'
+    fig1.yaxis.major_label_text_color = 'green'
+    fig1.xgrid.grid_line_color = None
+    fig1.y_range.start=0
+    fig1.vbar(
+        x='cluster_id',
+        top='number_of_cells',
+        source=cells_type_CDS,
+        width=0.8,
+        fill_color='seagreen',
+        line_color ='midnightblue',
         )
-    fig2.vbar(x=[1,2,3], width=0.5, bottom=0, top=[2,4,6], color="Red")
+    script1, div1 = components(fig1)
 
-    script, div1 = components(fig1)
+
+
+    data_set_groups_sum = cells_type_DF.groupby(['data_set']).sum()
+    data_set_groups_sum['value'] = (
+        data_set_groups_sum['number_of_cells']/data_set_groups_sum['number_of_cells'].sum() * 2*pi
+        )
+    data_set_groups_sum['value_weight'] = (
+        data_set_groups_sum['number_of_cells']/data_set_groups_sum['number_of_cells'].sum() * 100
+        )
+    data_set_groups_sum['color'] = Category10_10[:len(data_set_groups_sum)]
+    cells_data_set_groups_CDS = ColumnDataSource(data_set_groups_sum)
+    
+
+    fig2_tooltips= [
+            ('Data set', '@data_set'),
+            ('Percentage of total cells', '@value_weight'),
+        ]
+
+    fig2=figure(
+        title="Pie Chart showing grouped Data_Sets weighted by aggregate Number of Cells",
+        plot_height=600,
+        plot_width=992,
+        tooltips=fig2_tooltips,
+        # toolbar_location='below',
+        
+        )
+    fig2.wedge(
+        x=0,
+        y=1,
+        radius=0.45,
+        start_angle=cumsum('value', include_zero=True),
+        end_angle=cumsum('value'),
+        line_color="azure",
+        fill_color='color',
+        source=cells_data_set_groups_CDS,
+        legend_field='data_set',
+        )
+
+    fig2.axis.visible=False
+    fig2.axis.axis_line_color=None
+    fig2.toolbar.active_drag = None
+    fig2.title.align = "center"
+    fig2.title.text_color = "DarkSlateBlue"
+    fig2.title.text_font_size = "18px"
+    for a in fig2.legend:
+        print(a)
+    fig2.legend.orientation = "horizontal"
+    fig2.legend.location = "top_center"
+
+
+
+    
     script2, div2 = components(fig2)
+
+    # fig3=figure(
+    #     title="Bar Graph showing Cell clusterIDs by Number of Cells",
+    #     x_axis_label='Cell clusterID',
+    #     y_axis_label='Number of Cells',
+    #     x_range=sorted(cluster_id_list, key=lambda x: number_of_cells_list[cluster_id_list.index(x)], reverse=True),
+    #     plot_width=1200,
+    #     plot_height=360,
+    #     tooltips=fig1_tooltips,
+    #     toolbar_location='below',
+    #     )
+        
+    # fig3.toolbar.active_drag = None
+    # fig3.title.align = "center"
+    # fig3.title.text_color = "darkgreen"
+    # fig3.title.text_font_size = "18px"
+    # fig3.xgrid.grid_line_color = None
+    # fig3.y_range.start=0
+    # fig3.vbar(
+    #     x='cluster_id',
+    #     top='number_of_cells',
+    #     source=cells_data_set_groups_CDS3,
+    #     width=0.8,
+    #     )
+    # script3, div3 = components(fig3)
+
 
     context = {
         'page_name': 'Cell Types Detail',
         'cell_types': cell_types,
         'search_cell_types_form': search_cell_types_form,
-        'script': script,
+        # 'cells_type_CDS': data_table,
+        'cells_type_CDS': data_set_groups_sum['value'],
+        'script1': script1,
         'div1': div1,
         'script2': script2,
         'div2': div2,
-        # 'cells_type_df': somedata,
+        # 'script3': script3,
+        # 'div3': div3,
     }
 
     return render(request, template_name, context)

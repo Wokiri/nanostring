@@ -37,6 +37,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
+     # Third-party
+    'rest_framework',
+
+    # my apps
+    'data.apps.DataConfig',
+    'pages.apps.PagesConfig',
+    'api.apps.ApiConfig',
+
+    # Django defaults   
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,9 +60,6 @@ INSTALLED_APPS = [
     # humanize
     'django.contrib.humanize',
 
-    # apps
-    'data.apps.DataConfig',
-    'pages.apps.PagesConfig',
 ]
 
 MIDDLEWARE = [

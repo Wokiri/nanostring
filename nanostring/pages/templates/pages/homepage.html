@@ -1,12 +1,18 @@
-{% extends 'pages/base_template.html' %}
-{% load static %}
-{% load humanize %}
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
 
 {% block content %}
     {% if cell_types %}
-        <div class="container shadow-sm p-4 mt-sm-4">
+
+
+        <div class="container mt-sm-4">
             <div class="pb-2 pb-sm-2">
-                <h3 class="text-success">Subset of Cell Types data</h3>
+                <h3 class="text-success">Cell Deconvolution</h3>
+            </div>
+        </div>
+
+        <div class="container shadow-lg p-4">
+            <div class="pb-2 pb-sm-2">
+                <h2><small class="lead">Subset of Cell Annotations (Cell Types) data</small></h2>
             </div>
 
             <div class="table-responsive">
@@ -51,6 +57,9 @@
             <div class="py-2 py-sm-2">
                 <a class="btn btn-outline-success" href="{% url 'pages:cell_types_detail_page' %}">
                     Cell Types detailed statistical analysis
+                </a>
+                <a class="btn btn-outline-dark" href="{% url 'pages:list_cell_type_page' %}">
+                   Update Cell Types
                 </a>
             </div>
         </div>

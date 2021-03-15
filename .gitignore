@@ -16,10 +16,10 @@ venv_path.txt
 nanostring_hackathon.docx
 nanostring_hackathon.pdf
 
-/KidneyDataset/*.csv
-/KidneyDataset/*.pdf
+*.csv
+*.pdf
 /KidneyDataset/*.txt
-/KidneyDataset/*.docx
+*.docx
 
 *.vscode
 

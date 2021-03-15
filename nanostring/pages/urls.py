@@ -21,6 +21,8 @@ from .views import (
     about_page_view,
     cell_types_for_spatial_decon_uploader_view,
     cell_types_detail_view,
+    CellTypeList,
+    update_cell_type_view,
     messages_view,
 )
 
@@ -31,5 +33,8 @@ urlpatterns = [
     path('about-us/', about_page_view, name='about_page'),
     path('file-upload/', cell_types_for_spatial_decon_uploader_view, name='upload_page'),
     path('cell-types/', cell_types_detail_view, name='cell_types_detail_page'),
+    path('messages/', messages_view, name='messages_page'),
     path('<slug:prev_name>/messages/', messages_view, name='messages_page'),
+    path('update-cell-type/', CellTypeList.as_view(), name='list_cell_type_page'),
+    path('update-cell-type/<slug:clusterid>/', update_cell_type_view, name='update_cell_type_page'),
 ]
