@@ -5,16 +5,23 @@
 {% block docmeta %}
     <link rel="stylesheet" type="text/css" href="{% static 'pages/bokeh/bokeh-1.0.4.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'pages/bokeh/bokeh-widgets-1.0.4.min.css' %}">
+    {{ script_table|safe }}
     {{ script1|safe }}
     {{ script2|safe }}
-    {{ script3|safe }}
 {% endblock %}
 
 
 {% block content %}
     {% if cell_types %}
+
+
+
         <div class="container shadow-lg rounded-lg my-5">
             <div class="my-4">
+                <div class="py-sm-2">
+                   {{ div_intro }}
+                </div>
+
                 <div class="py-sm-2">
                     <h3 class="text-center text-success">Detailed Analysis of Cell Annotations (Cell Types) data</h3>
                 </div>
@@ -25,8 +32,6 @@
                         <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
                     </form>
                 </div>
-
-
 
                 <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
                     <table class="table table-bordered table-striped">
@@ -76,16 +81,58 @@
                 <div class="mx-auto mb-5" style="overflow: auto;">
                     {{ div2|safe }}
                 </div>
-
+                
                 <div class="mx-auto mb-5" style="overflow: auto;">
-                    {{ div3|safe }}
+                    <div class="py-2 py-sm-2">
+                    <p class="lead">Numerical Statistics summary table:</p>            
+                    <table class="table table-borderless table-sm">
+                        <thead>
+                        <tr>
+                            <th>Stats Field</th>
+                            <th>Stats Value (Number of cells)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Count</td>
+                            <td>{{ cells_type_describe_object.count }}</td>
+                        </tr>
+                        <tr>
+                            <td>Mean</td>
+                            <td>{{ cells_type_describe_object.mean }}</td>
+                        </tr>
+                        <tr>
+                            <td>Std</td>
+                            <td>{{ cells_type_describe_object.std }}</td>
+                        </tr>
+                        <tr>
+                            <td>Min</td>
+                            <td>{{ cells_type_describe_object.min }}</td>
+                        </tr>
+                        <tr>
+                            <td>25%</td>
+                            <td>{{ cells_type_describe_object.25 }}</td>
+                        </tr>
+                        <tr>
+                            <td>50%</td>
+                            <td>{{ cells_type_describe_object.50 }}</td>
+                        </tr>
+                        <tr>
+                            <td>75%</td>
+                            <td>{{ cells_type_describe_object.75 }}</td>
+                        </tr>
+                        <tr>
+                            <td>Max</td>
+                            <td>{{ cells_type_describe_object.max }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </div>
                 </div>
 
             </div>
 
-                            <!-- <div class="py-2 py-sm-4">
-                    {{ cells_type_CDS }}
-                </div> -->
+
             
         </div>
     {% else %}

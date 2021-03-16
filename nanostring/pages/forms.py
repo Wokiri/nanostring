@@ -7,7 +7,7 @@ class UploadCellTypesForm(forms.Form):
         )
 
 class SearchCellTypesForm(forms.Form):
-    search_cell_type = forms.CharField(label='Search Cell Type(s)', max_length=125, required=False,
+    search_cell_type = forms.CharField(label='Search Cell Annotations', max_length=125, required=False,
     widget=forms.TextInput(
         attrs={'id':'myFIELD', 'class':'form-control mr-sm-1'}
         ))

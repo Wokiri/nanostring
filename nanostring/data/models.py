@@ -14,7 +14,7 @@ class Cell_Types_for_Spatial_Decon(models.Model):
     cluster_name = models.CharField(max_length=125, null=True, blank=True)
 
     class Meta:
-        ordering = ['cluster_id', 'number_of_cells']
+        ordering = ['-number_of_cells', 'cluster_id', ]
 
     # def update_celltype(self): return f'update-cell-type/{self.cluster_id}'
 
