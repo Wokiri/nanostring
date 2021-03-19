@@ -9,10 +9,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: {
     bootstrapStyling: "./src/js/bootstrapStyling.js",
+    sample_annotation_map: "./src/js/sample_annotation_map.js",
   },
   output: {
     publicPath: "",
-    path: path.resolve(__dirname, "prod"),
+    path: path.resolve(__dirname, "sample_annotation"),
     filename: "js/[name].js",
   },
   devServer: {

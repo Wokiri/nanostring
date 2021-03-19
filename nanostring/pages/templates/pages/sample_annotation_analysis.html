@@ -3,6 +3,7 @@
 {% load humanize %}
 
 {% block docmeta %}
+<link rel="stylesheet" type="text/css" href="{% static 'pages/css/sample_annotation_map.css' %}">
 {% endblock %}
 
 
@@ -16,7 +17,7 @@
                 </div>
 
                 <div class="py-sm-2">
-                    <h3 class="text-center text-success">Detailed Analysis of Cell Annotations (Cell Types) data</h3>
+                    <h3 class="text-center text-success">{{ page_name }}</h3>
                 </div>
 
                 <div class="py-2 py-sm-4">
@@ -102,58 +103,13 @@
 
             <div class="row">
                 <div class="col-sm-12 mx-auto mb-5" style="overflow: auto;">
+                    <div id="sampleannotation_map" class="w-100 mx-auto my-sm-2"></div>
+                    <div id="mapcontent" class="bg-light my-sm-2" style="min-height: 120px;"></div>
                 </div>
 
                 <div class="mx-auto mb-5" style="overflow: auto;">
                 </div>
                 
-                <!-- <div class="mx-auto mb-5" style="overflow: auto;">
-                    <div class="py-2 py-sm-2">
-                    <p class="lead">Numerical Statistics summary table:</p>            
-                    <table class="table table-borderless table-sm text-monospace">
-                        <thead>
-                        <tr>
-                            <th class="text-center">Stats Field</th>
-                            <th>Stats Value (Number of cells)</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td class="text-right">Cell Annotations Count:</td>
-                            <td>{{ cells_type_describe_object.count }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">Number of cells Mean:</td>
-                            <td>{{ cells_type_describe_object.mean }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">Number of cells Std:</td>
-                            <td>{{ cells_type_describe_object.std }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">Max:</td>
-                            <td>{{ cells_type_describe_object.max }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">Min:</td>
-                            <td>{{ cells_type_describe_object.min }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">25%:</td>
-                            <td>{{ cells_type_describe_object.25 }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">50%:</td>
-                            <td>{{ cells_type_describe_object.50 }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">75%:</td>
-                            <td>{{ cells_type_describe_object.75 }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    </div>
-                </div> -->
 
             </div>
 
@@ -165,4 +121,13 @@
             <h3 class="text-center text-warning">No Sample Annotations in the database yet!</h3>
         </div>
     {% endif %}
+
+<script>
+  const sampleAnnotationsVectorGeoson = "{{ sample_annotations_vector_geoson|escapejs }}";
+  const mapLon = "{{ map_lon }}";
+  const mapLat = "{{ map_lat }}";
+  const mapZoom = "{{ map_zoom }}";
+</script>
+<script src="{% static 'pages/js/sample_annotation_map.js' %}"></script>
+
 {% endblock %}

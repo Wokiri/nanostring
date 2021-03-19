@@ -1,11 +1,11 @@
 import csv, io
-from bokeh.models.layouts import Column, Spacer
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib  import messages
 from django.contrib.gis.db.models import Q
 from django.contrib.gis.geos import Point
 from django.db import connection
 from django.views.generic import ListView
+from django.core.serializers import serialize
 
 from math import pi, floor
 
@@ -23,6 +23,8 @@ from bokeh.models import (
 from bokeh.transform import cumsum
 from bokeh.layouts import Column
 from bokeh.palettes import Category10_10, Greens256
+from bokeh.models.layouts import Column, Spacer
+
 
 
 from data.models import (
@@ -506,10 +508,23 @@ def sample_annotations_analysis_view(request):
             search_count = sample_annotations.count()
 
 
+    sample_annotations_vector_geoson = serialize('geojson', sample_annotations)
+    all_lons = [float(i.geom[0]) for i in sample_annotations]
+    all_lats = [float(i.geom[1]) for i in sample_annotations]
+
+    map_lon = float(sum(all_lons)/len(all_lons))
+    map_lat = float(sum(all_lats)/len(all_lats))
+    map_zoom = float(40)
+    
     context = {
         'page_name': 'Sample Annotations Analysis',
         'sample_annotations': sample_annotations,
         'sample_annotations_search_form': sample_annotations_search_form,
         'search_count': search_count,
+        'sample_annotations_vector_geoson': sample_annotations_vector_geoson,
+        'map_lon': map_lon,
+        'map_lat': map_lat,
+        'map_zoom': map_zoom,
     }
     return render(request, template_name, context)
+
