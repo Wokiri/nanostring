@@ -1,0 +1,23 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+<div class="container p-sm-4 mb-sm-5">
+  <div class="shadow-lg rounded-lg my-sm-2 p-sm-4">
+    <p class="lead mb-3">Kidney Sample Annotations {{ sample_annotation.slug }} Update form</p>
+    <form method="post">
+    {% csrf_token %}
+    <div class="row">
+    {% for form in update_sample_annotations_form %}
+        <div class="col-6">
+            <p class="mt-0">{{ form.errors }}</p>
+            <p class="mb-0">{{ form.label_tag }}</p>
+            <p class="mb-2">{{ form }}</p>
+        </div>
+    {% endfor %}
+    </div>
+      <button class="btn btn-info" type="submit">Update</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

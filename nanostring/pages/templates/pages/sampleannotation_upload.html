@@ -7,9 +7,9 @@
 
 <div class="container">
   <div class="shadow-lg rounded-lg my-sm-2 p-sm-4">
-    <p class="lead mb-3">Cell Annotations (Cell Types) upload/update form</p>
+    <p class="lead mb-3">Kidney_Sample_Annotations upload/update form</p>
     <form enctype="multipart/form-data" method="post">
-      {% csrf_token %} {% for form in cell_types_form %}
+      {% csrf_token %} {% for form in sample_annotations_form %}
       <p>{{ form.errors }}</p>
       <p>{{ form.label_tag }}</p>
       <p>{{ form }}</p>
@@ -18,5 +18,6 @@
     </form>
   </div>
 </div>
+
 
 {% endblock %}

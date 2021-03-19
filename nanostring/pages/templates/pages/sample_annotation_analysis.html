@@ -3,16 +3,11 @@
 {% load humanize %}
 
 {% block docmeta %}
-    <link rel="stylesheet" type="text/css" href="{% static 'pages/bokeh/bokeh-1.0.4.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'pages/bokeh/bokeh-widgets-1.0.4.min.css' %}">
-    {{ script_table|safe }}
-    {{ script1|safe }}
-    {{ script2|safe }}
 {% endblock %}
 
 
 {% block content %}
-    {% if cell_types %}
+{% if sample_annotations %}
     
         <div class="container shadow-lg rounded-lg my-5">
             <div class="my-4">
@@ -26,7 +21,7 @@
 
                 <div class="py-2 py-sm-4">
                     <form class="form-inline my-2 my-lg-0">
-                        {{ search_cell_types_form }}
+                        {{ sample_annotations_search_form }}
                         <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
                     </form>
                 </div>
@@ -40,38 +35,64 @@
                 {% endif %}
 
                 <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered table-sm">
                         <thead class="text-center text-success">
                             <tr>
                                 <th>#</th>
-                                <th>Cluster ID</th>
-                                <th>Alias</th>
-                                <th>Dataset</th>
-                                <th>Number of Cells</th>
-                                <th>Cell Type 1</th>
-                                <th>Cell Type 2</th>
-                                <th>Cell Type 3</th>
-                                <th>Cell Type Specific</th>
-                                <th>Cell Type General</th>
-                                <th>Cluster Name</th>
+                                <th>Slide Name</th>
+                                <th>Scan Name</th>
+                                <th>ROI Label</th>
+                                <th>Segment Label</th>
+                                <th>Segment Display Name</th>
+                                <th>AOI Surface Area</th>
+                                <th>AOI Nuclei Count</th>
+                                <th>ROI Coordinate X</th>
+                                <th>ROI Coordinate Y</th>
+                                <th>Raw Reads</th>
+                                <th>Trimmed Reads</th>
+                                <th>Stitched Reads</th>
+                                <th>Aligned Reads</th>
+                                <th>Duplicated Reads</th>
+                                <th>Sequencing Saturation</th>
+                                <th>UMIQ30</th>
+                                <th>RTSQ30</th>
+                                <th>Disease Status</th>
+                                <th>Pathology</th>
+                                <th>Region</th>
+                                <th>LOQ</th>
+                                <th>Normalization Factor</th>
+                                <th>Geom</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             
-                            {% for data in cell_types %}
+                            {% for data in sample_annotations %}
                                 <tr>
-                                    <td class="text-success">{{ forloop.counter }}</td>
-                                    <td>{{ data.cluster_id }}</td>
-                                    <td>{{ data.alias }}</td>
-                                    <td>{{ data.data_set }}</td>
-                                    <td>{{ data.number_of_cells }}</td>
-                                    <td>{{ data.cell_type1 }}</td>
-                                    <td>{{ data.cell_type2 }}</td>
-                                    <td>{{ data.cell_type3 }}</td>
-                                    <td>{{ data.cell_type_specific }}</td>
-                                    <td>{{ data.cell_type_general }}</td>
-                                    <td>{{ data.cluster_name }}</td>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ data.slide_name }}</td>
+                                    <td>{{ data.scan_name }}</td>
+                                    <td>{{ data.roi_label }}</td>
+                                    <td>{{ data.segment_label }}</td>
+                                    <td>{{ data.segment_display_name }}</td>
+                                    <td>{{ data.aoi_surface_area }}</td>
+                                    <td>{{ data.aoi_nuclei_count }}</td>
+                                    <td>{{ data.roi_coordinate_x }}</td>
+                                    <td>{{ data.roi_coordinate_y }}</td>
+                                    <td>{{ data.raw_reads }}</td>
+                                    <td>{{ data.trimmed_reads }}</td>
+                                    <td>{{ data.stitched_reads }}</td>
+                                    <td>{{ data.aligned_reads }}</td>
+                                    <td>{{ data.duplicated_reads }}</td>
+                                    <td>{{ data.sequencing_saturation }}</td>
+                                    <td>{{ data.umiq_30 }}</td>
+                                    <td>{{ data.rtsq_30 }}</td>
+                                    <td>{{ data.disease_status }}</td>
+                                    <td>{{ data.pathology }}</td>
+                                    <td>{{ data.region }}</td>
+                                    <td>{{ data.loq }}</td>
+                                    <td>{{ data.normalization_factor }}</td>
+                                    <td>{{ data.geom }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -81,14 +102,12 @@
 
             <div class="row">
                 <div class="col-sm-12 mx-auto mb-5" style="overflow: auto;">
-                    {{ div1|safe }}
                 </div>
 
                 <div class="mx-auto mb-5" style="overflow: auto;">
-                    {{ div2|safe }}
                 </div>
                 
-                <div class="mx-auto mb-5" style="overflow: auto;">
+                <!-- <div class="mx-auto mb-5" style="overflow: auto;">
                     <div class="py-2 py-sm-2">
                     <p class="lead">Numerical Statistics summary table:</p>            
                     <table class="table table-borderless table-sm text-monospace">
@@ -134,7 +153,7 @@
                         </tbody>
                     </table>
                     </div>
-                </div>
+                </div> -->
 
             </div>
 
@@ -143,10 +162,7 @@
         </div>
     {% else %}
         <div class="py-sm-2">
-            <h3 class="text-center text-warning">No Cell Types data in the database yet!</h3>
+            <h3 class="text-center text-warning">No Sample Annotations in the database yet!</h3>
         </div>
     {% endif %}
-
-    <script src="{% static 'pages/bokeh/bokeh-2.3.0.min.js' %}"></script>
-    <script src="{% static 'pages/bokeh/bokeh-widgets-2.3.0.min.js' %}"></script>
 {% endblock %}
