@@ -9,7 +9,7 @@ import sync from "ol-hashed";
 
 import ZoomSlider from "ol/control/ZoomSlider";
 
-
+const sampleAnnotationsVectorGeoson = require('./test.json')
 const sampleannotation_map = document.querySelector("#sampleannotation_map");
 const mapcontent = document.getElementById("mapcontent");
 
@@ -21,23 +21,23 @@ const sampleAnnotationsVector = new VectorSource({
 
 // sampleAnnotations visual style
 const sampleAnnotationsPointStyle = (feature) => {
-  return feature.values_.disease_status === "DKD"
-    ? new Style({
-        image: new CircleStyle({
-          radius: 4,
-          fill: new Fill({
-            color: "rgb(204, 0, 0)",
+    return feature.values_.disease_status === "DKD"
+      ? new Style({
+          image: new CircleStyle({
+            radius: 4,
+            fill: new Fill({
+              color: "rgb(204, 0, 0)",
+            }),
           }),
-        }),
-      })
-    : new Style({
-        image: new CircleStyle({
-          radius: 4,
-          fill: new Fill({
-            color: "rgb(0, 102, 204)",
+        })
+      : new Style({
+          image: new CircleStyle({
+            radius: 4,
+            fill: new Fill({
+              color: "rgb(0, 20, 26)",
+            }),
           }),
-        }),
-      });
+        });
 };
 
 // sampleAnnotations layer
@@ -50,8 +50,8 @@ const sampleAnnotationsMap = new Map({
   target: sampleannotation_map,
   layers: [sampleAnnotationsLayer],
   view: new View({
-    center: [mapLon, mapLat],
-    zoom: mapZoom,
+    center: [0.25, -0.3],
+    zoom: 30,
   }),
 });
 

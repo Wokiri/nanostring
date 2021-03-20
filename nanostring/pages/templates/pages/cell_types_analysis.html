@@ -3,9 +3,6 @@
 {% load humanize %}
 
 {% block docmeta %}
-    <link rel="stylesheet" type="text/css" href="{% static 'pages/bokeh/bokeh-1.0.4.min.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'pages/bokeh/bokeh-widgets-1.0.4.min.css' %}">
-    {{ script_table|safe }}
     {{ script1|safe }}
     {{ script2|safe }}
 {% endblock %}
@@ -137,8 +134,6 @@
                 </div>
 
             </div>
-
-
             
         </div>
     {% else %}

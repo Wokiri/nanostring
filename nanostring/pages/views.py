@@ -22,7 +22,7 @@ from bokeh.models import (
     )
 from bokeh.transform import cumsum
 from bokeh.layouts import Column
-from bokeh.palettes import Category10_10, Greens256
+from bokeh.palettes import Category10_10, Category10_3, Greens256, Category10
 from bokeh.models.layouts import Column, Spacer
 
 
@@ -471,6 +471,14 @@ def sample_annotations_analysis_view(request):
     sample_annotations = Kidney_Sample_Annotations.objects.all()
     search_count = sample_annotations.count()
 
+    sample_annotations_data = pandas.read_sql_query(
+        str(Kidney_Sample_Annotations.objects.all().query),
+        connection
+        )
+
+    sample_annotations_DF = DataFrame(sample_annotations_data, columns=['disease_status', 'segment_display_name'])
+    
+
     sample_annotations_search_form = SearchSampleAnnotationsForm(request.GET or None)
     if sample_annotations_search_form.is_valid():
         cd = sample_annotations_search_form.cleaned_data
@@ -501,6 +509,36 @@ def sample_annotations_analysis_view(request):
             Q(normalization_factor__icontains=search_value)
         )
 
+        sql_search_query = '''
+        SELECT * FROM data_kidney_sample_annotations WHERE
+        slide_name ILIKE %(search_value)s OR
+        scan_name ILIKE %(search_value)s OR
+        CAST (roi_label AS TEXT) ILIKE %(search_value)s OR
+        segment_label ILIKE %(search_value)s OR
+        segment_display_name ILIKE %(search_value)s OR
+        sample_id ILIKE %(search_value)s OR
+        CAST (aoi_surface_area AS TEXT) ILIKE %(search_value)s OR
+        CAST (aoi_nuclei_count AS TEXT) ILIKE %(search_value)s OR
+        CAST (roi_coordinate_x AS TEXT) ILIKE %(search_value)s OR
+        CAST (roi_coordinate_y AS TEXT) ILIKE %(search_value)s OR
+        CAST (raw_reads AS TEXT) ILIKE %(search_value)s OR
+        CAST (trimmed_reads AS TEXT) ILIKE %(search_value)s OR
+        CAST (stitched_reads AS TEXT) ILIKE %(search_value)s OR
+        CAST (aligned_reads AS TEXT) ILIKE %(search_value)s OR
+        CAST (duplicated_reads AS TEXT) ILIKE %(search_value)s OR
+        CAST (sequencing_saturation AS TEXT) ILIKE %(search_value)s OR
+        CAST (umiq_30 AS TEXT) ILIKE %(search_value)s OR
+        CAST (rtsq_30 AS TEXT) ILIKE %(search_value)s OR
+        disease_status ILIKE %(search_value)s OR
+        pathology ILIKE %(search_value)s OR
+        region ILIKE %(search_value)s OR
+        CAST (loq AS TEXT) ILIKE %(search_value)s OR
+        CAST (normalization_factor AS TEXT) ILIKE %(search_value)s
+        '''
+
+        sample_annotations_data = pandas.read_sql_query(sql_search_query, connection, params={'search_value':f'%{search_value}%'})
+        sample_annotations_DF = DataFrame(sample_annotations_data, columns=['disease_status', 'segment_display_name'])
+
         if sample_annotations.count() == 0:
             messages.error(request, f'No Sample Annotations matches: "{search_value}".')
             return redirect('pages:messages_page', 'sample-annotations-analysis')
@@ -508,13 +546,67 @@ def sample_annotations_analysis_view(request):
             search_count = sample_annotations.count()
 
 
-    sample_annotations_vector_geoson = serialize('geojson', sample_annotations)
+    sample_annotations_vector_geoson = serialize(
+        'geojson',
+        sample_annotations,
+        geometry_field='geom',
+        fields=('disease_status','segment_display_name')
+        )
     all_lons = [float(i.geom[0]) for i in sample_annotations]
     all_lats = [float(i.geom[1]) for i in sample_annotations]
 
     map_lon = float(sum(all_lons)/len(all_lons))
     map_lat = float(sum(all_lats)/len(all_lats))
     map_zoom = float(40)
+
+    disease_status_group = sample_annotations_DF.groupby(['disease_status']).count()
+
+    # Create value column to be used for piechart angles
+    disease_status_group['value'] = (
+        disease_status_group['segment_display_name']/len(sample_annotations_DF) * 2*pi
+        )
+    disease_status_group['proportion'] = (
+        disease_status_group['segment_display_name']
+        )
+    disease_status_group['color'] = ['orangered', 'mediumblue'][:len(disease_status_group)]
+    
+    disease_status_groups_CDS = ColumnDataSource(disease_status_group)
+
+
+    sample_annotations_tooltips= [
+            ('Disease Status', '@disease_status'),
+            ('Proportion', f'@proportion out of {len(sample_annotations_DF)}'),
+        ]
+
+    sample_annotations_fig=figure(
+        title="Pie Chart showing Kidney Sample Annotations categorized by Disease Status",
+        plot_height=600,
+        plot_width=992,
+        tooltips=sample_annotations_tooltips,
+        )
+
+    sample_annotations_fig.wedge(
+        x=0,
+        y=1,
+        radius=0.45,
+        start_angle=cumsum('value', include_zero=True),
+        end_angle=cumsum('value'),
+        line_color="white",
+        fill_color='color',
+        source=disease_status_groups_CDS,
+        legend_field='disease_status',
+        )
+
+    sample_annotations_fig.axis.visible=False
+    sample_annotations_fig.axis.axis_line_color=None
+    sample_annotations_fig.toolbar.active_drag = None
+    sample_annotations_fig.title.align = "center"
+    sample_annotations_fig.title.text_color = "DarkSlateBlue"
+    sample_annotations_fig.title.text_font_size = "18px"
+    sample_annotations_fig.legend.orientation = "vertical"
+    sample_annotations_fig.legend.location = "right"
+    
+    script, div = components(sample_annotations_fig)
     
     context = {
         'page_name': 'Sample Annotations Analysis',
@@ -525,6 +617,8 @@ def sample_annotations_analysis_view(request):
         'map_lon': map_lon,
         'map_lat': map_lat,
         'map_zoom': map_zoom,
+        'script': script,
+        'div': div,
     }
     return render(request, template_name, context)
 

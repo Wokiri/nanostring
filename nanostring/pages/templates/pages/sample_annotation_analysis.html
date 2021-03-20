@@ -4,11 +4,12 @@
 
 {% block docmeta %}
 <link rel="stylesheet" type="text/css" href="{% static 'pages/css/sample_annotation_map.css' %}">
+{{ script|safe }}
 {% endblock %}
 
 
 {% block content %}
-{% if sample_annotations %}
+    {% if sample_annotations %}
     
         <div class="container shadow-lg rounded-lg my-5">
             <div class="my-4">
@@ -103,8 +104,15 @@
 
             <div class="row">
                 <div class="col-sm-12 mx-auto mb-5" style="overflow: auto;">
+                    <h1 class="text-center text-info lead m-1">
+                        Map showing kidney sample annotations categorized by disease status
+                    </h1>
                     <div id="sampleannotation_map" class="w-100 mx-auto my-sm-2"></div>
                     <div id="mapcontent" class="bg-light my-sm-2" style="min-height: 120px;"></div>
+                </div>
+
+                <div class="mx-auto mb-5" style="overflow: auto;">
+                    {{ div|safe }}
                 </div>
 
                 <div class="mx-auto mb-5" style="overflow: auto;">
@@ -129,5 +137,7 @@
   const mapZoom = "{{ map_zoom }}";
 </script>
 <script src="{% static 'pages/js/sample_annotation_map.js' %}"></script>
+<script src="{% static 'pages/bokeh/bokeh-2.3.0.min.js' %}"></script>
+<script src="{% static 'pages/bokeh/bokeh-widgets-2.3.0.min.js' %}"></script>
 
 {% endblock %}

@@ -10,6 +10,7 @@ module.exports = {
   entry: {
     bootstrapStyling: "./src/js/bootstrapStyling.js",
     sample_annotation_map: "./src/js/sample_annotation_map.js",
+    testing: "./src/js/annotation_map.js",
   },
   output: {
     publicPath: "",
