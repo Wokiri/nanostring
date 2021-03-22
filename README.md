@@ -5,7 +5,7 @@
 
 
 
-<p align='center'><img src="" width="1728" alt="Main thumbnail"/></p>
+<p align='center'><img src="https://dub01pap001files.storage.live.com/y4mfx3F1gQb46H0CDfeaKkBiifqPTH4PLVvjJb9K64mPM75KS5hTzQLXfLfHm8oXYz8iBZCiBAZVhtbZrIWoNtVIWam-F8xjo-l6MSl0dQDzeLNTWMRT0crbTeCM7zlH6f_gP0PjtoLri-rOpoysam8OcxPwV1eNLbD_Pk-Gk-JRXlUQow0eujek41h4PdKLaGN?width=1728&height=1152&cropmode=none" width="1728" alt="Main thumbnail"/></p>
 
 &nbsp;&nbsp;<br/>
 
@@ -37,19 +37,19 @@ I have developed a web app that reads raw data from CSVs files, and for each fil
 
 ### <p align='center'>Bar Graph showing Number of Cells against Cell clusterID</p>
 
-<p align='center'><img src="" width="1280" alt="Bar Graph showing Number of Cells against Cell clusterID"/></p>
+<p align='center'><img src="https://dub01pap001files.storage.live.com/y4mh4x-COU_i6951EaEJvm7tepZRvfNCSEDAKBjiww3jIFb57vFVM7RMCVld2CY1tVyqv6KbdcBfacucXTGf-lUF64eHRZZUb_gbojiuAS8wJBw9Sj3EpcqMYJJ9mkcPxS-AsvV1o5CZycKU8-yT2pGEDWBba8qvajvcTdOpmifndku-QOykVWm8fLzATzkxNIt?width=1200&height=500&cropmode=none" width="1280" alt="Bar Graph showing Number of Cells against Cell clusterID"/></p>
 
 ### <p align='center'>Kidney sample annotations map with selected healthy cell</p>
 
-<p align='center'><img src="" width="1280" alt="Kidney sample annotations map with selected healthy cell"/></p>
+<p align='center'><img src="https://dub01pap001files.storage.live.com/y4mmJOyrfR52BlOx9cMS4e_PKpBrqr_KGJofuJWrY73CNGM_VHopzMPuFeNHV-SxFoo4zq9ffk-YlxhvEjQnRhWq7iAa43ss3IK5phyggFMzn29lA92I_scNPT__xvHon0agwcXT8WdKD1IgotNnhDoCWqrt1v-Cmu3PoauzrBF8KdhdxGVMxRV9DE1rkPYDFiv?width=1280&height=800&cropmode=none" width="1280" alt="Kidney sample annotations map with selected healthy cell"/></p>
 
 ### <p align='center'>Screen shot with search value of neutrophil</p>
 
-<p align='center'><img src="" width="1280" alt="Screen shot with search value of neutrophil"/></p>
+<p align='center'><img src="https://dub01pap001files.storage.live.com/y4mPh6qfRmKoQR7G0omjIMRBDpewKhCN_FniCRw24Jf8NTGAJxPZ6ah91CgMgG0VRAh3ijOIA6wFIxoB0JAzDlPvak2fQZkpAzEcA__itqhpvtOkTsSHF2ijE-nLzAEhQhIZvq-2Dc3W-6_Iritx033rFZ2HrXTxt1KsOtAWZfbzo8m42uZp04n2mscEnCUCzVC?width=1280&height=800&cropmode=none" width="1280" alt="Screen shot with search value of neutrophil"/></p>
 
 ### <p align='center'>Pie Chart showing Kidney Sample Annotations categorized by Disease Status</p>
 
-<p align='center'><img src="" width="992" alt="Pie Chart showing Kidney Sample Annotations categorized by Disease Status"/></p>
+<p align='center'><img src="https://dub01pap001files.storage.live.com/y4mu2k3Dxsqq7f-0ZlMdpKfmM25k35r63sOUyletrtF8ORdN3gJqGiGxWKdCuKlYp5JC0nWQQu4StlDndyCruV3Y5fs5_fTTPUW9i5TW0v2CnFgN0WiU0bsLM2Vt7aO6KZbUjkbNwhvw6FmIFMLZL0oCJi1OLfASROV5fB8fNVgK8EXC1dpfbU_9F-wzW68uyth?width=992&height=600&cropmode=none" width="992" alt="Pie Chart showing Kidney Sample Annotations categorized by Disease Status"/></p>
 
 <br/><br/>
 
