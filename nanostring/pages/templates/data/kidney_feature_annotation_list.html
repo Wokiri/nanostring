@@ -3,14 +3,14 @@
 
 <div class="container p-4 shadow-lg rounded lg">
     <div class="w-75 mx-auto">
-        <h2 class="text-success p-sm-4">Choose Sample Annotation to Update</h2>
+        <h2 class="text-success p-sm-4">Choose Feature Annotation to Update</h2>
     </div>
 
     <div class="container row">
     {% for item in object_list %}
         <div class="list-group my-sm-2 col-sm-4">
-            <a href="{% url 'pages:update_sample_annotation_page' item.id %}" class="list-group-item list-group-item-action w-75 mx-auto">
-                ID.{{ item.id }}: {{ item.segment_display_name }}
+            <a href="{% url 'pages:update_feature_annotation_page' item.rts_id %}" class="list-group-item list-group-item-action w-75 mx-auto">
+                {{ item.rts_id }}
             </a>
         </div>
     {% empty %}

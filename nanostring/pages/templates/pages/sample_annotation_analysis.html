@@ -40,7 +40,7 @@
                     <table class="table table-bordered table-sm">
                         <thead class="text-center text-success">
                             <tr>
-                                <th>#</th>
+                                <th>ID</th>
                                 <th>Slide Name</th>
                                 <th>Scan Name</th>
                                 <th>ROI Label</th>
@@ -71,7 +71,7 @@
                             
                             {% for data in sample_annotations %}
                                 <tr>
-                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ data.id }}</td>
                                     <td>{{ data.slide_name }}</td>
                                     <td>{{ data.scan_name }}</td>
                                     <td>{{ data.roi_label }}</td>
@@ -104,7 +104,7 @@
 
             <div class="row">
                 <div class="col-sm-12 mx-auto mb-5" style="overflow: auto;">
-                    <h1 class="text-center text-info lead m-1">
+                    <h1 class="text-center text-info lead m-1 font-weight-bolder">
                         Map showing kidney sample annotations categorized by disease status
                     </h1>
                     <div id="sampleannotation_map" class="w-100 mx-auto my-sm-2"></div>

@@ -3,11 +3,11 @@
 
 <div class="container p-sm-4 mb-sm-5">
   <div class="shadow-lg rounded-lg my-sm-2 p-sm-4">
-    <p class="lead mb-3">Kidney Sample Annotations {{ sample_annotation.segment_display_name }} Update form</p>
+    <p class="lead mb-3">Kidney Feature Annotations {{ feature_annotation.rts_id }} Update form</p>
     <form method="post">
     {% csrf_token %}
     <div class="row">
-    {% for form in update_sample_annotations_form %}
+    {% for form in update_feature_annotation_form %}
         <div class="col-6">
             <p class="mt-0">{{ form.errors }}</p>
             <p class="mb-0">{{ form.label_tag }}</p>

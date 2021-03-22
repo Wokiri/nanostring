@@ -18,5 +18,4 @@ class Kidney_Sample_Annotations(admin.ModelAdmin):
     list_filter = ['slide_name', 'scan_name',]
     ordering = ['roi_label', 'scan_name']
     search_fields = ['slide_name', 'scan_name', 'roi_label', 'segment_label',]
-    prepopulated_fields = {'slug': ('scan_name', 'roi_label', 'segment_label',)}
 

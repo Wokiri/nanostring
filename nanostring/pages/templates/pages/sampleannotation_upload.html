@@ -8,6 +8,10 @@
 <div class="container">
   <div class="shadow-lg rounded-lg my-sm-2 p-sm-4">
     <p class="lead mb-3">Kidney_Sample_Annotations upload/update form</p>
+    <p class="text-info lead mb-3">
+      The reference column name is SegmentDisplayName.<br/>If an entry in the database matching one in the CSV based on the
+      this column is found, all it's other fields are updated from the CSV, otherwise a new one is created.
+    </p>
     <form enctype="multipart/form-data" method="post">
       {% csrf_token %} {% for form in sample_annotations_form %}
       <p>{{ form.errors }}</p>

@@ -3,7 +3,7 @@
 {% block content %}
 
 
-    <div class="container my-sm-5 shadow-lg">
+    <div class="container my-sm-5 shadow-sm">
         <div class="mt-sm-4">
             <div class="pb-2 pb-sm-2">
                 <h3 class="text-success">Sample Annotations</h3>
@@ -12,7 +12,7 @@
         {% if sample_annotations %}
         <div class="p-4">
             <div class="pb-2 pb-sm-2">
-                <h2><small class="lead">Subset of Cell Annotations (Cell Types) data</small></h2>
+                <h2><small class="lead">Subset of Kidney Sample Annotations data</small></h2>
             </div>
 
             <div class="table-responsive">
@@ -108,7 +108,7 @@
 
 
 
-    <div class="container my-sm-5 shadow-lg">
+    <div class="container my-sm-5 shadow-sm">
         <div class="mt-sm-4">
             <div class="pb-2 pb-sm-2">
                 <h3 class="text-success">Cell Deconvolution</h3>
@@ -179,6 +179,72 @@
             <div class="py-2 py-sm-2">
                 <a class="btn btn-outline-dark" href="{% url 'pages:upload_celltype_page' %}">
                    Upload Cell Types
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <div class="container my-sm-5 shadow-sm">
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-success">Feature Annotations</h3>
+            </div>
+        </div>
+        {% if kidney_feature_annotations %}
+        <div class="p-4">
+            <div class="pb-2 pb-sm-2">
+                <h2><small class="lead">Subset of Kidney Feature Annotations data</small></h2>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <thead class="text-center text-success">
+                        <tr>
+                            <th>#</th>
+                            <th>RTS ID</th>
+                            <th>Target Name</th>
+                            <th>Probe ID</th>
+                            <th>Negative</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        
+                        {% for data in kidney_feature_annotations %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ data.rts_id }}</td>
+                                <td>{{ data.target_name }}</td>
+                                <td>{{ data.probe_id }}</td>
+                                <td>{{ data.negative }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-success" href="{% url 'pages:feature_annotations_analysis_page' %}">
+                    Kidney Feature Annotations analysis
+                </a>
+                <a class="btn btn-outline-dark" href="{% url 'pages:list_feature_annotation_page' %}">
+                   Update Kidney Feature Annotations
+                </a>
+                <a class="btn btn-outline-dark" href="{% url 'pages:upload_featureannotation_page' %}">
+                   Re-Upload Kidney Feature Annotations
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-info">Kidney Feature Annotations data not yet Uploaded!</h3>
+            </div>
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-dark" href="{% url 'pages:upload_featureannotation_page' %}">
+                   Upload Kidney Feature Annotations
                 </a>
             </div>
         </div>

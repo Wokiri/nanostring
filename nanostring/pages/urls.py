@@ -28,6 +28,10 @@ from .views import (
     messages_view,
     kidney_sample_annotations_uploader_view,
     sample_annotations_analysis_view,
+    feature_annotation_analysis_view,
+    feature_annotation_uploader_view,
+    update_feature_annotation_view,
+    FeatureAnnotationList,
 )
 
 app_name = 'pages'
@@ -42,7 +46,12 @@ urlpatterns = [
     path('messages/', messages_view, name='messages_page'),
     path('<slug:prev_name>/messages/', messages_view, name='messages_page'),
     path('cell-type-list/', CellTypeList.as_view(), name='list_cell_type_page'),
-    path('cell-type-detail/<slug:clusterid>/', update_cell_type_view, name='update_cell_type_page'),
+    path('update-cell-type/<slug:clusterid>/', update_cell_type_view, name='update_cell_type_page'),
     path('sample-annotation-list/', SampleAnnotationList.as_view(), name='list_sample_annotation_page'),
-    path('sample-annotation-detail/<slug:slug_value>/', update_sample_annotations_view, name='update_sample_annotation_page'),
+    path('update-sample-annotation/<int:id_value>/', update_sample_annotations_view, name='update_sample_annotation_page'),
+    path('feature-annotations-analysis/', feature_annotation_analysis_view, name='feature_annotations_analysis_page'),
+    path('featureannotation-upload/', feature_annotation_uploader_view, name='upload_featureannotation_page'),
+    path('update-feature-annotation/<slug:rts_id>/', update_feature_annotation_view, name='update_feature_annotation_page'),
+    path('feature-annotation-list/', FeatureAnnotationList.as_view(), name='list_feature_annotation_page'),
+
 ]

@@ -1,4 +1,4 @@
-'''Downloads data from the relevant links for each text file.
+'''Downloads data from the URL for each text file.
 
 For every download, this script writes the relevant text file into the local server.
 The written textfile is then read and a coresponding csv file is generated in the same location.
@@ -30,10 +30,15 @@ def nanostringtextdata_tocsvdata(text_name):
 
 def nanostringData(text_name):
 
-    if text_name.endswith('.txt') and text_name.find(' ') == -1:
-        dataurl = f'http://nanostring-public-share.s3-website-us-west-2.amazonaws.com/GeoScriptHub/KidneyDataset/{text_name}'
+    outputname = PurePath(fileDir, text_name)
+    name_valid = (text_name.endswith('.txt') and text_name.find(' ') == -1)
 
-        outputname = PurePath(fileDir, text_name)
+    if name_valid and Path(outputname).exists():
+        print(f"\nText file {outputname} EXISTS. \nIt has been used to write {text_name.replace('txt', 'csv')}.")
+        nanostringtextdata_tocsvdata(text_name)
+
+    elif name_valid:
+        dataurl = f'http://nanostring-public-share.s3-website-us-west-2.amazonaws.com/GeoScriptHub/KidneyDataset/{text_name}'
 
         with open(outputname, mode='w', newline=None) as resultsInTxt:
             with urllib.request.urlopen(dataurl) as nanostringData:
@@ -48,7 +53,6 @@ def nanostringData(text_name):
         else:
             print(f"Text file {outputname} WAS NOT created.")
 
-            
 
     else:
         print(f"Nothing happened! Check that {text_name} is valid and ends with .txt")
