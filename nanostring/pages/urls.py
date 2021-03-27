@@ -32,6 +32,8 @@ from .views import (
     feature_annotation_uploader_view,
     update_feature_annotation_view,
     FeatureAnnotationList,
+    upload_csvs_view,
+    kidney_raw_bioProbeCountMatrix_analysis_view,
 )
 
 app_name = 'pages'
@@ -53,5 +55,8 @@ urlpatterns = [
     path('featureannotation-upload/', feature_annotation_uploader_view, name='upload_featureannotation_page'),
     path('update-feature-annotation/<slug:rts_id>/', update_feature_annotation_view, name='update_feature_annotation_page'),
     path('feature-annotation-list/', FeatureAnnotationList.as_view(), name='list_feature_annotation_page'),
+    path('upload-csvs/', upload_csvs_view, name='upload_csvs_page'),
+    path('probe-expression-analysis/', kidney_raw_bioProbeCountMatrix_analysis_view, name='probe_expression_analysis_page'),
+
 
 ]

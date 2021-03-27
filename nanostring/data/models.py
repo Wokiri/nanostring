@@ -104,3 +104,29 @@ class Kidney_Feature_Annotation(models.Model):
 
 
     def __str__(self): return self.rts_id
+
+
+class RawCSVFiles(models.Model):
+    DATA_NAMES = [
+        ('KidneySampleAnnotations', 'Kidney_Sample_Annotations.csv'),
+        ('KidneyFeatureAnnotations', 'Kidney_Feature_Annotations.csv'),
+        ('KidneyRawBioProbeCountMatrix', 'Kidney_Raw_BioProbeCountMatrix.csv'),
+        ('KidneyRawTargetCountMatrix', 'Kidney_Raw_TargetCountMatrix.csv'),
+        ('KidneyQ3NormTargetCountMatrix', 'Kidney_Q3Norm_TargetCountMatrix.csv'),
+        ('CellTypesforSpatialDecon', 'Cell_Types_for_Spatial_Decon.csv'),
+        ('AverageGeneExpression', 'Young_kidney_cell_profile_matrix.csv'),
+        ('KidneyssGSEA', 'Kidney_ssGSEA.csv'),
+    ]
+    file_name = models.CharField(max_length=125, null=True, blank=True, choices=DATA_NAMES)
+    file = models.FileField(upload_to='csv_uploads/')
+
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="category of data"
+        )
+        
+
+    def __str__(self): return self.file_name

@@ -3,7 +3,7 @@
 {% block content %}
 
 
-    <div class="container my-sm-5 shadow-sm">
+    <div class="container my-sm-5 py-sm-4 shadow-sm">
         <div class="mt-sm-4">
             <div class="pb-2 pb-sm-2">
                 <h3 class="text-success">Sample Annotations</h3>
@@ -108,7 +108,7 @@
 
 
 
-    <div class="container my-sm-5 shadow-sm">
+    <div class="container my-sm-5 py-sm-4 shadow-sm">
         <div class="mt-sm-4">
             <div class="pb-2 pb-sm-2">
                 <h3 class="text-success">Cell Deconvolution</h3>
@@ -186,7 +186,7 @@
     </div>
 
 
-    <div class="container my-sm-5 shadow-sm">
+    <div class="container my-sm-5 py-sm-4 shadow-sm">
         <div class="mt-sm-4">
             <div class="pb-2 pb-sm-2">
                 <h3 class="text-success">Feature Annotations</h3>
@@ -245,6 +245,53 @@
             <div class="py-2 py-sm-2">
                 <a class="btn btn-outline-dark" href="{% url 'pages:upload_featureannotation_page' %}">
                    Upload Kidney Feature Annotations
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+
+
+    <div class="container my-sm-5 py-sm-4 shadow-sm">
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-success">Probe Expression</h3>
+            </div>
+        </div>
+        {% if kidney_raw_bioProbeCountMatrix %}
+        <div class="p-4">
+            <div class="pb-2 pb-sm-2">
+                <h2><small class="lead">DataFrame.to_markdown format for KidneyRawBioProbeCountMatrix data</small></h2>
+            </div>
+
+            <div class="mx-auto my-sm-3" style="overflow: auto;">
+                {{ probe_expression_dataframe }}
+            </div>
+
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-success" href="{% url 'pages:probe_expression_analysis_page' %}">
+                    Probe Expression analysis
+                </a>
+                <a class="btn btn-outline-dark" href="{% url 'pages:list_feature_annotation_page' %}">
+                   Update Kidney Feature Annotations
+                </a>
+                <a class="btn btn-outline-dark" href="{% url 'pages:upload_featureannotation_page' %}">
+                   Re-Upload Kidney Feature Annotations
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-info">Kidney_Raw_BioProbeCountMatrix data not yet Uploaded!</h3>
+                <p class="">
+                    The individual entries of this data will not be strored in the DB but the file as a whole.
+                </p>
+            </div>
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-dark" href="{% url 'pages:upload_csvs_page' %}">
+                   Upload CSV
                 </a>
             </div>
         </div>

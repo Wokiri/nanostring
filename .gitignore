@@ -20,9 +20,11 @@ nanostring_hackathon.pdf
 *.pdf
 /KidneyDataset/*.txt
 *.docx
+/guides/
 
 *.vscode
 
+*/media/
 */graphics/
 */prod/
 */nairobiconstituenciesmap/

@@ -3,6 +3,7 @@ from data.models import (
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
     Kidney_Feature_Annotation,
+    RawCSVFiles,
     )
 
 class UploadCellTypesForm(forms.Form):
@@ -56,3 +57,16 @@ class UploadFeatureAnnotationsForm(forms.Form):
     file = forms.FileField(
         label='Browse to Kidney_Feature_Annotations.csv file:'
         )
+
+class UploadRawCSVFilesModelForm(forms.ModelForm):
+    class Meta:
+        model = RawCSVFiles
+        fields = '__all__'
+
+
+
+class SearchProbeExpressionForm(forms.Form):
+    search_value = forms.IntegerField(label='Search Probe Expression Name', required=False,
+        widget=forms.NumberInput(
+            attrs={'class':'form-control mr-sm-1'}
+            ))

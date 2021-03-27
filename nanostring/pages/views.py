@@ -26,12 +26,16 @@ from bokeh.layouts import Column
 from bokeh.palettes import Category10_10, Category10_3, Greens256, Category10
 from bokeh.models.layouts import Column, Spacer
 
+from .handle_uploaded_files import (
+    probe_expression_DF
+)
 
 
 from data.models import (
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
     Kidney_Feature_Annotation,
+    RawCSVFiles,
     )
 
 from .forms import (
@@ -44,11 +48,14 @@ from .forms import (
     UploadFeatureAnnotationsForm,
     UpdateFeatureAnnotationForm,
     SearchFeatureAnnotationsForm,
+    UploadRawCSVFilesModelForm,
+    SearchProbeExpressionForm,
     )
 
 all_cell_types = Cell_Types_for_Spatial_Decon.objects.all()
 all_sample_annotations_types = Kidney_Sample_Annotations.objects.all()
 all_kidney_feature_annotations = Kidney_Feature_Annotation.objects.all()
+all_raw_csv_files = RawCSVFiles.objects.all()
 
 
 
@@ -60,6 +67,9 @@ def home_page_view(request):
         'cell_types': all_cell_types[0:3],
         'sample_annotations': all_sample_annotations_types[0:3],
         'kidney_feature_annotations': all_kidney_feature_annotations[0:3],
+        'kidney_raw_bioProbeCountMatrix': all_raw_csv_files.filter(file_name='KidneyRawBioProbeCountMatrix'),
+        'probe_expression_dataframe': probe_expression_DF().head(),
+        # 'probe_expression_dataframe': probe_expression_DF().to_markdown(),
     }
 
     return render(request, template_name, context)
@@ -666,8 +676,14 @@ def feature_annotation_uploader_view(request):
                         'negative' : col[4],
                     }
                 )
-            messages.success(request,'File data successfully written to the Database.')
-            return redirect('pages:messages_page', 'featureannotation-upload')
+
+                if created:
+                    messages.success(request, f'{uploaded_file.name} has been Uploaded')
+                    return redirect('pages:messages_page', 'featureannotation-upload')
+                else:
+                    messages.success(request, f'Updated existing {uploaded_file.name}')
+                    return redirect('pages:messages_page', 'featureannotation-upload')
+            
 
     context = {
         'page_name': 'Upload Feature Annotation file',
@@ -798,3 +814,62 @@ def feature_annotation_analysis_view(request):
 
     return render(request, template_name, context)
     
+
+
+def upload_csvs_view(request):
+    template_name = 'pages/upload_csvs.html'
+    uploadForm = UploadRawCSVFilesModelForm()
+
+    if request.method == 'POST':
+        uploadForm = UploadRawCSVFilesModelForm(request.POST or None, request.FILES)
+    
+        if uploadForm.is_valid:
+            uploaded_file = request.FILES['file']
+
+            # check if its csv
+            if not uploaded_file.name.endswith('.csv'):
+                messages.error(request, 'Uploaded file is not a csv!')
+                return redirect('pages:messages_page', 'upload-csvs')
+            
+            new_data, created = RawCSVFiles.objects.update_or_create(
+                file_name=uploadForm.data['file_name'],
+                defaults={'file':uploaded_file}
+            )
+
+            if created:
+                messages.success(request, f'{uploaded_file.name} has been Uploaded')
+                return redirect('pages:messages_page', 'upload-csvs')
+            else:
+                messages.success(request, f'Updated existing {uploaded_file.name}')
+                return redirect('pages:messages_page', 'upload-csvs')
+
+            
+    context = {
+        'page_name': 'Upload CSV files',
+        'uploadForm': uploadForm,
+    }
+
+    return render(request, template_name, context)
+
+
+def kidney_raw_bioProbeCountMatrix_analysis_view(request):
+    template_name = 'pages/probe_expression_analysis.html'
+    probe_expression_search_form = SearchProbeExpressionForm()
+
+    data_DF = probe_expression_DF()
+    search_count = len(data_DF)
+    columns_list = list(data_DF.columns.values)
+
+    print(dir(data_DF))
+    print(data_DF)
+
+    context = {
+        'page_name': 'Probe Expression Analysis',
+        'csv_obj': RawCSVFiles.objects.get(file_name='KidneyRawBioProbeCountMatrix'),
+        'search_count': search_count,
+        'columns_count': len(columns_list),
+        'search_form': probe_expression_search_form,
+
+    }
+
+    return render(request, template_name, context)
