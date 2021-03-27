@@ -11,7 +11,14 @@
 
                 <div class="py-sm-2">
                     <h3 class="text-center text-success">{{ page_name }}</h3>
+                    {% if search_count %}
+                        <p class="text-info text-center lead">
+                            Found {{ search_count|apnumber }} record{{ search_count|pluralize }}
+                            spanning {{ columns_count|apnumber }} column{{ columns_count|pluralize }}
+                        </p>
+                    {% endif %}
                 </div>
+                
 
                 <div class="py-2 py-sm-4">
                     <form class="form-inline my-2 my-lg-0">
@@ -20,14 +27,20 @@
                     </form>
                 </div>
 
-                {% if search_count %}
-                <div class="container">
-                    <p class="text-info font-weight-bold lead">
-                        Found {{ search_count|apnumber }} record{{ search_count|pluralize }}
-                        spanning {{ columns_count|apnumber }} column{{ columns_count|pluralize }}
-                    </p>
+                
+
+                {% if search_record %}
+                <div class="shadow-sm table-responsive border my-sm-5" style="max-height: 80vh;">
+                    <p class="text-success text-center lead">Search Record for ProbeName {{ search_value }}</p>
+                    {{ search_record|safe }}
                 </div>
                 {% endif %}
+
+                <div class="shadow-sm table-responsive border my-sm-5" style="max-height: 80vh;">
+                    <p class="text-success text-center lead">DataFrame Description for Probe Expression</p>
+                    {{ data_DF_describe_table|safe }}
+                </div>
+
 
             </div>
             

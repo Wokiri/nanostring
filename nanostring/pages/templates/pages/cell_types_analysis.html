@@ -88,48 +88,9 @@
                 <div class="mx-auto mb-5" style="overflow: auto;">
                     <div class="py-2 py-sm-2">
                     <p class="lead">Numerical Statistics summary table:</p>            
-                    <table class="table table-borderless table-sm text-monospace">
-                        <thead>
-                        <tr>
-                            <th class="text-center">Stats Field</th>
-                            <th>Stats Value (Number of cells)</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td class="text-right">Cell Annotations Count:</td>
-                            <td>{{ cells_type_describe_object.count }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">Number of cells Mean:</td>
-                            <td>{{ cells_type_describe_object.mean }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">Number of cells Std:</td>
-                            <td>{{ cells_type_describe_object.std }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">Max:</td>
-                            <td>{{ cells_type_describe_object.max }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">Min:</td>
-                            <td>{{ cells_type_describe_object.min }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">25%:</td>
-                            <td>{{ cells_type_describe_object.25 }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">50%:</td>
-                            <td>{{ cells_type_describe_object.50 }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-right">75%:</td>
-                            <td>{{ cells_type_describe_object.75 }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
+                        {{ data_DF_describe_table|safe }}
+                    </div>
                     </div>
                 </div>
 

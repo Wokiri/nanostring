@@ -37,7 +37,7 @@
                 {% endif %}
 
                 <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
-                    <table class="table table-bordered table-sm">
+                    <table class="table table-bordered table-striped">
                         <thead class="text-center text-success">
                             <tr>
                                 <th>ID</th>
@@ -115,7 +115,8 @@
                     {{ div|safe }}
                 </div>
 
-                <div class="mx-auto mb-5" style="overflow: auto;">
+                <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
+                    {{ data_DF_describe_table|safe }}
                 </div>
                 
 

@@ -61,6 +61,7 @@ all_raw_csv_files = RawCSVFiles.objects.all()
 
 def home_page_view(request):
     template_name = 'pages/homepage.html'
+    
 
     context = {
         'page_name': 'Home',
@@ -68,8 +69,7 @@ def home_page_view(request):
         'sample_annotations': all_sample_annotations_types[0:3],
         'kidney_feature_annotations': all_kidney_feature_annotations[0:3],
         'kidney_raw_bioProbeCountMatrix': all_raw_csv_files.filter(file_name='KidneyRawBioProbeCountMatrix'),
-        'probe_expression_dataframe': probe_expression_DF().head(),
-        # 'probe_expression_dataframe': probe_expression_DF().to_markdown(),
+        'probe_expression_dataframe': probe_expression_DF().head().to_html(classes=['table', 'table-bordered', 'table-sm']),
     }
 
     return render(request, template_name, context)
@@ -536,6 +536,8 @@ def cell_types_analysis_view(request):
         '75': cells_type_describe_values[6],
         'max': cells_type_describe_values[7],
     }
+
+    data_DF_describe_table = cells_type_DF.describe().to_html(classes=['table', 'table-bordered', 'table-striped'])
     
     cells_type_CDS_bar = ColumnDataSource(cells_type_DF)
 
@@ -630,7 +632,7 @@ def cell_types_analysis_view(request):
         'cell_types': cell_types,
         'search_cell_types_form': search_cell_types_form,
         'search_count': search_count,
-        'cells_type_describe_object': cells_type_describe_object,
+        'data_DF_describe_table': data_DF_describe_table,
         'script1': script1,
         'div1': div1,
         'script2': script2,
@@ -638,6 +640,8 @@ def cell_types_analysis_view(request):
     }
 
     return render(request, template_name, context)
+
+
 
 
 def feature_annotation_uploader_view(request):
@@ -802,6 +806,9 @@ def feature_annotation_analysis_view(request):
 
     script_pie, div_pie = components(pie)
 
+    data_DF_describe_table = feature_annotations_DF.describe().to_html(classes=['table', 'table-bordered', 'table-striped'])
+
+
 
     context = {
         'page_name': 'Feature Annotation Analysis',
@@ -810,6 +817,7 @@ def feature_annotation_analysis_view(request):
         'search_feature_annotations_form': search_feature_annotations_form,
         'script_pie': script_pie,
         'div_pie': div_pie,
+        'data_DF_describe_table': data_DF_describe_table,
     }
 
     return render(request, template_name, context)
@@ -854,14 +862,29 @@ def upload_csvs_view(request):
 
 def kidney_raw_bioProbeCountMatrix_analysis_view(request):
     template_name = 'pages/probe_expression_analysis.html'
-    probe_expression_search_form = SearchProbeExpressionForm()
+    probe_expression_search_form = SearchProbeExpressionForm(request.GET or None)
 
     data_DF = probe_expression_DF()
     search_count = len(data_DF)
     columns_list = list(data_DF.columns.values)
+    data_DF_describe_table = probe_expression_DF().describe().to_html(classes=['table', 'table-bordered', 'table-striped'])
 
-    print(dir(data_DF))
-    print(data_DF)
+    search_value = None
+    search_record = None
+    if probe_expression_search_form.is_valid():
+        cd = probe_expression_search_form.cleaned_data
+        search_value = cd['search_value']
+        try:
+            new_DF = probe_expression_DF().loc[[search_value]]
+            search_record = new_DF.to_html(classes=['table', 'table-bordered', 'table-striped'])
+        except KeyError:
+            messages.error(request, f'No Probe Expression matches: "{search_value}".')
+            return redirect('pages:messages_page', 'probe-expression-analysis')
+
+        
+            
+    # print(dir(data_DF))
+    # print(data_DF)
 
     context = {
         'page_name': 'Probe Expression Analysis',
@@ -869,6 +892,10 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
         'search_count': search_count,
         'columns_count': len(columns_list),
         'search_form': probe_expression_search_form,
+        'data_DF_describe_table': data_DF_describe_table,
+        'data_DF_describe_table': data_DF_describe_table,
+        'search_value': search_value,
+        'search_record': search_record,
 
     }
 

@@ -2,14 +2,13 @@
 {% block content %}
 
 <div class="py-2 py-sm-4">
-  <h3 class="text-center text-success">Load CSV files into the database</h3>
+  <h3 class="text-center text-success">Upload CSV file</h3>
 </div>
 
 <div class="container">
   <div class="shadow-lg rounded-lg my-sm-2 p-sm-4">
     <p class="text-info lead mb-3">
-      The reference column name is SegmentDisplayName.<br/>If an entry in the database matching one in the CSV based on the
-      this column is found, all it's other fields are updated from the CSV, otherwise a new one is created.
+      Ensure that the File Name and the File uploaded match.
     </p>
     
     <form enctype="multipart/form-data" method="post">

@@ -262,22 +262,19 @@
         {% if kidney_raw_bioProbeCountMatrix %}
         <div class="p-4">
             <div class="pb-2 pb-sm-2">
-                <h2><small class="lead">DataFrame.to_markdown format for KidneyRawBioProbeCountMatrix data</small></h2>
+                <h2><small class="lead">Subset of DataFrame.to_table format for KidneyRawBioProbeCountMatrix data</small></h2>
             </div>
 
-            <div class="mx-auto my-sm-3" style="overflow: auto;">
-                {{ probe_expression_dataframe }}
+            <div class="mx-auto my-sm-3 table-responsive" style="overflow: auto;">
+                {{ probe_expression_dataframe|safe }}
             </div>
 
             <div class="py-2 py-sm-2">
                 <a class="btn btn-outline-success" href="{% url 'pages:probe_expression_analysis_page' %}">
                     Probe Expression analysis
                 </a>
-                <a class="btn btn-outline-dark" href="{% url 'pages:list_feature_annotation_page' %}">
-                   Update Kidney Feature Annotations
-                </a>
-                <a class="btn btn-outline-dark" href="{% url 'pages:upload_featureannotation_page' %}">
-                   Re-Upload Kidney Feature Annotations
+                <a class="btn btn-outline-dark" href="{% url 'pages:upload_csvs_page' %}">
+                   Re-Upload CSV data
                 </a>
             </div>
         </div>
