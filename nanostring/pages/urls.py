@@ -19,6 +19,7 @@ from django.urls import path
 from .views import (
     home_page_view,
     about_page_view,
+    foss_licenses_page_view,
     cell_types_for_spatial_decon_uploader_view,
     cell_types_analysis_view,
     CellTypeList,
@@ -29,9 +30,6 @@ from .views import (
     kidney_sample_annotations_uploader_view,
     sample_annotations_analysis_view,
     feature_annotation_analysis_view,
-    feature_annotation_uploader_view,
-    update_feature_annotation_view,
-    FeatureAnnotationList,
     upload_csvs_view,
     kidney_raw_bioProbeCountMatrix_analysis_view,
 )
@@ -41,6 +39,7 @@ app_name = 'pages'
 urlpatterns = [
     path('', home_page_view, name='home_page'),
     path('about-us/', about_page_view, name='about_page'),
+    path('foss-licenses/', foss_licenses_page_view, name='foss_licenses_page'),
     path('celltype-upload/', cell_types_for_spatial_decon_uploader_view, name='upload_celltype_page'),
     path('sampleannotation-upload/', kidney_sample_annotations_uploader_view, name='upload_sampleannotation_page'),
     path('cell-types-analysis/', cell_types_analysis_view, name='cell-types-analysis_page'),
@@ -52,9 +51,6 @@ urlpatterns = [
     path('sample-annotation-list/', SampleAnnotationList.as_view(), name='list_sample_annotation_page'),
     path('update-sample-annotation/<int:id_value>/', update_sample_annotations_view, name='update_sample_annotation_page'),
     path('feature-annotations-analysis/', feature_annotation_analysis_view, name='feature_annotations_analysis_page'),
-    path('featureannotation-upload/', feature_annotation_uploader_view, name='upload_featureannotation_page'),
-    path('update-feature-annotation/<slug:rts_id>/', update_feature_annotation_view, name='update_feature_annotation_page'),
-    path('feature-annotation-list/', FeatureAnnotationList.as_view(), name='list_feature_annotation_page'),
     path('upload-csvs/', upload_csvs_view, name='upload_csvs_page'),
     path('probe-expression-analysis/', kidney_raw_bioProbeCountMatrix_analysis_view, name='probe_expression_analysis_page'),
 

@@ -74,7 +74,7 @@ Using softwares `distributed under a permissive open source license`, I have dev
 **<p>HACKATHON COMPLIANCE INFORMATION**</p>
 
 8. <a href="#compliance_statement">Compliance Statement</a><br/>
-9. <a href="#installation">Instalations</a><br/>
+9. <a href="#installation_procedure">Instalations & Procedure</a><br/>
 
   ---
 <br/>
@@ -89,7 +89,7 @@ At the core of these packages sits python which gives the 'base' platform upon w
 
 
 
-Some of the reliant pachkages include:
+Some of the reliant packages include:
 Package            | Version
 ------------------- |---------
 bokeh               |2.3.0
@@ -106,7 +106,7 @@ psycopg2            |2.8.6
 ---------------------------
 
 
-A detailed process of achieving these installations is covered <a href="#installation">here</a><br/>
+A detailed process of achieving these installations is covered <a href="#installation_procedure">here</a><br/>
 
 <br/>
 
@@ -124,6 +124,10 @@ To highlight a few specifics:
 - Django runs on top of python which is in itself a simple to use, but real programming language, offering much more structure and support for large programs than shell scripts or batch files can offer.
 - Being a very-high-level language, it has high-level data types built in, such as flexible arrays and dictionaries.
 
+</br>
+
+**With Django,** I have been able to perform all the data-science analyses depicted in this project. Once achieved and results obtained, whether they be tables or the various visual plots, django intergrates very well with pandas and bokeh to display these results in a screen.
+
 <br/>
 
 ## <p id="data_retrieval">3. Retrieving Data</p>
@@ -138,6 +142,12 @@ In so doing, it perfoms a few checks to minimize the possibilities of errors, i.
 
 <br/>
 
+
+### <p align='center'>GIF showing data download & writing using data_retrieval.py</p>
+
+<p align='center'><img src="" width="1080" alt="Downloading & writing data"/></p>
+
+<br/>
 
 ## <p id="data_storage">4. Data storage into the database</p>
 
@@ -225,11 +235,13 @@ With a DataFrame made, or a Series, much information can be derived or manipulat
 
 ## <p id="results_visualization">7. Result Visualization</p>
 
-Visualization of data analysis results is the means of communicating the findings from such analyses. **Bokeh**, a python library, offers a variety of nice interactive visual glyphs which can be rendered by html documents, hence a suitable choice.
+Visualization of data analysis results is the means of communicating the findings from such analyses. **Bokeh**, a python library, offers a variety of nice interactive visual plots which can be rendered by html documents, hence a suitable choice.
 
 ### <p align='center'>GIF showing some basic interactive options offered by Bokeh</p>
 
 <p align='center'><img src="" width="1080" alt="Bokeh interactive glyphs"/></p>
+
+Data from a csv or sql table, once read by pandas and a DataFrame made from it, can be collected by bokeh by passing it into a ColumnDataSource which then is a reliable data source for plottings with bokeh. 
 
 
 ---
@@ -237,12 +249,12 @@ Visualization of data analysis results is the means of communicating the finding
 
 ## <p id="compliance_statement">8. Hackathon Compliance Statement</p>
 
-
+I have, to the best of my knowledge, adhered to all stated guidelines stated for participation in this Hackathon. The guidelines were clear and I properly discerned every of the mentioned rules, and have kept them.
 
 <br/>
 
 
-## <p id="licences">9. Installations</p>
+## <p id="installation_procedure">9. Installations & Procedure</p>
 
 
 
@@ -254,43 +266,40 @@ Visualization of data analysis results is the means of communicating the finding
 
 **`Bokeh`**:
 
-Bokek is distributed under Berkeley Source Distribution (BSD) license.
+Bokek is distributed under Berkeley Source Distribution (BSD) license.<br/>
+<a href="">View Bokeh Lisence</a><br/>
 
 <br/>
 
 **`Django`**:
 
-Bokek hjkhhgggggggggg
+Bokek hjkhhgggggggggg.<br/>
+<a href="">View Django Lisence</a><br/>
 
 <br/>
 
-**`Django`**:
+<br/>
 
-Bokek hjkhhgggggggggg
+**`Python`**:
+
+Bokek hjkhhgggggggggg.<br/>
+<a href="">View Python Lisence</a><br/>
 
 <br/>
 
-**`Django`**:
+<br/>
 
-Bokek hjkhhgggggggggg
+**`Pandas`**:
+
+Bokek hjkhhgggggggggg.<br/>
+<a href="">View Pandas Lisence</a><br/>
 
 <br/>
 
-**`Django`**:
-
-Bokek hjkhhgggggggggg
+<br/>
 
 <br/>
 
-**`Django`**:
-
-Bokek hjkhhgggggggggg
-
-<br/>
-
-**`Django`**:
-
-Bokek hjkhhgggggggggg
 
 <br/>
 

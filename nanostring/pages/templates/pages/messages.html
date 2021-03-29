@@ -7,7 +7,7 @@
 {% if messages %}
     <div class="container my-4">
         {% for message in messages %}
-            <h4{% if message.tags %} class="text-{{ message.tags }}"{% endif %}>{{ message }}</h4>
+            <h4{% if message.tags %} class="text-{{ message.tags }}"{% endif %}>{{ message|safe }}</h4>
         {% endfor %}
     </div>
 

@@ -1,5 +1,9 @@
 {% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
 
+{% block docmeta %}
+
+{% endblock %}
+
 {% block content %}
 
 
@@ -160,13 +164,13 @@
             </div>
 
             <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-success" href="{% url 'pages:cell-types-analysis_page' %}">
+                <a class="btn btn-outline-success my-2" href="{% url 'pages:cell-types-analysis_page' %}">
                     Cell Types detailed statistical analysis
                 </a>
-                <a class="btn btn-outline-dark" href="{% url 'pages:list_cell_type_page' %}">
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:list_cell_type_page' %}">
                    Update Cell Types
                 </a>
-                <a class="btn btn-outline-dark" href="{% url 'pages:upload_celltype_page' %}">
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}">
                    Re-Upload Cell Types
                 </a>
             </div>
@@ -177,7 +181,7 @@
                 <h3 class="text-info">Cell Annotations data not yet Uploaded!</h3>
             </div>
             <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-dark" href="{% url 'pages:upload_celltype_page' %}">
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}">
                    Upload Cell Types
                 </a>
             </div>
@@ -186,65 +190,44 @@
     </div>
 
 
+    
     <div class="container my-sm-5 py-sm-4 shadow-sm">
         <div class="mt-sm-4">
             <div class="pb-2 pb-sm-2">
                 <h3 class="text-success">Feature Annotations</h3>
             </div>
         </div>
-        {% if kidney_feature_annotations %}
+        {% if Kidney_Feature_Annotations %}
         <div class="p-4">
+
             <div class="pb-2 pb-sm-2">
-                <h2><small class="lead">Subset of Kidney Feature Annotations data</small></h2>
+                <h2><small class="lead">DataFrame Head for KidneyFeatureAnnotations data</small></h2>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm">
-                    <thead class="text-center text-success">
-                        <tr>
-                            <th>#</th>
-                            <th>RTS ID</th>
-                            <th>Target Name</th>
-                            <th>Probe ID</th>
-                            <th>Negative</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        
-                        {% for data in kidney_feature_annotations %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ data.rts_id }}</td>
-                                <td>{{ data.target_name }}</td>
-                                <td>{{ data.probe_id }}</td>
-                                <td>{{ data.negative }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="mx-auto my-sm-3 table-responsive p-3" style="overflow: auto;">
+                {{ feature_annotations_dataframe|safe }}
             </div>
 
             <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-success" href="{% url 'pages:feature_annotations_analysis_page' %}">
+                <a class="btn btn-outline-success my-2" href="{% url 'pages:feature_annotations_analysis_page' %}">
                     Kidney Feature Annotations analysis
                 </a>
-                <a class="btn btn-outline-dark" href="{% url 'pages:list_feature_annotation_page' %}">
-                   Update Kidney Feature Annotations
-                </a>
-                <a class="btn btn-outline-dark" href="{% url 'pages:upload_featureannotation_page' %}">
-                   Re-Upload Kidney Feature Annotations
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
+                   Re-Upload CSV data
                 </a>
             </div>
         </div>
         {% else %}
         <div class="mt-sm-4">
             <div class="pb-2 pb-sm-2">
-                <h3 class="text-info">Kidney Feature Annotations data not yet Uploaded!</h3>
+                <h3 class="text-info">KidneyFeatureAnnotations data not yet Uploaded!</h3>
+                <p class="">
+                    The individual entries of this data will not be strored in the DB but the file as a whole.
+                </p>
             </div>
             <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-dark" href="{% url 'pages:upload_featureannotation_page' %}">
-                   Upload Kidney Feature Annotations
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
+                   Upload CSV
                 </a>
             </div>
         </div>
@@ -262,18 +245,18 @@
         {% if kidney_raw_bioProbeCountMatrix %}
         <div class="p-4">
             <div class="pb-2 pb-sm-2">
-                <h2><small class="lead">Subset of DataFrame.to_table format for KidneyRawBioProbeCountMatrix data</small></h2>
+                <h2><small class="lead">DataFrame Head for KidneyRawBioProbeCountMatrix data</small></h2>
             </div>
 
-            <div class="mx-auto my-sm-3 table-responsive" style="overflow: auto;">
+            <div class="mx-auto my-sm-3 table-responsive p-3" style="overflow: auto;">
                 {{ probe_expression_dataframe|safe }}
             </div>
 
             <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-success" href="{% url 'pages:probe_expression_analysis_page' %}">
+                <a class="btn btn-outline-success my-2" href="{% url 'pages:probe_expression_analysis_page' %}">
                     Probe Expression analysis
                 </a>
-                <a class="btn btn-outline-dark" href="{% url 'pages:upload_csvs_page' %}">
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
                    Re-Upload CSV data
                 </a>
             </div>
@@ -281,13 +264,13 @@
         {% else %}
         <div class="mt-sm-4">
             <div class="pb-2 pb-sm-2">
-                <h3 class="text-info">Kidney_Raw_BioProbeCountMatrix data not yet Uploaded!</h3>
+                <h3 class="text-info">Kidney Raw BioProbeCountMatrix data not yet Uploaded!</h3>
                 <p class="">
                     The individual entries of this data will not be strored in the DB but the file as a whole.
                 </p>
             </div>
             <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-dark" href="{% url 'pages:upload_csvs_page' %}">
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
                    Upload CSV
                 </a>
             </div>

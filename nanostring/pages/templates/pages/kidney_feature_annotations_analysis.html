@@ -3,83 +3,62 @@
 {% load humanize %}
 
 {% block docmeta %}
-{{ script_pie|safe }}
+{{ pie_script|safe }}
 {% endblock %}
 
 {% block content %}
-    {% if kidney_feature_annotations %}
+    {% if csv_obj %}
     
-        <div class="container shadow-lg rounded-lg my-5">
+        <div class="container shadow-lg rounded-lg my-sm-5 py-sm-2">
             <div class="my-4">
 
                 <div class="py-sm-2">
                     <h3 class="text-center text-success">{{ page_name }}</h3>
+                    {% if search_count %}
+                        <p class="text-info text-center lead">
+                            Found {{ search_count|apnumber }} record{{ search_count|pluralize }}
+                            spanning {{ columns_count|apnumber }} column{{ columns_count|pluralize }}
+                        </p>
+                    {% endif %}
                 </div>
 
-                <div class="py-2 py-sm-4">
+                <div class="mt-sm-4 mb-sm-2 pt-sm-4">
                     <form class="form-inline my-2 my-lg-0">
-                        {{ search_feature_annotations_form }}
-                        <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
+                        {{ search_form }}
+                        <button class="btn btn-success my-2 my-sm-0" type="submit">RTS_ID Search</button>
                     </form>
                 </div>
-
-                {% if search_count %}
-                <div class="container">
-                    <p class="text-info font-weight-bold lead">
-                        Found {{ search_count|apnumber }} record{{ search_count|pluralize }}
-                    </p>
+                
+                {% if search_record_table %}
+                <div class="shadow-sm table-responsive border my-sm-5 p-4" style="max-height: 80vh;">
+                    <p class="text-success text-center lead">Search Record for RTS_ID {{ search_value }}</p>
+                    {{ search_record_table|safe }}
                 </div>
                 {% endif %}
 
-                <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
-                    <table class="table table-bordered table-sm">
-                        <thead class="text-center text-success">
-                            <tr>
-                                <th>PK</th>
-                                <th>RTS ID</th>
-                                <th>Target Name</th>
-                                <th>Probe ID</th>
-                                <th>Negative</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            
-                            {% for data in kidney_feature_annotations %}
-                                <tr>
-                                    <td>{{ data.id }}</td>
-                                    <td>{{ data.rts_id }}</td>
-                                    <td>{{ data.target_name }}</td>
-                                    <td>{{ data.probe_id }}</td>
-                                    <td>{{ data.negative }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="shadow-sm table-responsive border my-sm-5 p-4">
+                    <p class="text-success text-center lead">Feature Annotations Dataframe grouped by Negative</p>
+                    {{ data_DF_describe_table|safe }}
                 </div>
+                
+
+                <div class="row my-sm-5">
+                    <div class="mx-auto p-sm-2" style="overflow: auto;">
+                        {{ pie_div|safe }}
+                    </div>
+                </div>
+                
+                
+
             </div>
-
-            <div class="row">
-                <div class="col-12 mx-auto mb-5" style="overflow: auto;">
-                    {{ div_pie|safe }}
-                </div>
-
-                <div class="mx-auto mb-5" style="overflow: auto;">
-                </div>
-
-                <div class="mx-auto mb-5" style="overflow: auto;">
-                </div>
-            </div>
-
-
             
         </div>
     {% else %}
         <div class="py-sm-2">
-            <h3 class="text-center text-warning">No Feature Annotations in the database yet!</h3>
+            <h3 class="text-center text-warning">No Feature Annotations data to display yet!</h3>
         </div>
     {% endif %}
 
+
 <script src="{% static 'pages/bokeh/bokeh-2.3.0.min.js' %}"></script>
-<script src="{% static 'pages/bokeh/bokeh-widgets-2.3.0.min.js' %}"></script>
 {% endblock %}

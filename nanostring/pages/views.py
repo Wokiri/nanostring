@@ -14,6 +14,7 @@ from math import pi, floor
 from pandas import DataFrame
 import pandas
 
+import bokeh
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import (
@@ -23,18 +24,25 @@ from bokeh.models import (
     )
 from bokeh.transform import cumsum
 from bokeh.layouts import Column
-from bokeh.palettes import Category10_10, Category10_3, Greens256, Category10
+from bokeh.palettes import Category10_10, PuRd3, Greens256, Category10
 from bokeh.models.layouts import Column, Spacer
 
 from .handle_uploaded_files import (
-    probe_expression_DF
+    feature_annotations_DF,
+    probe_expression_DF,
+)
+
+from .foss_licences import (
+    bokeh_license,
+    bootstrap_license,
+    django_license,
+    python_license,
 )
 
 
 from data.models import (
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
-    Kidney_Feature_Annotation,
     RawCSVFiles,
     )
 
@@ -45,34 +53,78 @@ from .forms import (
     UploadSampleAnnotationsForm,
     UpdateSampleAnnotationsCSVForm,
     SearchSampleAnnotationsForm,
-    UploadFeatureAnnotationsForm,
-    UpdateFeatureAnnotationForm,
     SearchFeatureAnnotationsForm,
     UploadRawCSVFilesModelForm,
     SearchProbeExpressionForm,
+    QuantileSearchForm,
     )
 
 all_cell_types = Cell_Types_for_Spatial_Decon.objects.all()
 all_sample_annotations_types = Kidney_Sample_Annotations.objects.all()
-all_kidney_feature_annotations = Kidney_Feature_Annotation.objects.all()
 all_raw_csv_files = RawCSVFiles.objects.all()
+
+
+def upload_csvs_view(request):
+    template_name = 'pages/upload_csvs.html'
+    uploadForm = UploadRawCSVFilesModelForm()
+
+    if request.method == 'POST':
+        uploadForm = UploadRawCSVFilesModelForm(request.POST or None, request.FILES)
+    
+        if uploadForm.is_valid:
+            uploaded_file = request.FILES['file']
+
+            # check if its csv
+            if not uploaded_file.name.endswith('.csv'):
+                messages.error(request, 'Uploaded file is not a csv!')
+                return redirect('pages:messages_page', 'upload-csvs')
+            
+            new_data, created = RawCSVFiles.objects.update_or_create(
+                file_name=uploadForm.data['file_name'],
+                defaults={'file':uploaded_file}
+            )
+
+            if created:
+                messages.success(request, f'{uploaded_file.name} has been Uploaded')
+                return redirect('pages:messages_page', 'upload-csvs')
+            else:
+                messages.success(request, f'Updated existing {uploaded_file.name}')
+                return redirect('pages:messages_page', 'upload-csvs')
+
+            
+    context = {
+        'page_name': 'Upload CSV files',
+        'uploadForm': uploadForm,
+    }
+
+    return render(request, template_name, context)
 
 
 
 def home_page_view(request):
     template_name = 'pages/homepage.html'
     
+    feature_annotations_dataframe = feature_annotations_DF().head().to_html(
+        justify='center', show_dimensions=True, classes=['table table-bordered table-sm']
+    )
+
+    probe_expression_dataframe = probe_expression_DF().head().to_html(
+        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-sm']
+    )
+    
 
     context = {
         'page_name': 'Home',
         'cell_types': all_cell_types[0:3],
         'sample_annotations': all_sample_annotations_types[0:3],
-        'kidney_feature_annotations': all_kidney_feature_annotations[0:3],
+        'Kidney_Feature_Annotations': all_raw_csv_files.filter(file_name='KidneyFeatureAnnotations'),
+        'feature_annotations_dataframe': feature_annotations_dataframe,
         'kidney_raw_bioProbeCountMatrix': all_raw_csv_files.filter(file_name='KidneyRawBioProbeCountMatrix'),
-        'probe_expression_dataframe': probe_expression_DF().head().to_html(classes=['table', 'table-bordered', 'table-sm']),
+        'probe_expression_dataframe': probe_expression_dataframe,
     }
 
     return render(request, template_name, context)
+
 
 
 def messages_view(request, prev_name=None):
@@ -96,17 +148,31 @@ def about_page_view(request):
     return render(request, template_name, context)
 
 
+
+def foss_licenses_page_view(request):
+    template_name = 'pages/foss_licenses.html'
+
+    context = {
+        'page_name': 'FOSS Licenses',
+        'bokeh_license': bokeh_license(),
+        'bootstrap_license': bootstrap_license(),
+        'django_license': django_license(),
+        'python_license': python_license(),
+    }
+
+    return render(request, template_name, context)
+
+
+
 class SampleAnnotationList(ListView):
     model = Kidney_Sample_Annotations
     paginate_by = 60
 
 
+
 class CellTypeList(ListView):
     model = Cell_Types_for_Spatial_Decon
 
-class FeatureAnnotationList(ListView):
-    model = Kidney_Feature_Annotation
-    paginate_by = 100
 
 
 def kidney_sample_annotations_uploader_view(request):
@@ -199,84 +265,6 @@ def update_sample_annotations_view(request, id_value):
     return render(request, template_name, context)
 
 
-
-def cell_types_for_spatial_decon_uploader_view(request):
-    template_name = 'pages/celltype_upload.html'
-    cell_types_form = UploadCellTypesForm()
-
-    if request.method == 'POST':
-        cell_types_form = UploadCellTypesForm(request.POST, request.FILES)
-        if cell_types_form.is_valid:
-            uploaded_file = request.FILES['file']
-
-            # check if its csv
-            if not uploaded_file.name.endswith('.csv'):
-                messages.error(request, 'Uploaded file is not a csv!')
-                return redirect('pages:messages_page', 'celltype-upload')
-
-            # check if its the right csv
-            if uploaded_file.name != 'Cell_Types_for_Spatial_Decon.csv':
-                messages.error(request, '''Uploaded file is not the right csv!
-                    \nEnsure it is: Cell_Types_for_Spatial_Decon.csv''')
-                return redirect('pages:messages_page', 'celltype-upload')
-
-            # If its csv
-            file_data = uploaded_file.read().decode('UTF-8')
-
-            # Set up stream
-            io_string = io.StringIO(file_data)
-            next(io_string) # Skips the header row
-            for col in csv.reader(io_string, delimiter=','):
-                new_cell_type, created = Cell_Types_for_Spatial_Decon.objects.update_or_create(
-                    cluster_id= col[1],
-                    defaults={
-                        'cluster_id' : col[1],
-                        'alias' : col[2],
-                        'data_set' : col[3],
-                        'number_of_cells' : col[4],
-                        'cell_type1' : col[5],
-                        'cell_type2' : col[6],
-                        'cell_type3' : col[7],
-                        'cell_type_specific' : col[8],
-                        'cell_type_general' : col[9],
-                        'cluster_name' : col[10],
-                    }
-                )
-            messages.success(request,'File data successfully written to the Database.')
-            return redirect('pages:messages_page', 'celltype-upload')
-
-
-    
-
-    context = {
-        'page_name': 'Upload Cell Types file',
-        'cell_types_form': cell_types_form
-    }
-
-    return render(request, template_name, context)
-
-
-
-def update_cell_type_view(request, clusterid):
-    template_name = 'pages/update_cell_type.html'
-
-    cell_type = get_object_or_404(Cell_Types_for_Spatial_Decon, cluster_id=clusterid)
-    update_cells_type_csv_form = UpdateCellsTypeCSVsForm(request.POST or None, instance=cell_type)
-    if update_cells_type_csv_form.is_valid():
-        update_cells_type_csv_form.save()
-        messages.success(request, f'Cell Type {cell_type.cluster_id} successfully updated.')
-        return redirect('pages:messages_page', 'cell-type-list')
-
-    context = {
-        'page_name': f'Update {cell_type.cluster_id}',
-        'update_cells_type_csv_form': update_cells_type_csv_form,
-        'cell_type': cell_type,
-    }
-
-    return render(request, template_name, context)
-
-
-
 def sample_annotations_analysis_view(request):
     template_name = 'pages/sample_annotation_analysis.html'
     sample_annotations = Kidney_Sample_Annotations.objects.all()
@@ -285,10 +273,14 @@ def sample_annotations_analysis_view(request):
     sample_annotations_data = pandas.read_sql_query(
         str(Kidney_Sample_Annotations.objects.all().query),
         connection
-        )
+    )
 
     sample_annotations_DF = DataFrame(sample_annotations_data, columns=['disease_status', 'segment_display_name'])
     
+    data_DF_describe_table = DataFrame(sample_annotations_data).describe().to_html(
+        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+    )
+
     sample_annotations_search_form = SearchSampleAnnotationsForm(request.GET or None)
     if sample_annotations_search_form.is_valid():
         cd = sample_annotations_search_form.cleaned_data
@@ -419,6 +411,19 @@ def sample_annotations_analysis_view(request):
     sample_annotations_fig.legend.location = "right"
     
     script, div = components(sample_annotations_fig)
+
+    quantile_search_table = None
+    quantile_search_percentage = None
+    quantile_search_value = None
+    quantile_search_form = QuantileSearchForm(request.GET or None)
+    
+    if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
+        q_cd = quantile_search_form.cleaned_data
+        quantile_search_value = float(q_cd['quantile_value'])
+        quantile_search_percentage = quantile_search_value * 100
+        quantile_search_table = DataFrame(sample_annotations_data).quantile([quantile_search_value]).to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+        )
     
     context = {
         'page_name': 'Sample Annotations Analysis',
@@ -431,9 +436,89 @@ def sample_annotations_analysis_view(request):
         'map_zoom': map_zoom,
         'script': script,
         'div': div,
+        'data_DF_describe_table': data_DF_describe_table,
+        'quantile_search_percentage': quantile_search_percentage,
+        'quantile_search_table': quantile_search_table,
+        'quantile_search_value': quantile_search_value,
+        'quantile_search_form': quantile_search_form,
     }
     return render(request, template_name, context)
 
+
+
+def cell_types_for_spatial_decon_uploader_view(request):
+    template_name = 'pages/celltype_upload.html'
+    cell_types_form = UploadCellTypesForm()
+
+    if request.method == 'POST':
+        cell_types_form = UploadCellTypesForm(request.POST, request.FILES)
+        if cell_types_form.is_valid:
+            uploaded_file = request.FILES['file']
+
+            # check if its csv
+            if not uploaded_file.name.endswith('.csv'):
+                messages.error(request, 'Uploaded file is not a csv!')
+                return redirect('pages:messages_page', 'celltype-upload')
+
+            # check if its the right csv
+            if uploaded_file.name != 'Cell_Types_for_Spatial_Decon.csv':
+                messages.error(request, '''Uploaded file is not the right csv!
+                    \nEnsure it is: Cell_Types_for_Spatial_Decon.csv''')
+                return redirect('pages:messages_page', 'celltype-upload')
+
+            # If its csv
+            file_data = uploaded_file.read().decode('UTF-8')
+
+            # Set up stream
+            io_string = io.StringIO(file_data)
+            next(io_string) # Skips the header row
+            for col in csv.reader(io_string, delimiter=','):
+                new_cell_type, created = Cell_Types_for_Spatial_Decon.objects.update_or_create(
+                    cluster_id= col[1],
+                    defaults={
+                        'cluster_id' : col[1],
+                        'alias' : col[2],
+                        'data_set' : col[3],
+                        'number_of_cells' : col[4],
+                        'cell_type1' : col[5],
+                        'cell_type2' : col[6],
+                        'cell_type3' : col[7],
+                        'cell_type_specific' : col[8],
+                        'cell_type_general' : col[9],
+                        'cluster_name' : col[10],
+                    }
+                )
+            messages.success(request,'File data successfully written to the Database.')
+            return redirect('pages:messages_page', 'celltype-upload')
+
+
+    
+
+    context = {
+        'page_name': 'Upload Cell Types file',
+        'cell_types_form': cell_types_form
+    }
+
+    return render(request, template_name, context)
+
+
+def update_cell_type_view(request, clusterid):
+    template_name = 'pages/update_cell_type.html'
+
+    cell_type = get_object_or_404(Cell_Types_for_Spatial_Decon, cluster_id=clusterid)
+    update_cells_type_csv_form = UpdateCellsTypeCSVsForm(request.POST or None, instance=cell_type)
+    if update_cells_type_csv_form.is_valid():
+        update_cells_type_csv_form.save()
+        messages.success(request, f'Cell Type {cell_type.cluster_id} successfully updated.')
+        return redirect('pages:messages_page', 'cell-type-list')
+
+    context = {
+        'page_name': f'Update {cell_type.cluster_id}',
+        'update_cells_type_csv_form': update_cells_type_csv_form,
+        'cell_type': cell_type,
+    }
+
+    return render(request, template_name, context)
 
 
 def cell_types_analysis_view(request):
@@ -521,21 +606,6 @@ def cell_types_analysis_view(request):
     for item in number_of_cells:
         number_of_cells_list.append(item)
         
-
-    cells_type_describe_values = []
-    for item in cells_type_DF.describe()['number_of_cells']:
-        cells_type_describe_values.append(item)
-        
-    cells_type_describe_object = {
-        'count': cells_type_describe_values[0],
-        'mean': cells_type_describe_values[1],
-        'std': cells_type_describe_values[2],
-        'min': cells_type_describe_values[3],
-        '25': cells_type_describe_values[4],
-        '50': cells_type_describe_values[5],
-        '75': cells_type_describe_values[6],
-        'max': cells_type_describe_values[7],
-    }
 
     data_DF_describe_table = cells_type_DF.describe().to_html(classes=['table', 'table-bordered', 'table-striped'])
     
@@ -642,261 +712,201 @@ def cell_types_analysis_view(request):
     return render(request, template_name, context)
 
 
+def analyses_tables(
+    request,
+    file_name, #str
+    theDF, #the csv handler retrning the DF
+    modelSearchForm,
+    quantileSearchForm
+    ):
 
+    csv_obj = RawCSVFiles.objects.get(file_name=file_name),
+    data_DF = theDF()
+    search_count = len(data_DF)
+    columns_list = list(data_DF.columns.values)
+    data_DF_describe_table = data_DF.describe().to_html(
+        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+    )
 
-def feature_annotation_uploader_view(request):
-    template_name = 'pages/featureannotation_upload.html'
-    feature_annotation_upload_form = UploadFeatureAnnotationsForm()
+    model_search_form = modelSearchForm(request.GET or None)
 
-    if request.method == 'POST':
-        feature_annotation_upload_form = UploadCellTypesForm(request.POST, request.FILES)
-        if feature_annotation_upload_form.is_valid:
-            uploaded_file = request.FILES['file']
-
-            # check if its csv
-            if not uploaded_file.name.endswith('.csv'):
-                messages.error(request, 'Uploaded file is not a csv!')
-                return redirect('pages:messages_page', 'featureannotation-upload')
-
-            # check if its the right csv
-            if uploaded_file.name != 'Kidney_Feature_Annotations.csv':
-                messages.error(request, '''Uploaded file is not the right csv!
-                    \nEnsure it is: Kidney_Feature_Annotations.csv''')
-                return redirect('pages:messages_page', 'featureannotation-upload')
-
-            # If its csv
-            file_data = uploaded_file.read().decode('UTF-8')
-
-            # Set up stream
-            io_string = io.StringIO(file_data)
-            next(io_string) # Skips the header row
-            for col in csv.reader(io_string, delimiter=','):
-                new_data, created = Kidney_Feature_Annotation.objects.update_or_create(
-                    rts_id= col[1],
-                    defaults={
-                        'rts_id' : col[1],
-                        'target_name' : col[2],
-                        'probe_id' : col[3],
-                        'negative' : col[4],
-                    }
-                )
-
-                if created:
-                    messages.success(request, f'{uploaded_file.name} has been Uploaded')
-                    return redirect('pages:messages_page', 'featureannotation-upload')
-                else:
-                    messages.success(request, f'Updated existing {uploaded_file.name}')
-                    return redirect('pages:messages_page', 'featureannotation-upload')
+    search_value = None
+    search_record_table = None
+    if model_search_form.is_valid() and 'search_value' in request.GET:
+        cd = model_search_form.cleaned_data
+        search_value = cd['search_value']
+        new_DF = data_DF.loc[[search_value]]
+        search_record_table = new_DF.to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+        )
+        
             
+    quantiles_1_2_3 = data_DF.dropna().quantile([.25, .5, .75]).to_html(
+        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+    )
+    
+    quantile_search_table = None
+    quantile_search_percentage = None
+    quantile_search_value = None
+    quantile_search_form = quantileSearchForm(request.GET or None)
+    
+    if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
+        q_cd = quantile_search_form.cleaned_data
+        quantile_search_value = float(q_cd['quantile_value'])
+        quantile_search_percentage = quantile_search_value * 100
+        quantile_search_table = data_DF.quantile([quantile_search_value]).to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+        )
 
-    context = {
-        'page_name': 'Upload Feature Annotation file',
-        'feature_annotation_upload_form': feature_annotation_upload_form
+    return {
+        'csv_obj': csv_obj,
+        'search_count': search_count,
+        'columns_count': len(columns_list),
+        'search_form': model_search_form,
+        'data_DF_describe_table': data_DF_describe_table,
+        'search_value': search_value,
+        'search_record_table': search_record_table,
+        'quantiles_1_2_3': quantiles_1_2_3,
+        'quantile_search_form': quantile_search_form,
+        'quantile_search_percentage': quantile_search_percentage,
+        'quantile_search_table': quantile_search_table,
     }
 
-    return render(request, template_name, context)
 
 
-
-def update_feature_annotation_view(request, rts_id):
-    template_name = 'pages/update_feature_annotation.html'
-
-    feature_annotation = get_object_or_404(Kidney_Feature_Annotation, rts_id=rts_id)
-    update_feature_annotation_form = UpdateFeatureAnnotationForm(request.POST or None, instance=feature_annotation)
-    if update_feature_annotation_form.is_valid():
-        update_feature_annotation_form.save()
-        messages.success(request, f'Feature Annotation {feature_annotation.rts_id} successfully updated.')
-        return redirect('pages:messages_page', 'feature-annotation-list')
-
-    context = {
-        'page_name': f'Update {feature_annotation.rts_id}',
-        'update_feature_annotation_form': update_feature_annotation_form,
-        'feature_annotation': feature_annotation,
-    }
-
-    return render(request, template_name, context)
+def draw_boxplots():
+    pass
 
 
 
 def feature_annotation_analysis_view(request):
+    
     template_name = 'pages/kidney_feature_annotations_analysis.html'
-    kidney_feature_annotations = Kidney_Feature_Annotation.objects.order_by('rts_id')
-    search_count = kidney_feature_annotations.count()
+    csv_obj = RawCSVFiles.objects.get(file_name='KidneyFeatureAnnotations')
+    data_DF = feature_annotations_DF()
+    
 
-    feature_annotations_data = pandas.read_sql_query(
-        str(Kidney_Feature_Annotation.objects.all().query),
-        connection
+    search_count = len(data_DF)
+    columns_list = list(data_DF.columns.values)
+    
+
+    negative_groups_count_DF = data_DF.groupby(['Negative']).count()
+    negative_groups_count_DF['Value'] = (
+        negative_groups_count_DF['ProbeID']/negative_groups_count_DF['ProbeID'].sum() * 2*pi
         )
+    negative_groups_count_DF['Proportion'] = negative_groups_count_DF['ProbeID']
+    negative_groups_count_DF['Color'] = ['#cce5ff', '#cc00cc']
+    data_DF_describe_table = negative_groups_count_DF.to_html(
+        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+    )
+    data_CDS = ColumnDataSource(negative_groups_count_DF)
 
-    DF_columns=[
-        'rts_id',
-        'negative',
-        ]
-
-    feature_annotations_DF = DataFrame(feature_annotations_data, columns=DF_columns)
-
-    search_feature_annotations_form = SearchFeatureAnnotationsForm(request.GET or None)
-    if search_feature_annotations_form.is_valid():
-        cd = search_feature_annotations_form.cleaned_data
-        search_value = cd['search_value']
-        kidney_feature_annotations = Kidney_Feature_Annotation.objects.filter(
-            Q(id__icontains=search_value) |
-            Q(rts_id__icontains=search_value) |
-            Q(target_name__icontains=search_value) |
-            Q(probe_id__icontains=search_value) |
-            Q(negative__icontains=search_value) 
-        )
-
-        sql_search_query = '''
-        SELECT * FROM data_kidney_feature_annotation WHERE
-        target_name ILIKE %(search_value)s OR
-        rts_id ILIKE %(search_value)s OR
-        CAST (id AS TEXT) ILIKE %(search_value)s OR
-        CAST (probe_id AS TEXT) ILIKE %(search_value)s
-        '''
-        search_data = pandas.read_sql_query(sql_search_query, connection, params={'search_value':f'%{search_value}%'})
-        feature_annotations_DF = DataFrame(search_data, columns=DF_columns)
-
-        if kidney_feature_annotations.count() == 0:
-            messages.error(request, f'No Feature Annotations matches: "{search_value}".')
-            return redirect('pages:messages_page', 'feature-annotations-analysis')
-        else:
-            search_count = kidney_feature_annotations.count()
-
-
-    group_by_negative = feature_annotations_DF.groupby(['negative']).count()
-
-    # Create value column to be used for piechart angles
-    group_by_negative['value'] = (
-        group_by_negative['rts_id']/len(feature_annotations_DF) * 2*pi
-        )
-    group_by_negative['color'] = ['violet', 'Turquoise'][:len(group_by_negative)]
-    group_by_negative_CDS = ColumnDataSource(group_by_negative)
-
-    feature_annotations_tooltips= [
-            ('Negative Status', '@negative'),
-            ('Proportion', f'@rts_id out of {len(feature_annotations_DF)}'),
+    pie_chart_tooltips= [
+            ('Negative', '@Negative'),
+            ('Proportion', f'@Proportion out of {negative_groups_count_DF["ProbeID"].sum()}'),
         ]
 
 
-    pie=figure(
-        title="Pie Chart showing Feature Annotation Proportions of Negative Records",
-        plot_height=600,
-        plot_width=992,
-        tooltips=feature_annotations_tooltips
-        )
-    pie.wedge(
+    pie_chart = figure(
+        title="Pie Chart showing Proportions of Negative for Feature Annotations",
+        width = 992,
+        height = 560,
+        background_fill_color = '#e6f2ff',
+        outline_line_color = '#0066cc',
+        tooltips=pie_chart_tooltips,
+    )
+
+    pie_chart.wedge(
         x=0,
         y=1,
-        radius=0.45,
-        start_angle=cumsum('value', include_zero=True),
-        end_angle=cumsum('value'),
-        line_color="white",
-        fill_color='color',
-        source=group_by_negative_CDS,
-        legend_field='negative',
-    )
-    pie.axis.visible=False
-    pie.toolbar.active_drag = None
-    pie.title.align = "center"
-    pie.title.text_color = "RebeccaPurple"
-    pie.title.text_font_size = "18px"
-    pie.legend.orientation = "vertical"
-    pie.legend.location = "right"
+        radius=0.5,
+        start_angle=cumsum('Value', include_zero=True),
+        end_angle=cumsum('Value'),
+        line_color="#ffffff",
+        fill_color='Color',
+        source=data_CDS,
+        legend_field='Negative',
+        )
 
-    script_pie, div_pie = components(pie)
+    pie_chart.axis.visible=False
+    pie_chart.axis.axis_line_color=None
+    pie_chart.toolbar.active_drag = None
+    pie_chart.title.align = "center"
+    pie_chart.title.text_color = "#003e80"
+    pie_chart.title.text_font_size = "18px"
+    pie_chart.legend.orientation = "vertical"
+    pie_chart.legend.location = "right"
+    
+    pie_script, pie_div = components(pie_chart)
 
-    data_DF_describe_table = feature_annotations_DF.describe().to_html(classes=['table', 'table-bordered', 'table-striped'])
-
-
+    search_value = None
+    search_record_table = None
+    search_form = SearchFeatureAnnotationsForm(request.GET or None)
+    if search_form.is_valid() and 'search_value' in request.GET:
+        cd = search_form.cleaned_data
+        search_value = cd['search_value']
+        try:
+            new_DF = data_DF.loc[[search_value]]
+            search_record_table = new_DF.to_html(
+                justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+            )
+        except KeyError:
+            messages.error(request, f'No Feature Annotation (RTS_ID) matches: <h1 class="display-4">{search_value}</h1>')
+            return redirect('pages:messages_page', 'feature-annotations-analysis')
 
     context = {
         'page_name': 'Feature Annotation Analysis',
-        'kidney_feature_annotations': kidney_feature_annotations,
+        'csv_obj': csv_obj,
+        'data_DF': data_DF,
         'search_count': search_count,
-        'search_feature_annotations_form': search_feature_annotations_form,
-        'script_pie': script_pie,
-        'div_pie': div_pie,
+        'columns_count': len(columns_list),
         'data_DF_describe_table': data_DF_describe_table,
-    }
+        'pie_script': pie_script,
+        'pie_div': pie_div,
+        'search_form': search_form,
+        'search_value': search_value,
+        'search_record_table': search_record_table,
+            
+        }
 
     return render(request, template_name, context)
     
-
-
-def upload_csvs_view(request):
-    template_name = 'pages/upload_csvs.html'
-    uploadForm = UploadRawCSVFilesModelForm()
-
-    if request.method == 'POST':
-        uploadForm = UploadRawCSVFilesModelForm(request.POST or None, request.FILES)
-    
-        if uploadForm.is_valid:
-            uploaded_file = request.FILES['file']
-
-            # check if its csv
-            if not uploaded_file.name.endswith('.csv'):
-                messages.error(request, 'Uploaded file is not a csv!')
-                return redirect('pages:messages_page', 'upload-csvs')
-            
-            new_data, created = RawCSVFiles.objects.update_or_create(
-                file_name=uploadForm.data['file_name'],
-                defaults={'file':uploaded_file}
-            )
-
-            if created:
-                messages.success(request, f'{uploaded_file.name} has been Uploaded')
-                return redirect('pages:messages_page', 'upload-csvs')
-            else:
-                messages.success(request, f'Updated existing {uploaded_file.name}')
-                return redirect('pages:messages_page', 'upload-csvs')
-
-            
-    context = {
-        'page_name': 'Upload CSV files',
-        'uploadForm': uploadForm,
-    }
-
-    return render(request, template_name, context)
 
 
 def kidney_raw_bioProbeCountMatrix_analysis_view(request):
-    template_name = 'pages/probe_expression_analysis.html'
-    probe_expression_search_form = SearchProbeExpressionForm(request.GET or None)
-
-    data_DF = probe_expression_DF()
-    search_count = len(data_DF)
-    columns_list = list(data_DF.columns.values)
-    data_DF_describe_table = probe_expression_DF().describe().to_html(classes=['table', 'table-bordered', 'table-striped'])
-
-    search_value = None
-    search_record = None
-    if probe_expression_search_form.is_valid():
-        cd = probe_expression_search_form.cleaned_data
-        search_value = cd['search_value']
-        try:
-            new_DF = probe_expression_DF().loc[[search_value]]
-            search_record = new_DF.to_html(classes=['table', 'table-bordered', 'table-striped'])
-        except KeyError:
-            messages.error(request, f'No Probe Expression matches: "{search_value}".')
-            return redirect('pages:messages_page', 'probe-expression-analysis')
+    
+    
+    try:
+        analysis_context = analyses_tables(
+            request,
+            'KidneyRawBioProbeCountMatrix',
+            probe_expression_DF,
+            SearchProbeExpressionForm,
+            QuantileSearchForm,
+        )
 
         
-            
-    # print(dir(data_DF))
-    # print(data_DF)
+        template_name = 'pages/probe_expression_analysis.html'
 
-    context = {
-        'page_name': 'Probe Expression Analysis',
-        'csv_obj': RawCSVFiles.objects.get(file_name='KidneyRawBioProbeCountMatrix'),
-        'search_count': search_count,
-        'columns_count': len(columns_list),
-        'search_form': probe_expression_search_form,
-        'data_DF_describe_table': data_DF_describe_table,
-        'data_DF_describe_table': data_DF_describe_table,
-        'search_value': search_value,
-        'search_record': search_record,
+        context = {
+            'page_name': 'Feature Annotation Analysis',
+            'csv_obj': analysis_context['csv_obj'],
+            'search_count': analysis_context['search_count'],
+            'columns_count': analysis_context['columns_count'],
+            'search_form': analysis_context['search_form'],
+            'data_DF_describe_table': analysis_context['data_DF_describe_table'],
+            'search_value': analysis_context['search_value'],
+            'search_record_table': analysis_context['search_record_table'],
+            'quantiles_1_2_3': analysis_context['quantiles_1_2_3'],
+            'quantile_search_form': analysis_context['quantile_search_form'],
+            'quantile_search_percentage': analysis_context['quantile_search_percentage'],
+            'quantile_search_table': analysis_context['quantile_search_table'],
+        }
 
-    }
+        return render(request, template_name, context)
+        
+    except KeyError:
+        search_value = SearchProbeExpressionForm(request.GET).data['search_value']
+        messages.error(request, f'No Probe Expressions (ProbeName) matches: <h1 class="display-4">{search_value}</h1>')
+        return redirect('pages:messages_page', 'probe-expression-analysis')
 
-    return render(request, template_name, context)

@@ -38,13 +38,13 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
 
-     # Third-party
-    'rest_framework',
+    # Third-party
+    # 'rest_framework',
 
     # my apps
     'data.apps.DataConfig',
     'pages.apps.PagesConfig',
-    'api.apps.ApiConfig',
+    # 'api.apps.ApiConfig',
 
     # Django defaults   
     'django.contrib.admin',

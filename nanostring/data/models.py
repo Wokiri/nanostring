@@ -8,6 +8,7 @@ class Category(models.Model):
         verbose_name_plural = 'categories'
 
 
+
 class Kidney_Sample_Annotations(models.Model):
     slide_name = models.CharField(max_length=25, null=True, blank=True)
     scan_name = models.CharField(max_length=50, null=True, blank=True)
@@ -81,29 +82,6 @@ class Cell_Types_for_Spatial_Decon(models.Model):
 
     def __str__(self): return self.cluster_id
 
-
-class Kidney_Feature_Annotation(models.Model):
-    rts_id = models.CharField(max_length=25, null=True, blank=True)
-    target_name = models.CharField(max_length=25, null=True, blank=True)
-    probe_id = models.IntegerField(null=True, blank=True)
-    negative = models.BooleanField(null=True, blank=True)
-
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name="category of data"
-        )
-
-
-    class Meta:
-        ordering = ['probe_id', ]
-        verbose_name = 'kidney feature annotation'
-        verbose_name_plural = 'kidney feature annotations'
-
-
-    def __str__(self): return self.rts_id
 
 
 class RawCSVFiles(models.Model):

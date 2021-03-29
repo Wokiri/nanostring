@@ -21,6 +21,7 @@ nanostring_hackathon.pdf
 /KidneyDataset/*.txt
 *.docx
 /guides/
+/video/
 
 *.vscode
 

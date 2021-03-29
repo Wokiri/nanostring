@@ -11,11 +11,8 @@
 {% block content %}
     {% if sample_annotations %}
     
-        <div class="container shadow-lg rounded-lg my-5">
+        <div class="container shadow-lg rounded-lg my-sm-5 py-sm-2">
             <div class="my-4">
-                <div class="py-sm-2">
-                   {{ div_intro }}
-                </div>
 
                 <div class="py-sm-2">
                     <h3 class="text-center text-success">{{ page_name }}</h3>
@@ -102,7 +99,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="my-4">
                 <div class="col-sm-12 mx-auto mb-5" style="overflow: auto;">
                     <h1 class="text-center text-info lead m-1 font-weight-bolder">
                         Map showing kidney sample annotations categorized by disease status
@@ -111,13 +108,31 @@
                     <div id="mapcontent" class="bg-light my-sm-2" style="min-height: 120px;"></div>
                 </div>
 
-                <div class="mx-auto mb-5" style="overflow: auto;">
-                    {{ div|safe }}
+                
+                <div class="row my-sm-5">
+                    <div class="mx-auto mb-5" style="overflow: auto;">
+                        {{ div|safe }}
+                    </div>
                 </div>
 
-                <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
+                <div class="shadow-sm table-responsive border my-sm-5 p-4">
+                    <p class="text-success text-center lead">DataFrame Description for Sample Annotations</p>
                     {{ data_DF_describe_table|safe }}
                 </div>
+
+                <div class="mt-sm-4 mb-sm-2 pt-sm-4">
+                    <form class="form-inline my-2 my-lg-0">
+                        {{ quantile_search_form }}
+                        <button class="btn btn-success my-2 my-sm-0" type="submit">Quantile Search</button>
+                    </form>
+                </div>
+
+                {% if quantile_search_table %}
+                <div class="shadow-sm table-responsive border mb-sm-5 p-4" style="max-height: 80vh;">
+                    <p class="text-success text-center lead">Values at {{ quantile_search_percentage }}% Quantile for Sample Annotations</p>
+                    {{ quantile_search_table|safe }}
+                </div>
+                {% endif %}
                 
 
             </div>
@@ -127,7 +142,7 @@
         </div>
     {% else %}
         <div class="py-sm-2">
-            <h3 class="text-center text-warning">No Sample Annotations in the database yet!</h3>
+            <h3 class="text-center text-warning">No Sample Annotations records yet!</h3>
         </div>
     {% endif %}
 

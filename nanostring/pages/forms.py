@@ -2,7 +2,6 @@ from django.contrib.gis import forms
 from data.models import (
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
-    Kidney_Feature_Annotation,
     RawCSVFiles,
     )
 
@@ -24,21 +23,10 @@ class SearchCellTypesForm(forms.Form):
             )
         )
 
-class SearchFeatureAnnotationsForm(forms.Form):
-    search_value = forms.CharField(label='Search Kidney Feature Annotations', max_length=125, required=False,
-        widget=forms.TextInput(
-            attrs={'class':'form-control mr-sm-1'}
-            ))
 
 class UpdateCellsTypeCSVsForm(forms.ModelForm):
     class Meta:
         model = Cell_Types_for_Spatial_Decon
-        fields = '__all__'
-
-
-class UpdateFeatureAnnotationForm(forms.ModelForm):
-    class Meta:
-        model = Kidney_Feature_Annotation
         fields = '__all__'
 
 
@@ -65,8 +53,31 @@ class UploadRawCSVFilesModelForm(forms.ModelForm):
 
 
 
+
+class SearchFeatureAnnotationsForm(forms.Form):
+    search_value = forms.CharField(
+        label='Search Feature Annotations (RTS_ID)',
+        max_length=125,
+        required=False,
+        widget=forms.TextInput(
+            attrs={'class':'form-control mr-sm-1'}
+            ))
+
+
 class SearchProbeExpressionForm(forms.Form):
-    search_value = forms.IntegerField(label='Search Probe Expression Name', required=False,
+    search_value = forms.IntegerField(label='Search Probe Expression (ProbeName)', required=False,
+        widget=forms.NumberInput(
+            attrs={'class':'form-control mr-sm-1'}
+            ))
+
+
+class QuantileSearchForm(forms.Form):
+    quantile_value = forms.DecimalField(
+        label='Search Quantile Value',
+        required=False,
+        decimal_places=2,
+        min_value=0,
+        max_value =1,
         widget=forms.NumberInput(
             attrs={'class':'form-control mr-sm-1'}
             ))

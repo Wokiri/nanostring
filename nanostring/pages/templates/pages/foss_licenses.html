@@ -1,0 +1,138 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+
+
+<div class="container">
+    <h1 class="display-5 my-4">Used FOSS Licenses</h1>
+
+
+    {% comment %}Bokeh{% endcomment %}
+    <div class="my-sm-1">
+        <button type="button" class="btn btn-outline btn-outline-info px-sm-5" data-toggle="modal" data-target="#bokeh" style="width: 180px;">
+        Bokeh
+        </button>
+
+        <div class="modal" id="bokeh">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">Bokeh Licence</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                    {{ bokeh_license|linebreaks }}
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% comment %}Bootstrap{% endcomment %}
+    <div class="my-sm-1">
+        <button type="button" class="btn btn-outline btn-outline-info px-sm-5" data-toggle="modal" data-target="#bootstrap" style="width: 180px;">
+        Bootstrap
+        </button>
+
+        <div class="modal" id="bootstrap">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">Bootstrap Licence</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                    {{ bootstrap_license|linebreaks }}
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% comment %}Django{% endcomment %}
+    <div class="my-sm-1">
+        <button type="button" class="btn btn-outline btn-outline-info px-sm-5" data-toggle="modal" data-target="#django" style="width: 180px;">
+        Django
+        </button>
+
+        <div class="modal" id="django">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">Django Licence</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                    {{ django_license|linebreaks }}
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% comment %}Python{% endcomment %}
+    <div class="my-sm-1">
+        <button type="button" class="btn btn-outline btn-outline-info px-sm-5" data-toggle="modal" data-target="#python" style="width: 180px;">
+        Python
+        </button>
+
+        <div class="modal" id="python">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">Python Licence</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                    {{ python_license|linebreaks }}
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+</div>
+
+
+{% endblock %}
