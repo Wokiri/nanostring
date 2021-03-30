@@ -27,10 +27,7 @@ from bokeh.layouts import Column
 from bokeh.palettes import Category10_10, PuRd3, Greens256, Category10
 from bokeh.models.layouts import Column, Spacer
 
-from .handle_uploaded_files import (
-    feature_annotations_DF,
-    probe_expression_DF,
-)
+
 
 from .foss_licences import (
     bokeh_license,
@@ -57,11 +54,95 @@ from .forms import (
     UploadRawCSVFilesModelForm,
     SearchProbeExpressionForm,
     QuantileSearchForm,
+    SearchTargetExpressionForm,
+    SearchNormalizedExpressionForm,
+    SearchKidneyssGSEAForm,
+    SearchAverageGeneExpressionForm,
     )
 
 all_cell_types = Cell_Types_for_Spatial_Decon.objects.all()
 all_sample_annotations_types = Kidney_Sample_Annotations.objects.all()
 all_raw_csv_files = RawCSVFiles.objects.all()
+
+from .handle_uploaded_files import (
+    feature_annotations_DF,
+    probe_expression_DF,
+    target_expression_DF,
+    normalized_expression_DF,
+    ssGSEA_expression_DF,
+    average_gene_expression_DF,
+)
+
+
+# find the outliers for each category
+def draw_boxplots(dataframe):
+
+    # dataframe
+    data_DF = dataframe()
+
+    # find the quartiles and IQR for each category
+    q1 = data_DF.quantile(q=0.25)
+    q2 = data_DF.quantile(q=0.5)
+    q3 = data_DF.quantile(q=0.75)
+    iqr = q3 - q1
+    upper = q3 + 1.5*iqr
+    lower = q1 - 1.5*iqr
+
+
+    def outliers(series):
+        series_name = series.name
+        return series[(series > upper.loc[series_name]) | (series < lower.loc[series_name])]
+
+    applied_DF = data_DF.apply(outliers).dropna()
+
+    # prepare outlier data for plotting, we need coordinates for every outlier.
+    if not applied_DF.empty:
+        applied_DF_x = list(applied_DF.index.get_level_values(0))
+        applied_DF_y = list(applied_DF.values)
+
+
+    dataframe_cols = list(data_DF.columns)
+    box_plot = figure(width=(50 * len(dataframe_cols)), tools="", background_fill_color="#efefef", x_range=dataframe_cols, toolbar_location=None)
+    
+    # if no outliers, shrink lengths of stems to be no longer than the minimums or maximums
+    qmin = data_DF.quantile(q=0.00)
+    qmax = data_DF.quantile(q=1.00)
+    upper = [min([x,y]) for (x,y) in zip(list(qmax.loc[:]),upper)]
+    lower = [max([x,y]) for (x,y) in zip(list(qmin.loc[:]),lower)]
+
+    
+    # stems
+    box_plot.segment(dataframe_cols, upper, dataframe_cols, q3, line_color="black")
+    box_plot.segment(dataframe_cols, lower, dataframe_cols, q1, line_color="black")
+
+    # boxes
+    box_plot.vbar(dataframe_cols, 0.7, q2, q3, fill_color="#E08E79", line_color="black")
+    box_plot.vbar(dataframe_cols, 0.7, q1, q2, fill_color="#3B8686", line_color="black")
+
+    # whiskers (almost-0 height rects simpler than segments)
+    box_plot.rect(dataframe_cols, lower, 0.2, 0.01, line_color="black")
+    box_plot.rect(dataframe_cols, upper, 0.2, 0.01, line_color="black")
+
+    # outliers
+    if not applied_DF.empty:
+        box_plot.circle(applied_DF_x, applied_DF_y, size=6, color="#F38630", fill_alpha=0.6)
+
+    box_plot.xgrid.grid_line_color = None
+    box_plot.ygrid.grid_line_color = "white"
+    box_plot.grid.grid_line_width = 2
+    box_plot.xaxis.major_label_text_font_size="16px"
+
+    script_box_plot, div_box_plot = components(box_plot)
+
+    return {
+        'script_box_plot': script_box_plot,
+        'div_box_plot': div_box_plot,
+    }
+
+
+
+    # return applied_DF
+
 
 
 def upload_csvs_view(request):
@@ -91,10 +172,11 @@ def upload_csvs_view(request):
                 messages.success(request, f'Updated existing {uploaded_file.name}')
                 return redirect('pages:messages_page', 'upload-csvs')
 
-            
+
     context = {
         'page_name': 'Upload CSV files',
         'uploadForm': uploadForm,
+        'all_raw_csv_files': all_raw_csv_files,
     }
 
     return render(request, template_name, context)
@@ -104,13 +186,43 @@ def upload_csvs_view(request):
 def home_page_view(request):
     template_name = 'pages/homepage.html'
     
-    feature_annotations_dataframe = feature_annotations_DF().head().to_html(
-        justify='center', show_dimensions=True, classes=['table table-bordered table-sm']
-    )
 
-    probe_expression_dataframe = probe_expression_DF().head().to_html(
-        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-sm']
-    )
+    feature_annotations_dataframe = None
+    if feature_annotations_DF() is not None:
+        feature_annotations_dataframe = feature_annotations_DF().head().to_html(
+            justify='center', show_dimensions=True, classes=['table table-bordered table-sm']
+        )
+
+    probe_expression_dataframe = None
+    if probe_expression_DF() is not None:
+        probe_expression_dataframe = probe_expression_DF().head().to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-sm']
+        )
+
+    target_expression_dataframe = None
+    if target_expression_DF() is not None:
+        target_expression_dataframe = target_expression_DF().head().to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-sm']
+        )
+
+    normalized_expression_dataframe = None
+    if normalized_expression_DF() is not None:
+        normalized_expression_dataframe = normalized_expression_DF().head().to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-sm']
+        )
+    
+
+    single_sample_gsea_results_dataframe = None
+    if ssGSEA_expression_DF() is not None:
+        single_sample_gsea_results_dataframe = ssGSEA_expression_DF().rename(columns={"Unnamed: 0.1": "Name"}).head().to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-sm']
+        )
+
+    average_gene_dataframe = None
+    if average_gene_expression_DF() is not None:
+        average_gene_dataframe = average_gene_expression_DF().head().to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-sm']
+        )
     
 
     context = {
@@ -121,6 +233,14 @@ def home_page_view(request):
         'feature_annotations_dataframe': feature_annotations_dataframe,
         'kidney_raw_bioProbeCountMatrix': all_raw_csv_files.filter(file_name='KidneyRawBioProbeCountMatrix'),
         'probe_expression_dataframe': probe_expression_dataframe,
+        'kidney_raw_target_count_matrix': all_raw_csv_files.filter(file_name='KidneyRawTargetCountMatrix'),
+        'target_expression_dataframe': target_expression_dataframe,
+        'kidney_q3_norm_target_count_matrix': all_raw_csv_files.filter(file_name='KidneyQ3NormTargetCountMatrix'),
+        'normalized_expression_dataframe': normalized_expression_dataframe,
+        'Kidneyss_GSEA': all_raw_csv_files.filter(file_name='KidneyssGSEA'),
+        'single_sample_gsea_results_dataframe': single_sample_gsea_results_dataframe,
+        'average_gene_expression': all_raw_csv_files.filter(file_name='AverageGeneExpression'),
+        'average_gene_dataframe': average_gene_dataframe,
     }
 
     return render(request, template_name, context)
@@ -443,7 +563,6 @@ def sample_annotations_analysis_view(request):
         'quantile_search_form': quantile_search_form,
     }
     return render(request, template_name, context)
-
 
 
 def cell_types_for_spatial_decon_uploader_view(request):
@@ -774,11 +893,6 @@ def analyses_tables(
 
 
 
-def draw_boxplots():
-    pass
-
-
-
 def feature_annotation_analysis_view(request):
     
     template_name = 'pages/kidney_feature_annotations_analysis.html'
@@ -887,9 +1001,51 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
 
         
         template_name = 'pages/probe_expression_analysis.html'
+        box_plot = draw_boxplots(probe_expression_DF)
 
         context = {
-            'page_name': 'Feature Annotation Analysis',
+            'page_name': 'Probe Expressions',
+            'csv_obj': analysis_context['csv_obj'],
+            'search_count': analysis_context['search_count'],
+            'columns_count': analysis_context['columns_count'],
+            'search_form': analysis_context['search_form'],
+            'data_DF_describe_table': analysis_context['data_DF_describe_table'],
+            'search_value': analysis_context['search_value'],
+            'search_record_table': analysis_context['search_record_table'],
+            'quantiles_1_2_3': analysis_context['quantiles_1_2_3'],
+            'quantile_search_form': analysis_context['quantile_search_form'],
+            'quantile_search_percentage': analysis_context['quantile_search_percentage'],
+            'quantile_search_table': analysis_context['quantile_search_table'],
+            'script_box_plot': box_plot['script_box_plot'],
+            'div_box_plot': box_plot['div_box_plot'],
+        }
+
+        return render(request, template_name, context)
+        
+    except KeyError:
+        search_value = SearchProbeExpressionForm(request.GET).data['search_value']
+        messages.error(request, f'No Probe Expressions (ProbeName) matches: <h1 class="display-4">{search_value}</h1>')
+        return redirect('pages:messages_page', 'probe-expression-analysis')
+
+
+
+def KidneyRawTargetCountMatrix_analysis_view(request):
+    
+    try:
+        analysis_context = analyses_tables(
+            request,
+            'KidneyRawTargetCountMatrix',
+            target_expression_DF,
+            SearchTargetExpressionForm,
+            QuantileSearchForm,
+        )
+
+        
+        template_name = 'pages/target_expression_analysis.html'
+
+
+        context = {
+            'page_name': 'Target Expressions',
             'csv_obj': analysis_context['csv_obj'],
             'search_count': analysis_context['search_count'],
             'columns_count': analysis_context['columns_count'],
@@ -907,6 +1063,127 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
         
     except KeyError:
         search_value = SearchProbeExpressionForm(request.GET).data['search_value']
-        messages.error(request, f'No Probe Expressions (ProbeName) matches: <h1 class="display-4">{search_value}</h1>')
-        return redirect('pages:messages_page', 'probe-expression-analysis')
+        messages.error(request, f'No Target Expressions (TargetName) matches: <h1 class="display-4">{search_value}</h1>')
+        return redirect('pages:messages_page', 'target-expression-analysis')
+
+
+
+
+
+def KidneyQ3NormTargetCountMatrix_analysis_view(request):
+    
+    try:
+        analysis_context = analyses_tables(
+            request,
+            'KidneyQ3NormTargetCountMatrix',
+            normalized_expression_DF,
+            SearchNormalizedExpressionForm,
+            QuantileSearchForm,
+        )
+
+        
+        template_name = 'pages/normalized_expression_analysis.html'
+
+
+        context = {
+            'page_name': 'Normalized Expressions',
+            'csv_obj': analysis_context['csv_obj'],
+            'search_count': analysis_context['search_count'],
+            'columns_count': analysis_context['columns_count'],
+            'search_form': analysis_context['search_form'],
+            'data_DF_describe_table': analysis_context['data_DF_describe_table'],
+            'search_value': analysis_context['search_value'],
+            'search_record_table': analysis_context['search_record_table'],
+            'quantiles_1_2_3': analysis_context['quantiles_1_2_3'],
+            'quantile_search_form': analysis_context['quantile_search_form'],
+            'quantile_search_percentage': analysis_context['quantile_search_percentage'],
+            'quantile_search_table': analysis_context['quantile_search_table'],
+        }
+
+        return render(request, template_name, context)
+        
+    except KeyError:
+        search_value = SearchProbeExpressionForm(request.GET).data['search_value']
+        messages.error(request, f'No Normalized Expressions (TargetName) matches: <h1 class="display-4">{search_value}</h1>')
+        return redirect('pages:messages_page', 'normalized-expression-analysis')
+
+
+
+
+def kidneyssGSEA_analysis_view(request):
+    
+    try:
+        analysis_context = analyses_tables(
+            request,
+            'KidneyssGSEA',
+            ssGSEA_expression_DF,
+            SearchKidneyssGSEAForm,
+            QuantileSearchForm,
+        )
+
+        
+        template_name = 'pages/KidneyssGSEA_analysis.html'
+
+
+        context = {
+            'page_name': 'KidneyssGSEA',
+            'csv_obj': analysis_context['csv_obj'],
+            'search_count': analysis_context['search_count'],
+            'columns_count': analysis_context['columns_count'],
+            'search_form': analysis_context['search_form'],
+            'data_DF_describe_table': analysis_context['data_DF_describe_table'],
+            'search_value': analysis_context['search_value'],
+            'search_record_table': analysis_context['search_record_table'],
+            'quantiles_1_2_3': analysis_context['quantiles_1_2_3'],
+            'quantile_search_form': analysis_context['quantile_search_form'],
+            'quantile_search_percentage': analysis_context['quantile_search_percentage'],
+            'quantile_search_table': analysis_context['quantile_search_table'],
+        }
+
+        return render(request, template_name, context)
+        
+    except KeyError:
+        search_value = SearchProbeExpressionForm(request.GET).data['search_value']
+        messages.error(request, f'No KidneyssGSEA matches: <h1 class="display-4">{search_value}</h1>')
+        return redirect('pages:messages_page', 'kidneyssGSEA-analysis')
+
+
+
+
+def average_gene_expression_analysis_view(request):
+    
+    try:
+        analysis_context = analyses_tables(
+            request,
+            'AverageGeneExpression',
+            average_gene_expression_DF,
+            SearchAverageGeneExpressionForm,
+            QuantileSearchForm,
+        )
+
+        
+        template_name = 'pages/average_gene_expression_analysis.html'
+
+
+        context = {
+            'page_name': 'Average Gene Expression',
+            'csv_obj': analysis_context['csv_obj'],
+            'search_count': analysis_context['search_count'],
+            'columns_count': analysis_context['columns_count'],
+            'search_form': analysis_context['search_form'],
+            'data_DF_describe_table': analysis_context['data_DF_describe_table'],
+            'search_value': analysis_context['search_value'],
+            'search_record_table': analysis_context['search_record_table'],
+            'quantiles_1_2_3': analysis_context['quantiles_1_2_3'],
+            'quantile_search_form': analysis_context['quantile_search_form'],
+            'quantile_search_percentage': analysis_context['quantile_search_percentage'],
+            'quantile_search_table': analysis_context['quantile_search_table'],
+        }
+
+        return render(request, template_name, context)
+        
+    except KeyError:
+        search_value = SearchProbeExpressionForm(request.GET).data['search_value']
+        messages.error(request, f'No KidneyssGSEA matches: <h1 class="display-4">{search_value}</h1>')
+        return redirect('pages:messages_page', 'average-gene-expression-analysis')
 

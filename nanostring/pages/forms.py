@@ -81,3 +81,48 @@ class QuantileSearchForm(forms.Form):
         widget=forms.NumberInput(
             attrs={'class':'form-control mr-sm-1'}
             ))
+
+
+
+class SearchTargetExpressionForm(forms.Form):
+    search_value = forms.CharField(
+        label='Search Target Expression (TargetName)',
+        max_length=125,
+        required=False,
+        widget=forms.TextInput(
+            attrs={'class':'form-control mr-sm-1'}
+            ))
+
+
+
+class SearchNormalizedExpressionForm(forms.Form):
+    search_value = forms.CharField(
+        label='Search Normalized Expression (TargetName)',
+        max_length=125,
+        required=False,
+        widget=forms.TextInput(
+            attrs={'class':'form-control mr-sm-1'}
+            ))
+
+
+
+class SearchKidneyssGSEAForm(forms.Form):
+    search_value = forms.CharField(
+        label='Search KidneyssGSEA',
+        max_length=125,
+        required=False,
+        widget=forms.TextInput(
+            attrs={'class':'form-control mr-sm-1'}
+            ))
+
+
+
+class SearchAverageGeneExpressionForm(forms.Form):
+    search_value = forms.CharField(
+        label='Search AverageGeneExpression',
+        max_length=125,
+        required=False,
+        widget=forms.TextInput(
+            attrs={'class':'form-control mr-sm-1'}
+            ))
+

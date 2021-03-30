@@ -1,18 +1,3 @@
-"""nanostring URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 
 from django.urls import path
 
@@ -32,6 +17,10 @@ from .views import (
     feature_annotation_analysis_view,
     upload_csvs_view,
     kidney_raw_bioProbeCountMatrix_analysis_view,
+    KidneyRawTargetCountMatrix_analysis_view,
+    KidneyQ3NormTargetCountMatrix_analysis_view,
+    kidneyssGSEA_analysis_view,
+    average_gene_expression_analysis_view,
 )
 
 app_name = 'pages'
@@ -53,6 +42,10 @@ urlpatterns = [
     path('feature-annotations-analysis/', feature_annotation_analysis_view, name='feature_annotations_analysis_page'),
     path('upload-csvs/', upload_csvs_view, name='upload_csvs_page'),
     path('probe-expression-analysis/', kidney_raw_bioProbeCountMatrix_analysis_view, name='probe_expression_analysis_page'),
+    path('target-expression-analysis/', KidneyRawTargetCountMatrix_analysis_view, name='target_expression_analysis_page'),
+    path('normalized-expression-analysis/', KidneyQ3NormTargetCountMatrix_analysis_view, name='normalized_expression_analysis_page'),
+    path('kidneyssGSEA-analysis/', kidneyssGSEA_analysis_view, name='kidneyssGSEA_analysis_page'),
+    path('average-gene-expression-analysis/', average_gene_expression_analysis_view, name='average_gene_expression_analysis_page'),
 
 
 ]

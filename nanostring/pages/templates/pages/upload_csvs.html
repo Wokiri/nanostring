@@ -6,20 +6,42 @@
 </div>
 
 <div class="container">
-  <div class="shadow-lg rounded-lg my-sm-2 p-sm-4">
-    <p class="text-info lead mb-3">
-      Ensure that the File Name and the File uploaded match.
-    </p>
-    
-    <form enctype="multipart/form-data" method="post">
-      {% csrf_token %} {% for form in uploadForm %}
-      <p>{{ form.errors }}</p>
-      <p>{{ form.label_tag }}</p>
-      <p>{{ form }}</p>
+  <div class="row shadow-lg rounded-lg my-sm-2 p-sm-4">
+    <div class="col-sm-7 p-4 rounded-lg">
+      <p class="text-info lead mb-3">
+        Ensure that the File Name and the File uploaded match.
+      </p>
+      
+      <form enctype="multipart/form-data" method="post">
+        {% csrf_token %} {% for form in uploadForm %}
+        <p>{{ form.errors }}</p>
+        <p>{{ form.label_tag }}</p>
+        <p>{{ form }}</p>
+        {% endfor %}
+        <button class="btn btn-info" type="submit">Upload</button>
+      </form>
+    </div>
+
+    <div class="col-sm-5 p-4 border border-info rounded-lg">
+      {% if all_raw_csv_files %}
+        <p class="text-info lead mb-3">
+          Files Already Uploaded.
+        </p>
+      {% endif %}
+      
+      {% for file in all_raw_csv_files %}
+        <p class="text-success lead mb-3">
+          {{ forloop.counter }}. {{ file }}
+        </p>
+        
+      {% empty %}
+        <p class="text-warning lead mb-3">
+          No Files Uploaded yet.
+        </p>
       {% endfor %}
-      <button class="btn btn-info" type="submit">Upload</button>
-    </form>
+    </div>
   </div>
+  
 </div>
 
 
