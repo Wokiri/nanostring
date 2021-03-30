@@ -2,13 +2,9 @@
 {% load static %}
 {% load humanize %}
 
-{% block docmeta %}
-{{ script_box_plot|safe }}
-{% endblock %}
 
 {% block content %}
  
 {% include 'pages/analysis_template.html' %}
 
-<script src="{% static 'pages/bokeh/bokeh-2.3.0.min.js' %}"></script>
 {% endblock %}

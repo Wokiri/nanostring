@@ -85,8 +85,8 @@ def average_gene_expression_DF():
             return pandas.read_csv(
                 file_name,
                 header=0,
-                index_col='Unnamed: 0',
-                # usecols=lambda x: x != 'Unnamed: 0',
+                # index_col='Unnamed: 0',
+                usecols=lambda x: x != 'Unnamed: 0',
                 delimiter=','
             )
 

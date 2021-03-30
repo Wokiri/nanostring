@@ -75,7 +75,7 @@ from .handle_uploaded_files import (
 
 
 # find the outliers for each category
-def draw_boxplots(dataframe):
+def draw_boxplots(dataframe, outfliers_title):
 
     # dataframe
     data_DF = dataframe()
@@ -102,7 +102,19 @@ def draw_boxplots(dataframe):
 
 
     dataframe_cols = list(data_DF.columns)
-    box_plot = figure(width=(50 * len(dataframe_cols)), tools="", background_fill_color="#efefef", x_range=dataframe_cols, toolbar_location=None)
+    box_plot = figure(
+        title=outfliers_title,
+        width=(60 * len(dataframe_cols)),
+        height=800,
+        tools="",
+        background_fill_color="#f2ffff",
+        x_range=dataframe_cols,
+        toolbar_location=None
+    )
+    box_plot.xaxis.major_label_orientation = pi/2.4
+    box_plot.title.align = "left"
+    box_plot.title.text_color = "#009999"
+    box_plot.title.text_font_size = "18px"
     
     # if no outliers, shrink lengths of stems to be no longer than the minimums or maximums
     qmin = data_DF.quantile(q=0.00)
@@ -116,8 +128,8 @@ def draw_boxplots(dataframe):
     box_plot.segment(dataframe_cols, lower, dataframe_cols, q1, line_color="black")
 
     # boxes
-    box_plot.vbar(dataframe_cols, 0.7, q2, q3, fill_color="#E08E79", line_color="black")
-    box_plot.vbar(dataframe_cols, 0.7, q1, q2, fill_color="#3B8686", line_color="black")
+    box_plot.vbar(dataframe_cols, 0.7, q2, q3, fill_color="#ff9999", line_color="black")
+    box_plot.vbar(dataframe_cols, 0.7, q1, q2, fill_color="#99ccff", line_color="black")
 
     # whiskers (almost-0 height rects simpler than segments)
     box_plot.rect(dataframe_cols, lower, 0.2, 0.01, line_color="black")
@@ -130,7 +142,7 @@ def draw_boxplots(dataframe):
     box_plot.xgrid.grid_line_color = None
     box_plot.ygrid.grid_line_color = "white"
     box_plot.grid.grid_line_width = 2
-    box_plot.xaxis.major_label_text_font_size="16px"
+    box_plot.xaxis.major_label_text_font_size="12px"
 
     script_box_plot, div_box_plot = components(box_plot)
 
@@ -138,10 +150,6 @@ def draw_boxplots(dataframe):
         'script_box_plot': script_box_plot,
         'div_box_plot': div_box_plot,
     }
-
-
-
-    # return applied_DF
 
 
 
@@ -1001,7 +1009,7 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
 
         
         template_name = 'pages/probe_expression_analysis.html'
-        box_plot = draw_boxplots(probe_expression_DF)
+        box_plot = draw_boxplots(probe_expression_DF, 'Outfliers for Probe Expressions')
 
         context = {
             'page_name': 'Probe Expressions',
@@ -1042,6 +1050,7 @@ def KidneyRawTargetCountMatrix_analysis_view(request):
 
         
         template_name = 'pages/target_expression_analysis.html'
+        box_plot = draw_boxplots(target_expression_DF, 'Boxplot for Target Expressions')
 
 
         context = {
@@ -1057,6 +1066,8 @@ def KidneyRawTargetCountMatrix_analysis_view(request):
             'quantile_search_form': analysis_context['quantile_search_form'],
             'quantile_search_percentage': analysis_context['quantile_search_percentage'],
             'quantile_search_table': analysis_context['quantile_search_table'],
+            'script_box_plot': box_plot['script_box_plot'],
+            'div_box_plot': box_plot['div_box_plot'],
         }
 
         return render(request, template_name, context)
@@ -1065,8 +1076,6 @@ def KidneyRawTargetCountMatrix_analysis_view(request):
         search_value = SearchProbeExpressionForm(request.GET).data['search_value']
         messages.error(request, f'No Target Expressions (TargetName) matches: <h1 class="display-4">{search_value}</h1>')
         return redirect('pages:messages_page', 'target-expression-analysis')
-
-
 
 
 
@@ -1083,6 +1092,7 @@ def KidneyQ3NormTargetCountMatrix_analysis_view(request):
 
         
         template_name = 'pages/normalized_expression_analysis.html'
+        box_plot = draw_boxplots(normalized_expression_DF, 'Outfliers for Normalized Expressions')
 
 
         context = {
@@ -1098,6 +1108,8 @@ def KidneyQ3NormTargetCountMatrix_analysis_view(request):
             'quantile_search_form': analysis_context['quantile_search_form'],
             'quantile_search_percentage': analysis_context['quantile_search_percentage'],
             'quantile_search_table': analysis_context['quantile_search_table'],
+            'script_box_plot': box_plot['script_box_plot'],
+            'div_box_plot': box_plot['div_box_plot'],
         }
 
         return render(request, template_name, context)
@@ -1106,7 +1118,6 @@ def KidneyQ3NormTargetCountMatrix_analysis_view(request):
         search_value = SearchProbeExpressionForm(request.GET).data['search_value']
         messages.error(request, f'No Normalized Expressions (TargetName) matches: <h1 class="display-4">{search_value}</h1>')
         return redirect('pages:messages_page', 'normalized-expression-analysis')
-
 
 
 
@@ -1123,6 +1134,7 @@ def kidneyssGSEA_analysis_view(request):
 
         
         template_name = 'pages/KidneyssGSEA_analysis.html'
+        box_plot = draw_boxplots(ssGSEA_expression_DF, 'Outfliers for KidneyssGSEA')
 
 
         context = {
@@ -1138,6 +1150,8 @@ def kidneyssGSEA_analysis_view(request):
             'quantile_search_form': analysis_context['quantile_search_form'],
             'quantile_search_percentage': analysis_context['quantile_search_percentage'],
             'quantile_search_table': analysis_context['quantile_search_table'],
+            'script_box_plot': box_plot['script_box_plot'],
+            'div_box_plot': box_plot['div_box_plot'],
         }
 
         return render(request, template_name, context)
@@ -1146,7 +1160,6 @@ def kidneyssGSEA_analysis_view(request):
         search_value = SearchProbeExpressionForm(request.GET).data['search_value']
         messages.error(request, f'No KidneyssGSEA matches: <h1 class="display-4">{search_value}</h1>')
         return redirect('pages:messages_page', 'kidneyssGSEA-analysis')
-
 
 
 
@@ -1163,6 +1176,7 @@ def average_gene_expression_analysis_view(request):
 
         
         template_name = 'pages/average_gene_expression_analysis.html'
+        box_plot = draw_boxplots(average_gene_expression_DF, 'Outfliers for Average Gene Expression')
 
 
         context = {
@@ -1178,6 +1192,8 @@ def average_gene_expression_analysis_view(request):
             'quantile_search_form': analysis_context['quantile_search_form'],
             'quantile_search_percentage': analysis_context['quantile_search_percentage'],
             'quantile_search_table': analysis_context['quantile_search_table'],
+            'script_box_plot': box_plot['script_box_plot'],
+            'div_box_plot': box_plot['div_box_plot'],
         }
 
         return render(request, template_name, context)
