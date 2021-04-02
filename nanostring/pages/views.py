@@ -18,7 +18,8 @@ import bokeh
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import (
-    ColumnDataSource, 
+    ColumnDataSource,
+    FactorRange,
     DataTable, 
     TableColumn,
     )
@@ -74,6 +75,172 @@ from .handle_uploaded_files import (
 )
 
 
+
+def analyses_tables(
+    request,
+    file_name, #str
+    theDF, #the csv handler retrning the DF
+    modelSearchForm,
+    quantileSearchForm
+    ):
+
+    csv_obj = RawCSVFiles.objects.get(file_name=file_name),
+    data_DF = theDF()
+    search_count = len(data_DF)
+    columns_list = list(data_DF.columns.values)
+    data_DF_describe_table = data_DF.describe().to_html(
+        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+    )
+
+    model_search_form = modelSearchForm(request.GET or None)
+
+    search_value = None
+    search_record_table = None
+    if model_search_form.is_valid() and 'search_value' in request.GET:
+        cd = model_search_form.cleaned_data
+        search_value = cd['search_value']
+        new_DF = data_DF.loc[[search_value]]
+        search_record_table = new_DF.to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+        )
+        
+            
+    quantiles_1_2_3 = data_DF.dropna().quantile([.25, .5, .75]).to_html(
+        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+    )
+    
+    quantile_search_table = None
+    quantile_search_percentage = None
+    quantile_search_value = None
+    quantile_search_form = quantileSearchForm(request.GET or None)
+    
+    if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
+        q_cd = quantile_search_form.cleaned_data
+        quantile_search_value = float(q_cd['quantile_value'])
+        quantile_search_percentage = quantile_search_value * 100
+        quantile_search_table = data_DF.quantile([quantile_search_value]).to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+        )
+
+    return {
+        'csv_obj': csv_obj,
+        'search_count': search_count,
+        'columns_count': len(columns_list),
+        'search_form': model_search_form,
+        'data_DF_describe_table': data_DF_describe_table,
+        'search_value': search_value,
+        'search_record_table': search_record_table,
+        'quantiles_1_2_3': quantiles_1_2_3,
+        'quantile_search_form': quantile_search_form,
+        'quantile_search_percentage': quantile_search_percentage,
+        'quantile_search_table': quantile_search_table,
+    }
+
+
+def draw_bar_charts(
+    dataframe,
+    df_title,
+    x_name,
+    x_label,
+    y_name,
+    y_label,
+    tooltips:list, legend_field, fill_color='Color',
+    legend_orientation="vertical",
+    legend_location = "top_center"
+):
+    data_CDS = ColumnDataSource(dataframe)
+    
+    b_graph=figure(
+        title=df_title,
+        x_axis_label=x_label,
+        y_axis_label=y_label,
+        width = 992,
+        height = 600,
+        tooltips = tooltips,
+        # x_range=sorted(cluster_id_list, key=lambda x: number_of_cells_list[cluster_id_list.index(x)], reverse=True),
+        # plot_width=1200,
+        # plot_height=500,
+        # toolbar_location='below',
+        )
+        
+    
+    b_graph.vbar(
+        x=x_name,
+        top=y_name,
+        source=data_CDS,
+        width=0.8,
+        legend_field=legend_field,
+        fill_color=fill_color,
+        line_color ='#ffffff',
+        )
+
+    b_graph.toolbar.active_drag = None
+    b_graph.title.align = "center"
+    b_graph.title.text_color = "darkgreen"
+    b_graph.title.text_font_size = "18px"
+    b_graph.xaxis.major_label_text_color = 'darkgreen'
+    b_graph.yaxis.major_label_text_color = 'darkgreen'
+    b_graph.xgrid.grid_line_color = None
+    b_graph.y_range.start=0
+    b_graph.legend.orientation=legend_orientation
+    b_graph.legend.location = legend_location
+
+
+    b_graph_script, b_graph_div = components(b_graph)
+
+    return {
+        'b_graph_script': b_graph_script,
+        'b_graph_div': b_graph_div,
+    }
+
+
+
+# Draw Nested Bars for each category
+def draw_bar_nested(dataframe, n_bar_title):
+    
+    # dataframe
+    data_DF = dataframe()
+
+    list_max = list(data_DF.max())
+    list_mean = list(data_DF.mean())
+    list_min = list(data_DF.min())
+    
+    x= [(col,measure) for col in list(data_DF.columns) for measure in ['max', 'mean', 'min']]
+    counts = sum(zip(list_max, list_mean, list_min), ())
+
+    source = ColumnDataSource(data=dict(x=x, counts=counts))
+    
+    bar_nested = figure(
+        x_range=FactorRange(*x),
+        plot_width=(60 * len(list(data_DF.columns))),
+        title=n_bar_title,
+    )
+
+    bar_nested.vbar(x='x', top='counts', width=0.5, source=source)
+
+    bar_nested.y_range.start = 0
+    bar_nested.x_range.range_padding = 0.005
+    bar_nested.title.align = "left"
+    bar_nested.title.text_color = "#002b80"
+    bar_nested.title.text_font_size = "18px"
+    bar_nested.xaxis.major_label_orientation = pi/2
+    bar_nested.xaxis.group_label_orientation = pi/2
+    bar_nested.xaxis.group_text_color = "#002b80"
+    bar_nested.xaxis.group_text_font_size = "14px"
+    bar_nested.xaxis.group_text_font_style = "bold"
+    bar_nested.ygrid.grid_line_color = '#e6e6e6'
+    bar_nested.xgrid.grid_line_color = None
+
+    script_bar_nested, div_bar_nested = components(bar_nested)
+
+    return {
+        'script_bar_nested': script_bar_nested,
+        'div_bar_nested': div_bar_nested,
+        # 'script_bar_nested': None,
+        # 'div_bar_nested': None,
+    }
+
+
 # find the outliers for each category
 def draw_boxplots(dataframe, outfliers_title):
 
@@ -107,7 +274,7 @@ def draw_boxplots(dataframe, outfliers_title):
         width=(60 * len(dataframe_cols)),
         height=800,
         tools="",
-        background_fill_color="#f2ffff",
+        background_fill_color="#ffffff",
         x_range=dataframe_cols,
         toolbar_location=None
     )
@@ -115,6 +282,8 @@ def draw_boxplots(dataframe, outfliers_title):
     box_plot.title.align = "left"
     box_plot.title.text_color = "#009999"
     box_plot.title.text_font_size = "18px"
+    box_plot.ygrid.grid_line_color = '#e6e6e6'
+    box_plot.ygrid.minor_grid_line_color = '#f2f2f2'
     
     # if no outliers, shrink lengths of stems to be no longer than the minimums or maximums
     qmin = data_DF.quantile(q=0.00)
@@ -124,12 +293,12 @@ def draw_boxplots(dataframe, outfliers_title):
 
     
     # stems
-    box_plot.segment(dataframe_cols, upper, dataframe_cols, q3, line_color="black")
-    box_plot.segment(dataframe_cols, lower, dataframe_cols, q1, line_color="black")
+    box_plot.segment(dataframe_cols, upper, dataframe_cols, q3, line_color="#660066")
+    box_plot.segment(dataframe_cols, lower, dataframe_cols, q1, line_color="#660066")
 
     # boxes
-    box_plot.vbar(dataframe_cols, 0.7, q2, q3, fill_color="#ff9999", line_color="black")
-    box_plot.vbar(dataframe_cols, 0.7, q1, q2, fill_color="#99ccff", line_color="black")
+    box_plot.vbar(dataframe_cols, 0.7, q2, q3, fill_color="#ff99ff", line_color="#ff4dff")
+    box_plot.vbar(dataframe_cols, 0.7, q1, q2, fill_color="#00e6e6", line_color="#00b3b3")
 
     # whiskers (almost-0 height rects simpler than segments)
     box_plot.rect(dataframe_cols, lower, 0.2, 0.01, line_color="black")
@@ -409,6 +578,10 @@ def sample_annotations_analysis_view(request):
         justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
     )
 
+    # quantiles_1_2_3 = DataFrame(sample_annotations_data).dropna().quantile([.25, .5, .75]).to_html(
+    #     justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+    # )
+
     sample_annotations_search_form = SearchSampleAnnotationsForm(request.GET or None)
     if sample_annotations_search_form.is_valid():
         cd = sample_annotations_search_form.cleaned_data
@@ -552,7 +725,8 @@ def sample_annotations_analysis_view(request):
         quantile_search_table = DataFrame(sample_annotations_data).quantile([quantile_search_value]).to_html(
             justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
         )
-    
+
+
     context = {
         'page_name': 'Sample Annotations Analysis',
         'sample_annotations': sample_annotations,
@@ -565,11 +739,13 @@ def sample_annotations_analysis_view(request):
         'script': script,
         'div': div,
         'data_DF_describe_table': data_DF_describe_table,
+        # 'quantiles_1_2_3': quantiles_1_2_3,
         'quantile_search_percentage': quantile_search_percentage,
         'quantile_search_table': quantile_search_table,
         'quantile_search_value': quantile_search_value,
         'quantile_search_form': quantile_search_form,
     }
+
     return render(request, template_name, context)
 
 
@@ -839,68 +1015,6 @@ def cell_types_analysis_view(request):
     return render(request, template_name, context)
 
 
-def analyses_tables(
-    request,
-    file_name, #str
-    theDF, #the csv handler retrning the DF
-    modelSearchForm,
-    quantileSearchForm
-    ):
-
-    csv_obj = RawCSVFiles.objects.get(file_name=file_name),
-    data_DF = theDF()
-    search_count = len(data_DF)
-    columns_list = list(data_DF.columns.values)
-    data_DF_describe_table = data_DF.describe().to_html(
-        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
-    )
-
-    model_search_form = modelSearchForm(request.GET or None)
-
-    search_value = None
-    search_record_table = None
-    if model_search_form.is_valid() and 'search_value' in request.GET:
-        cd = model_search_form.cleaned_data
-        search_value = cd['search_value']
-        new_DF = data_DF.loc[[search_value]]
-        search_record_table = new_DF.to_html(
-            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
-        )
-        
-            
-    quantiles_1_2_3 = data_DF.dropna().quantile([.25, .5, .75]).to_html(
-        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
-    )
-    
-    quantile_search_table = None
-    quantile_search_percentage = None
-    quantile_search_value = None
-    quantile_search_form = quantileSearchForm(request.GET or None)
-    
-    if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
-        q_cd = quantile_search_form.cleaned_data
-        quantile_search_value = float(q_cd['quantile_value'])
-        quantile_search_percentage = quantile_search_value * 100
-        quantile_search_table = data_DF.quantile([quantile_search_value]).to_html(
-            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
-        )
-
-    return {
-        'csv_obj': csv_obj,
-        'search_count': search_count,
-        'columns_count': len(columns_list),
-        'search_form': model_search_form,
-        'data_DF_describe_table': data_DF_describe_table,
-        'search_value': search_value,
-        'search_record_table': search_record_table,
-        'quantiles_1_2_3': quantiles_1_2_3,
-        'quantile_search_form': quantile_search_form,
-        'quantile_search_percentage': quantile_search_percentage,
-        'quantile_search_table': quantile_search_table,
-    }
-
-
-
 def feature_annotation_analysis_view(request):
     
     template_name = 'pages/kidney_feature_annotations_analysis.html'
@@ -910,29 +1024,33 @@ def feature_annotation_analysis_view(request):
 
     search_count = len(data_DF)
     columns_list = list(data_DF.columns.values)
+
+    df_head = data_DF.head().to_html(
+            justify='center', show_dimensions=True, classes=['table table-bordered table-striped']
+        )
     
 
     negative_groups_count_DF = data_DF.groupby(['Negative']).count()
     negative_groups_count_DF['Value'] = (
         negative_groups_count_DF['ProbeID']/negative_groups_count_DF['ProbeID'].sum() * 2*pi
         )
-    negative_groups_count_DF['Proportion'] = negative_groups_count_DF['ProbeID']
+        
     negative_groups_count_DF['Color'] = ['#cce5ff', '#cc00cc']
     data_DF_describe_table = negative_groups_count_DF.to_html(
-        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+        justify='center', show_dimensions=True, classes=['table table-bordered table-striped']
     )
     data_CDS = ColumnDataSource(negative_groups_count_DF)
 
     pie_chart_tooltips= [
-            ('Negative', '@Negative'),
-            ('Proportion', f'@Proportion out of {negative_groups_count_DF["ProbeID"].sum()}'),
-        ]
+        ('Negative', '@Negative'),
+        ('Proportion', f'@ProbeID out of {negative_groups_count_DF["ProbeID"].sum()}'),
+    ]
 
 
     pie_chart = figure(
         title="Pie Chart showing Proportions of Negative for Feature Annotations",
         width = 992,
-        height = 560,
+        height = 600,
         background_fill_color = '#e6f2ff',
         outline_line_color = '#0066cc',
         tooltips=pie_chart_tooltips,
@@ -976,6 +1094,26 @@ def feature_annotation_analysis_view(request):
             messages.error(request, f'No Feature Annotation (RTS_ID) matches: <h1 class="display-4">{search_value}</h1>')
             return redirect('pages:messages_page', 'feature-annotations-analysis')
 
+
+    tooltips= [
+        ('Negative', '@Negative'),
+        ('Proportion', f'@ProbeID out of {negative_groups_count_DF["ProbeID"].sum()}'),
+    ]
+    bar_chart = draw_bar_charts(
+        negative_groups_count_DF,
+        "Bar Graph Showing Proportions of Negative for Feature Annotations",
+        'Negative',
+        'Negative',
+        'ProbeID',
+        '',
+        tooltips,
+        'Negative',
+        'Color',
+        'horizontal',
+        'center_right'
+    )
+    
+
     context = {
         'page_name': 'Feature Annotation Analysis',
         'csv_obj': csv_obj,
@@ -983,13 +1121,15 @@ def feature_annotation_analysis_view(request):
         'search_count': search_count,
         'columns_count': len(columns_list),
         'data_DF_describe_table': data_DF_describe_table,
+        'df_head': df_head,
         'pie_script': pie_script,
         'pie_div': pie_div,
         'search_form': search_form,
         'search_value': search_value,
         'search_record_table': search_record_table,
-            
-        }
+        'b_graph_script': bar_chart['b_graph_script'],
+        'b_graph_div': bar_chart['b_graph_div'],
+    }
 
     return render(request, template_name, context)
     
@@ -1010,6 +1150,7 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
         
         template_name = 'pages/probe_expression_analysis.html'
         box_plot = draw_boxplots(probe_expression_DF, 'Outfliers for Probe Expressions')
+        nested_bar = draw_bar_nested(probe_expression_DF, 'Nested Bar Plot for Probe Expressions')
 
         context = {
             'page_name': 'Probe Expressions',
@@ -1026,6 +1167,8 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
             'quantile_search_table': analysis_context['quantile_search_table'],
             'script_box_plot': box_plot['script_box_plot'],
             'div_box_plot': box_plot['div_box_plot'],
+            'script_bar_nested': nested_bar['script_bar_nested'],
+            'div_bar_nested': nested_bar['div_bar_nested'],
         }
 
         return render(request, template_name, context)
@@ -1040,17 +1183,20 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
 def KidneyRawTargetCountMatrix_analysis_view(request):
     
     try:
+        data_DF = target_expression_DF
         analysis_context = analyses_tables(
             request,
             'KidneyRawTargetCountMatrix',
-            target_expression_DF,
+            data_DF,
             SearchTargetExpressionForm,
             QuantileSearchForm,
         )
 
         
         template_name = 'pages/target_expression_analysis.html'
-        box_plot = draw_boxplots(target_expression_DF, 'Boxplot for Target Expressions')
+        box_plot = draw_boxplots(data_DF, 'Boxplot for Target Expressions')
+        nested_bar = draw_bar_nested(data_DF, 'Nested Bar Plot for Target Expressions')
+
 
 
         context = {
@@ -1068,6 +1214,8 @@ def KidneyRawTargetCountMatrix_analysis_view(request):
             'quantile_search_table': analysis_context['quantile_search_table'],
             'script_box_plot': box_plot['script_box_plot'],
             'div_box_plot': box_plot['div_box_plot'],
+            'script_bar_nested': nested_bar['script_bar_nested'],
+            'div_bar_nested': nested_bar['div_bar_nested'],
         }
 
         return render(request, template_name, context)
@@ -1082,17 +1230,20 @@ def KidneyRawTargetCountMatrix_analysis_view(request):
 def KidneyQ3NormTargetCountMatrix_analysis_view(request):
     
     try:
+        data_DF = normalized_expression_DF
         analysis_context = analyses_tables(
             request,
             'KidneyQ3NormTargetCountMatrix',
-            normalized_expression_DF,
+            data_DF,
             SearchNormalizedExpressionForm,
             QuantileSearchForm,
         )
 
         
         template_name = 'pages/normalized_expression_analysis.html'
-        box_plot = draw_boxplots(normalized_expression_DF, 'Outfliers for Normalized Expressions')
+        box_plot = draw_boxplots(data_DF, 'Outfliers for Normalized Expressions')
+        nested_bar = draw_bar_nested(data_DF, 'Nested Bar Plot for Normalized Expressions')
+
 
 
         context = {
@@ -1110,6 +1261,8 @@ def KidneyQ3NormTargetCountMatrix_analysis_view(request):
             'quantile_search_table': analysis_context['quantile_search_table'],
             'script_box_plot': box_plot['script_box_plot'],
             'div_box_plot': box_plot['div_box_plot'],
+            'script_bar_nested': nested_bar['script_bar_nested'],
+            'div_bar_nested': nested_bar['div_bar_nested'],
         }
 
         return render(request, template_name, context)
@@ -1124,17 +1277,20 @@ def KidneyQ3NormTargetCountMatrix_analysis_view(request):
 def kidneyssGSEA_analysis_view(request):
     
     try:
+        data_DF = ssGSEA_expression_DF
         analysis_context = analyses_tables(
             request,
             'KidneyssGSEA',
-            ssGSEA_expression_DF,
+            data_DF,
             SearchKidneyssGSEAForm,
             QuantileSearchForm,
         )
 
         
         template_name = 'pages/KidneyssGSEA_analysis.html'
-        box_plot = draw_boxplots(ssGSEA_expression_DF, 'Outfliers for KidneyssGSEA')
+        box_plot = draw_boxplots(data_DF, 'Outfliers for KidneyssGSEA')
+        nested_bar = draw_bar_nested(data_DF, 'Nested Bar Plot for KidneyssGSEA')
+
 
 
         context = {
@@ -1152,6 +1308,8 @@ def kidneyssGSEA_analysis_view(request):
             'quantile_search_table': analysis_context['quantile_search_table'],
             'script_box_plot': box_plot['script_box_plot'],
             'div_box_plot': box_plot['div_box_plot'],
+            'script_bar_nested': nested_bar['script_bar_nested'],
+            'div_bar_nested': nested_bar['div_bar_nested'],
         }
 
         return render(request, template_name, context)
@@ -1166,17 +1324,20 @@ def kidneyssGSEA_analysis_view(request):
 def average_gene_expression_analysis_view(request):
     
     try:
+        data_DF = average_gene_expression_DF
         analysis_context = analyses_tables(
             request,
             'AverageGeneExpression',
-            average_gene_expression_DF,
+            data_DF,
             SearchAverageGeneExpressionForm,
             QuantileSearchForm,
         )
 
         
         template_name = 'pages/average_gene_expression_analysis.html'
-        box_plot = draw_boxplots(average_gene_expression_DF, 'Outfliers for Average Gene Expression')
+        box_plot = draw_boxplots(data_DF, 'Outfliers for Average Gene Expression')
+        nested_bar = draw_bar_nested(data_DF, 'Nested Bar Plot for Gene Expressions')
+
 
 
         context = {
@@ -1194,6 +1355,8 @@ def average_gene_expression_analysis_view(request):
             'quantile_search_table': analysis_context['quantile_search_table'],
             'script_box_plot': box_plot['script_box_plot'],
             'div_box_plot': box_plot['div_box_plot'],
+            'script_bar_nested': nested_bar['script_bar_nested'],
+            'div_bar_nested': nested_bar['div_bar_nested'],
         }
 
         return render(request, template_name, context)

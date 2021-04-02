@@ -6,235 +6,6 @@
 
 {% block content %}
 
-    {% comment %}Sample Annotations{% endcomment %}
-    <div class="container my-sm-5 py-sm-4 shadow-sm light-Aqua-BG">
-        <div class="mt-sm-4">
-            <div class="pb-2 pb-sm-2">
-                <h3 class="text-success">Sample Annotations</h3>
-            </div>
-        </div>
-        {% if sample_annotations %}
-        <div class="p-4">
-            <div class="pb-2 pb-sm-2">
-                <h2><small class="lead">Subset of Kidney Sample Annotations data</small></h2>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm">
-                    <thead class="text-center text-success">
-                        <tr>
-                            <th>#</th>
-                            <th>Slide Name</th>
-                            <th>Scan Name</th>
-                            <th>ROI Label</th>
-                            <th>Segment Label</th>
-                            <th>Segment Display Name</th>
-                            <th>AOI Surface Area</th>
-                            <th>AOI Nuclei Count</th>
-                            <th>ROI Coordinate X</th>
-                            <th>ROI Coordinate Y</th>
-                            <th>Raw Reads</th>
-                            <th>Trimmed Reads</th>
-                            <th>Stitched Reads</th>
-                            <th>Aligned Reads</th>
-                            <th>Duplicated Reads</th>
-                            <th>Sequencing Saturation</th>
-                            <th>UMIQ30</th>
-                            <th>RTSQ30</th>
-                            <th>Disease Status</th>
-                            <th>Pathology</th>
-                            <th>Region</th>
-                            <th>LOQ</th>
-                            <th>Normalization Factor</th>
-                            <th>Geom</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        
-                        {% for data in sample_annotations %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ data.slide_name }}</td>
-                                <td>{{ data.scan_name }}</td>
-                                <td>{{ data.roi_label }}</td>
-                                <td>{{ data.segment_label }}</td>
-                                <td>{{ data.segment_display_name }}</td>
-                                <td>{{ data.aoi_surface_area }}</td>
-                                <td>{{ data.aoi_nuclei_count }}</td>
-                                <td>{{ data.roi_coordinate_x }}</td>
-                                <td>{{ data.roi_coordinate_y }}</td>
-                                <td>{{ data.raw_reads }}</td>
-                                <td>{{ data.trimmed_reads }}</td>
-                                <td>{{ data.stitched_reads }}</td>
-                                <td>{{ data.aligned_reads }}</td>
-                                <td>{{ data.duplicated_reads }}</td>
-                                <td>{{ data.sequencing_saturation }}</td>
-                                <td>{{ data.umiq_30 }}</td>
-                                <td>{{ data.rtsq_30 }}</td>
-                                <td>{{ data.disease_status }}</td>
-                                <td>{{ data.pathology }}</td>
-                                <td>{{ data.region }}</td>
-                                <td>{{ data.loq }}</td>
-                                <td>{{ data.normalization_factor }}</td>
-                                <td>{{ data.geom }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-success my-2" href="{% url 'pages:sample_annotations_analysis_page' %}">
-                    Sample Annotations analysis
-                </a>
-                <a class="btn btn-outline-dark my-2" href="{% url 'pages:list_sample_annotation_page' %}">
-                   Update Sample Annotations
-                </a>
-                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_sampleannotation_page' %}">
-                   Re-Upload Sample Annotations
-                </a>
-            </div>
-        </div>
-        {% else %}
-        <div class="mt-sm-4">
-            <div class="pb-2 pb-sm-2">
-                <h3 class="text-info">Sample Annotations data not yet Uploaded!</h3>
-            </div>
-            <div class="py-2 py-sm-2 my-2">
-                <a class="btn btn-outline-dark" href="{% url 'pages:upload_sampleannotation_page' %}">
-                   Upload Sample Annotations
-                </a>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-
-
-    {% comment %}Cell Deconvolution{% endcomment %}
-    <div class="container my-sm-5 py-sm-4 shadow-sm light-Aqua-BG">
-        <div class="mt-sm-4">
-            <div class="pb-2 pb-sm-2">
-                <h3 class="text-success">Cell Deconvolution</h3>
-            </div>
-        </div>
-        {% if cell_types %}
-        <div class="p-4">
-            <div class="pb-2 pb-sm-2">
-                <h2><small class="lead">Subset of Cell Annotations (Cell Types) data</small></h2>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm">
-                    <thead class="text-center text-success">
-                        <tr>
-                            <th>#</th>
-                            <th>Cluster ID</th>
-                            <th>Alias</th>
-                            <th>Dataset</th>
-                            <th>Number of Cells</th>
-                            <th>Cell Type 1</th>
-                            <th>Cell Type 2</th>
-                            <th>Cell Type 3</th>
-                            <th>Cell Type Specific</th>
-                            <th>Cell Type General</th>
-                            <th>Cluster Name</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        
-                        {% for data in cell_types %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ data.cluster_id }}</td>
-                                <td>{{ data.alias }}</td>
-                                <td>{{ data.data_set }}</td>
-                                <td>{{ data.number_of_cells }}</td>
-                                <td>{{ data.cell_type1 }}</td>
-                                <td>{{ data.cell_type2 }}</td>
-                                <td>{{ data.cell_type3 }}</td>
-                                <td>{{ data.cell_type_specific }}</td>
-                                <td>{{ data.cell_type_general }}</td>
-                                <td>{{ data.cluster_name }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-success my-2" href="{% url 'pages:cell-types-analysis_page' %}">
-                    Cell Types detailed statistical analysis
-                </a>
-                <a class="btn btn-outline-dark my-2" href="{% url 'pages:list_cell_type_page' %}">
-                   Update Cell Types
-                </a>
-                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}">
-                   Re-Upload Cell Types
-                </a>
-            </div>
-        </div>
-        {% else %}
-        <div class="mt-sm-4">
-            <div class="pb-2 pb-sm-2">
-                <h3 class="text-info">Cell Annotations data not yet Uploaded!</h3>
-            </div>
-            <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}">
-                   Upload Cell Types
-                </a>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-
-
-    {% comment %}Feature Annotations{% endcomment %}
-    <div class="container my-sm-5 py-sm-4 shadow-sm light-Aqua-BG">
-        <div class="mt-sm-4">
-            <div class="pb-2 pb-sm-2">
-                <h3 class="text-success">Feature Annotations</h3>
-            </div>
-        </div>
-        {% if Kidney_Feature_Annotations %}
-        <div class="p-4">
-
-            <div class="pb-2 pb-sm-2">
-                <h2><small class="lead">DataFrame Head for KidneyFeatureAnnotations data</small></h2>
-            </div>
-
-            <div class="mx-auto my-sm-3 table-responsive p-3" style="overflow: auto;">
-                {{ feature_annotations_dataframe|safe }}
-            </div>
-
-            <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-success my-2" href="{% url 'pages:feature_annotations_analysis_page' %}">
-                    Kidney Feature Annotations analysis
-                </a>
-                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
-                   Re-Upload CSV data
-                </a>
-            </div>
-        </div>
-        {% else %}
-        <div class="mt-sm-4">
-            <div class="pb-2 pb-sm-2">
-                <h3 class="text-info">KidneyFeatureAnnotations data not yet Uploaded!</h3>
-                <p class="">
-                    The individual entries of this data will not be strored in the DB but the file as a whole.
-                </p>
-            </div>
-            <div class="py-2 py-sm-2">
-                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
-                   Upload CSV
-                </a>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-
-
     {% comment %}Probe Expression{% endcomment %}
     <div class="container my-sm-5 py-sm-4 shadow-sm light-Aqua-BG">
         <div class="mt-sm-4">
@@ -413,6 +184,51 @@
     </div>
 
 
+    {% comment %}Feature Annotations{% endcomment %}
+    <div class="container my-sm-5 py-sm-4 shadow-sm light-Aqua-BG">
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-success">Feature Annotations</h3>
+            </div>
+        </div>
+        {% if Kidney_Feature_Annotations %}
+        <div class="p-4">
+
+            <div class="pb-2 pb-sm-2">
+                <h2><small class="lead">DataFrame Head for KidneyFeatureAnnotations data</small></h2>
+            </div>
+
+            <div class="mx-auto my-sm-3 table-responsive p-3" style="overflow: auto;">
+                {{ feature_annotations_dataframe|safe }}
+            </div>
+
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-success my-2" href="{% url 'pages:feature_annotations_analysis_page' %}">
+                    Kidney Feature Annotations analysis
+                </a>
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
+                   Re-Upload CSV data
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-info">KidneyFeatureAnnotations data not yet Uploaded!</h3>
+                <p class="">
+                    The individual entries of this data will not be strored in the DB but the file as a whole.
+                </p>
+            </div>
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
+                   Upload CSV
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+
     {% comment %}Average Gene Expression{% endcomment %}
     <div class="container my-sm-5 py-sm-4 shadow-sm light-Aqua-BG">
         <div class="mt-sm-4">
@@ -450,6 +266,192 @@
             <div class="py-2 py-sm-2">
                 <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">
                    Upload CSV
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+
+
+    {% comment %}Cell Deconvolution{% endcomment %}
+    <div class="container my-sm-5 py-sm-4 shadow-sm light-Aqua-BG">
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-success">Cell Deconvolution</h3>
+            </div>
+        </div>
+        {% if cell_types %}
+        <div class="p-4">
+            <div class="pb-2 pb-sm-2">
+                <h2><small class="lead">Subset of Cell Annotations (Cell Types) data</small></h2>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <thead class="text-center text-success">
+                        <tr>
+                            <th>#</th>
+                            <th>Cluster ID</th>
+                            <th>Alias</th>
+                            <th>Dataset</th>
+                            <th>Number of Cells</th>
+                            <th>Cell Type 1</th>
+                            <th>Cell Type 2</th>
+                            <th>Cell Type 3</th>
+                            <th>Cell Type Specific</th>
+                            <th>Cell Type General</th>
+                            <th>Cluster Name</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        
+                        {% for data in cell_types %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ data.cluster_id }}</td>
+                                <td>{{ data.alias }}</td>
+                                <td>{{ data.data_set }}</td>
+                                <td>{{ data.number_of_cells }}</td>
+                                <td>{{ data.cell_type1 }}</td>
+                                <td>{{ data.cell_type2 }}</td>
+                                <td>{{ data.cell_type3 }}</td>
+                                <td>{{ data.cell_type_specific }}</td>
+                                <td>{{ data.cell_type_general }}</td>
+                                <td>{{ data.cluster_name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-success my-2" href="{% url 'pages:cell-types-analysis_page' %}">
+                    Cell Types detailed statistical analysis
+                </a>
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:list_cell_type_page' %}">
+                   Update Cell Types
+                </a>
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}">
+                   Re-Upload Cell Types
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-info">Cell Annotations data not yet Uploaded!</h3>
+            </div>
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}">
+                   Upload Cell Types
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+
+
+    {% comment %}Sample Annotations{% endcomment %}
+    <div class="container my-sm-5 py-sm-4 shadow-sm light-Aqua-BG">
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-success">Sample Annotations</h3>
+            </div>
+        </div>
+        {% if sample_annotations %}
+        <div class="p-4">
+            <div class="pb-2 pb-sm-2">
+                <h2><small class="lead">Subset of Kidney Sample Annotations data</small></h2>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <thead class="text-center text-success">
+                        <tr>
+                            <th>#</th>
+                            <th>Slide Name</th>
+                            <th>Scan Name</th>
+                            <th>ROI Label</th>
+                            <th>Segment Label</th>
+                            <th>Segment Display Name</th>
+                            <th>AOI Surface Area</th>
+                            <th>AOI Nuclei Count</th>
+                            <th>ROI Coordinate X</th>
+                            <th>ROI Coordinate Y</th>
+                            <th>Raw Reads</th>
+                            <th>Trimmed Reads</th>
+                            <th>Stitched Reads</th>
+                            <th>Aligned Reads</th>
+                            <th>Duplicated Reads</th>
+                            <th>Sequencing Saturation</th>
+                            <th>UMIQ30</th>
+                            <th>RTSQ30</th>
+                            <th>Disease Status</th>
+                            <th>Pathology</th>
+                            <th>Region</th>
+                            <th>LOQ</th>
+                            <th>Normalization Factor</th>
+                            <th>Geom</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        
+                        {% for data in sample_annotations %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ data.slide_name }}</td>
+                                <td>{{ data.scan_name }}</td>
+                                <td>{{ data.roi_label }}</td>
+                                <td>{{ data.segment_label }}</td>
+                                <td>{{ data.segment_display_name }}</td>
+                                <td>{{ data.aoi_surface_area }}</td>
+                                <td>{{ data.aoi_nuclei_count }}</td>
+                                <td>{{ data.roi_coordinate_x }}</td>
+                                <td>{{ data.roi_coordinate_y }}</td>
+                                <td>{{ data.raw_reads }}</td>
+                                <td>{{ data.trimmed_reads }}</td>
+                                <td>{{ data.stitched_reads }}</td>
+                                <td>{{ data.aligned_reads }}</td>
+                                <td>{{ data.duplicated_reads }}</td>
+                                <td>{{ data.sequencing_saturation }}</td>
+                                <td>{{ data.umiq_30 }}</td>
+                                <td>{{ data.rtsq_30 }}</td>
+                                <td>{{ data.disease_status }}</td>
+                                <td>{{ data.pathology }}</td>
+                                <td>{{ data.region }}</td>
+                                <td>{{ data.loq }}</td>
+                                <td>{{ data.normalization_factor }}</td>
+                                <td>{{ data.geom }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="py-2 py-sm-2">
+                <a class="btn btn-outline-success my-2" href="{% url 'pages:sample_annotations_analysis_page' %}">
+                    Sample Annotations analysis
+                </a>
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:list_sample_annotation_page' %}">
+                   Update Sample Annotations
+                </a>
+                <a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_sampleannotation_page' %}">
+                   Re-Upload Sample Annotations
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="mt-sm-4">
+            <div class="pb-2 pb-sm-2">
+                <h3 class="text-info">Sample Annotations data not yet Uploaded!</h3>
+            </div>
+            <div class="py-2 py-sm-2 my-2">
+                <a class="btn btn-outline-dark" href="{% url 'pages:upload_sampleannotation_page' %}">
+                   Upload Sample Annotations
                 </a>
             </div>
         </div>
