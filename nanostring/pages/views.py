@@ -9,6 +9,7 @@ from django.views.generic import ListView
 from django.core.serializers import serialize
 
 from math import pi, floor
+from numpy import source
 
 
 from pandas import DataFrame
@@ -726,6 +727,39 @@ def sample_annotations_analysis_view(request):
             justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
         )
 
+    coords_DF = sample_annotations_DF = DataFrame(
+        sample_annotations_data,
+        columns=['roi_coordinate_x', 'roi_coordinate_y', 'disease_status', 'Color']
+    )
+    
+    coords_DF.loc[coords_DF['disease_status'] == 'normal', 'Color'] = 'green'
+    coords_DF.loc[coords_DF['disease_status'] == 'DKD', 'Color'] = 'red'
+    # coords_DF['Color'][coords_DF['disease_status'] == 'normal'] = 'green'
+    # coords_DF['Color'][coords_DF['disease_status'] == 'DKD'] = 'red'
+    coords_CDS = ColumnDataSource(coords_DF)
+
+    TOOLS = TOOLS="hover,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,reset,tap,save,box_select,poly_select,"
+
+    scatter = figure(
+        title='Scatter Plot for Sample Annotations',
+        tools=TOOLS
+    )
+    scatter.scatter(
+        'roi_coordinate_x',
+        'roi_coordinate_y',
+        size=8,
+        marker="circle",
+        fill_color='Color',
+        line_color=None,
+        source=coords_CDS
+    )
+    scatter.title.align = "center"
+    scatter.title.text_color = "#003300"
+    scatter.title.text_font_size = "18px"
+    scatter.toolbar.active_drag = None
+    
+
+    script_scatter, div_scatter = components(scatter)
 
     context = {
         'page_name': 'Sample Annotations Analysis',
@@ -744,6 +778,8 @@ def sample_annotations_analysis_view(request):
         'quantile_search_table': quantile_search_table,
         'quantile_search_value': quantile_search_value,
         'quantile_search_form': quantile_search_form,
+        'script_scatter': script_scatter,
+        'div_scatter': div_scatter,
     }
 
     return render(request, template_name, context)

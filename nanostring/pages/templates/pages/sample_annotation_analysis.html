@@ -5,6 +5,7 @@
 {% block docmeta %}
 <link rel="stylesheet" type="text/css" href="{% static 'pages/css/sample_annotation_map.css' %}">
 {{ script|safe }}
+{{ script_scatter|safe }}
 {% endblock %}
 
 
@@ -104,8 +105,15 @@
                     <h1 class="text-center text-info lead m-1 font-weight-bolder">
                         Map showing kidney sample annotations categorized by disease status
                     </h1>
-                    <div id="sampleannotation_map" class="w-100 mx-auto my-sm-2"></div>
-                    <div id="mapcontent" class="bg-light my-sm-2" style="min-height: 120px;"></div>
+                    <div id="sampleannotation_map" class="w-75 mx-auto my-sm-2"></div>
+                    <div id="mapcontent" class="w-75 mx-auto bg-light my-sm-2" style="min-height: 120px;"></div>
+                </div>
+
+
+                <div class="row my-sm-5">
+                    <div class="mx-auto mb-5" style="overflow: auto;">
+                        {{ div_scatter|safe }}
+                    </div>
                 </div>
 
                 
