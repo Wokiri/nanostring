@@ -1,0 +1,22 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+<div class="py-2 py-sm-4">
+  <h3 class="text-center text-success">{{ page_name }}</h3>
+  <p class="text-info lead mb-3">
+    The data downloaded will be stored at:<br />
+    <span class="font-weight-bold">
+        {{ save_dir_path }}
+    </span>
+  </p>
+</div>
+
+
+<div class="mt-sm-4 mb-sm-2 pt-sm-4">
+  <form class="form-inline my-2 my-lg-0">
+    {{ download_form }}
+    <button class="btn btn-success my-2 my-sm-0" type="submit">Download</button>
+  </form>
+</div>
+
+{% endblock %}

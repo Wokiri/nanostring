@@ -1,4 +1,29 @@
 from django.contrib.gis import forms
+
+
+class DownloadDataForm(forms.Form):
+    DATA_NAMES = [
+        ('Kidney_Sample_Annotations.txt', 'Kidney_Sample_Annotations.txt'),
+        ('Kidney_Feature_Annotations.txt', 'Kidney_Feature_Annotations.txt'),
+        ('Kidney_Raw_BioProbeCountMatrix.txt', 'Kidney_Raw_BioProbeCountMatrix.txt'),
+        ('Kidney_Raw_TargetCountMatrix.txt', 'Kidney_Raw_TargetCountMatrix.txt'),
+        ('Kidney_Q3Norm_TargetCountMatrix.txt', 'Kidney_Q3Norm_TargetCountMatrix.txt'),
+        ('Cell_Types_for_Spatial_Decon.txt', 'Cell_Types_for_Spatial_Decon.txt'),
+        ('Young_kidney_cell_profile_matrix.csv', 'Young_kidney_cell_profile_matrix.csv'),
+        ('Kidney_ssGSEA.txt', 'Kidney_ssGSEA.txt'),
+    ]
+
+    data_name = forms.ChoiceField(
+        label='Name of txt/csv file to download',
+        required=False,
+        choices=DATA_NAMES,
+        widget=forms.Select(
+            attrs={'class':'form-control mr-sm-1'}
+            )
+    
+    )
+
+
 from data.models import (
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,

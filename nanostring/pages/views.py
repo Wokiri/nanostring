@@ -1,4 +1,9 @@
 import csv, io
+from pathlib import Path, PurePath
+import urllib
+
+
+
 from django.shortcuts import get_object_or_404, render, redirect
 from django.core.paginator import Paginator
 from django.contrib  import messages
@@ -46,6 +51,7 @@ from data.models import (
     )
 
 from .forms import (
+    DownloadDataForm,
     UploadCellTypesForm,
     SearchCellTypesForm,
     UpdateCellsTypeCSVsForm,
@@ -75,6 +81,72 @@ from .handle_uploaded_files import (
     average_gene_expression_DF,
 )
 
+
+def download_data_view(request):
+    template_name = 'pages/download_data.html'
+
+    save_dir_path = PurePath(Path.home(), "Downloads",)
+
+    def nanostringtextdata_tocsvdata(text_name):
+        text_file = PurePath(save_dir_path, text_name)
+        csv_name = text_name.replace('txt', 'csv')
+        csv_file = PurePath(save_dir_path, csv_name)
+
+        df = pandas.read_csv(text_file, delimiter=',')
+        df.to_csv(csv_file)
+
+        if Path(csv_file).exists:
+            messages.success(request, f"CSV file {csv_file} is successfully created.")
+            return redirect('pages:messages_page', 'download-data')
+        else:
+            messages.error(request, f"CSV file {csv_file} WAS NOT created.")
+            return redirect('pages:messages_page', 'download-data')
+    
+
+    download_form = DownloadDataForm(request.GET or None)
+
+    if download_form.is_valid() and 'data_name' in request.GET:
+        cd = download_form.cleaned_data
+        name_of_data = cd['data_name']
+        
+        save_data_path = PurePath(save_dir_path, name_of_data)
+        name_valid = (name_of_data.endswith('.txt') or name_of_data.endswith('.csv')and name_of_data.find(' ') == -1)
+        
+        if name_valid and Path(save_data_path).exists():
+            nanostringtextdata_tocsvdata(name_of_data)
+            messages.warning(request, f"Text file {save_data_path} EXISTS. It has been used to write {name_of_data.replace('txt', 'csv')}.")
+            return redirect('pages:messages_page', 'download-data')
+
+        elif name_valid:
+            dataurl = f'http://nanostring-public-share.s3-website-us-west-2.amazonaws.com/GeoScriptHub/KidneyDataset/{name_of_data}'
+            try:
+                with open(save_data_path, mode='w', newline=None) as resultsInTxt:
+                    with urllib.request.urlopen(dataurl) as nanostringData:
+                        theData = nanostringData.read()
+                        text_data = theData.decode(encoding="utf-8", errors="strict").replace('\t', ',').replace('\r\n', '\n').strip()
+                        resultsInTxt.write(text_data)
+
+                if Path(save_data_path).exists:
+                    messages.success(request, f"Text file {save_data_path} is successfully created.")
+                    nanostringtextdata_tocsvdata(name_of_data)
+                    return redirect('pages:messages_page', 'download-data')
+                else:
+                    messages.warning(request, f"Text file {name_of_data} WAS NOT created.")
+                    return redirect('pages:messages_page', 'download-data')
+
+            except urllib.error.URLError:
+                messages.warning(request, f"URLError is raised because there is no network connection.")
+                return redirect('pages:messages_page', 'download-data')
+
+
+
+    context = {
+        'page_name': 'Download Data',
+        'download_form': download_form,
+        'save_dir_path': save_dir_path,
+    }
+
+    return render(request, template_name, context)
 
 
 def analyses_tables(
@@ -136,6 +208,7 @@ def analyses_tables(
         'quantile_search_percentage': quantile_search_percentage,
         'quantile_search_table': quantile_search_table,
     }
+
 
 
 def draw_bar_charts(
@@ -237,9 +310,8 @@ def draw_bar_nested(dataframe, n_bar_title):
     return {
         'script_bar_nested': script_bar_nested,
         'div_bar_nested': div_bar_nested,
-        # 'script_bar_nested': None,
-        # 'div_bar_nested': None,
     }
+
 
 
 # find the outliers for each category
@@ -319,6 +391,66 @@ def draw_boxplots(dataframe, outfliers_title):
     return {
         'script_box_plot': script_box_plot,
         'div_box_plot': div_box_plot,
+    }
+
+
+
+
+def draw_star(
+    dataframe, line_title, x_field, y_field,
+    color, tooltips:list, legend_field,
+    x_axis_label, y_axis_label
+):
+    # line(x={'field': 'x'}, y={'field': 'y'}, *, line_alpha=1.0, line_cap='butt', line_color='black',...)
+    
+    # dataframe
+    try:
+        data_DF = dataframe()
+    except TypeError:
+        data_DF = dataframe
+        
+
+    # CDS source
+    source = ColumnDataSource(data_DF)
+
+    
+
+    # Star figure
+    star_fig = figure(
+        title=line_title,
+        plot_height=600,
+        plot_width=992,
+        x_axis_label=x_axis_label,
+        y_axis_label=y_axis_label,
+        tooltips=tooltips,
+    )
+    star_fig.star(
+        x_field,
+        y_field,
+        size=12,
+        color=color,
+        source=source,
+        legend_field=legend_field,
+    )
+
+    star_fig.title.align = "center"
+    star_fig.title.text_color = "#660066"
+    star_fig.title.text_font_size = "18px"
+    star_fig.toolbar.active_drag = None
+    star_fig.legend.orientation = "vertical"
+    star_fig.legend.location = "top_left"
+    star_fig.xaxis.major_label_text_font_size = "14px"
+    star_fig.yaxis.major_label_text_font_size = "12px"
+    star_fig.xaxis.formatter.use_scientific = False
+    star_fig.yaxis.formatter.use_scientific = False
+
+
+    script_star_plot, div_star_plot = components(star_fig)
+    
+
+    return {
+        'script_star_plot':script_star_plot,
+        'div_star_plot':div_star_plot,
     }
 
 
@@ -544,6 +676,7 @@ def kidney_sample_annotations_uploader_view(request):
     return render(request, template_name, context)
 
 
+
 def update_sample_annotations_view(request, id_value):
     template_name = 'pages/update_sample_annotations.html'
 
@@ -561,6 +694,7 @@ def update_sample_annotations_view(request, id_value):
     }
 
     return render(request, template_name, context)
+
 
 
 def sample_annotations_analysis_view(request):
@@ -674,7 +808,7 @@ def sample_annotations_analysis_view(request):
     disease_status_group['proportion'] = (
         disease_status_group['segment_display_name']
         )
-    disease_status_group['color'] = ['orangered', 'mediumblue'][:len(disease_status_group)]
+    disease_status_group['color'] = ['#009933', '#ff3300'][:len(disease_status_group)]
     
     disease_status_groups_CDS = ColumnDataSource(disease_status_group)
 
@@ -694,10 +828,10 @@ def sample_annotations_analysis_view(request):
     sample_annotations_fig.wedge(
         x=0,
         y=1,
-        radius=0.45,
+        radius=0.54,
         start_angle=cumsum('value', include_zero=True),
         end_angle=cumsum('value'),
-        line_color="white",
+        line_color="#ffffff",
         fill_color='color',
         source=disease_status_groups_CDS,
         legend_field='disease_status',
@@ -727,22 +861,30 @@ def sample_annotations_analysis_view(request):
             justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
         )
 
-    coords_DF = sample_annotations_DF = DataFrame(
+    coords_DF = DataFrame(
         sample_annotations_data,
-        columns=['roi_coordinate_x', 'roi_coordinate_y', 'disease_status', 'Color']
+        columns=[
+            'roi_coordinate_x',
+            'roi_coordinate_y',
+            'disease_status',
+            'Color',
+            'aoi_surface_area',
+            'aoi_nuclei_count',
+        ]
     )
     
     coords_DF.loc[coords_DF['disease_status'] == 'normal', 'Color'] = 'green'
     coords_DF.loc[coords_DF['disease_status'] == 'DKD', 'Color'] = 'red'
-    # coords_DF['Color'][coords_DF['disease_status'] == 'normal'] = 'green'
-    # coords_DF['Color'][coords_DF['disease_status'] == 'DKD'] = 'red'
+    
     coords_CDS = ColumnDataSource(coords_DF)
 
     TOOLS = TOOLS="hover,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,reset,tap,save,box_select,poly_select,"
 
     scatter = figure(
         title='Scatter Plot for Sample Annotations',
-        tools=TOOLS
+        x_axis_label='X Coordinates',
+        y_axis_label='Y Coordinates',
+        tools=TOOLS,
     )
     scatter.scatter(
         'roi_coordinate_x',
@@ -760,6 +902,29 @@ def sample_annotations_analysis_view(request):
     
 
     script_scatter, div_scatter = components(scatter)
+    
+    
+
+    star_tooltips=[
+        (('Status'), ('@disease_status')),
+        (('Nuclei Count'), ('@aoi_nuclei_count')),
+        (('Surface Area'), ('@aoi_surface_area')),
+    ]
+
+    star_graph = draw_star(
+        coords_DF,
+        'Relationship between AOI Surface Area with AOI Nuclei Count',
+        'aoi_nuclei_count',
+        'aoi_surface_area',
+        'Color',
+        star_tooltips,
+        'disease_status',
+        'Nuclei Count',
+        'Surface Area'
+    )
+
+    
+
 
     context = {
         'page_name': 'Sample Annotations Analysis',
@@ -780,9 +945,12 @@ def sample_annotations_analysis_view(request):
         'quantile_search_form': quantile_search_form,
         'script_scatter': script_scatter,
         'div_scatter': div_scatter,
+        'script_star_plot': star_graph['script_star_plot'],
+        'div_star_plot': star_graph['div_star_plot'],
     }
 
     return render(request, template_name, context)
+
 
 
 def cell_types_for_spatial_decon_uploader_view(request):
@@ -841,6 +1009,7 @@ def cell_types_for_spatial_decon_uploader_view(request):
     return render(request, template_name, context)
 
 
+
 def update_cell_type_view(request, clusterid):
     template_name = 'pages/update_cell_type.html'
 
@@ -858,6 +1027,7 @@ def update_cell_type_view(request, clusterid):
     }
 
     return render(request, template_name, context)
+
 
 
 def cell_types_analysis_view(request):
@@ -1049,6 +1219,7 @@ def cell_types_analysis_view(request):
     }
 
     return render(request, template_name, context)
+
 
 
 def feature_annotation_analysis_view(request):

@@ -134,6 +134,9 @@ To highlight a few specifics:
 
 The [python code (***data_retrieval.py***)](KidneyDataset/data_retrieval.py) which sits in the directory **KidneyDataset** plays the role of accessing the raw txt files from the appropriate [URL](http://nanostring-public-share.s3-website-us-west-2.amazonaws.com/GeoScriptHub/KidneyDataset/) *(given by Nanostring Spatial Omics)*, reading the contents of the text data, cleaning the data and writing both the txt file and a corresponding csv file into the same directory.
 
+A much quicker and perhaps an more effective method of downloading the data may be achieved by visiting http://127.0.0.1:8000/download-data/ when the local server has been started. It functions more or less as the refered python code above (which indeed it is) only there is an added friendly user interface by using the [URL](http://127.0.0.1:8000/download-data/)
+
+
 In so doing, it perfoms a few checks to minimize the possibilities of errors, i.e:
 - Upon execution, the code requires one to input the text name with the extension suffix included (e.g ***Cell_Types_for_Spatial_Decon.txt***). The code will here asses that the name is okay in the sense that there are no spaces between characters and that it has a .txt extension. 
 - If this validation is not passed, the appropriate error message(s) is (are) printed out.

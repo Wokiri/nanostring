@@ -3,6 +3,7 @@ from django.urls import path
 
 from .views import (
     home_page_view,
+    download_data_view,
     about_page_view,
     foss_licenses_page_view,
     cell_types_for_spatial_decon_uploader_view,
@@ -27,6 +28,7 @@ app_name = 'pages'
 
 urlpatterns = [
     path('', home_page_view, name='home_page'),
+    path('download-data/', download_data_view, name='download_data_page'),
     path('about-us/', about_page_view, name='about_page'),
     path('foss-licenses/', foss_licenses_page_view, name='foss_licenses_page'),
     path('celltype-upload/', cell_types_for_spatial_decon_uploader_view, name='upload_celltype_page'),
