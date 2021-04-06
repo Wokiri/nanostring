@@ -25,7 +25,7 @@
     <div class="col-sm-5 p-4 border border-info rounded-lg">
       {% if all_raw_csv_files %}
         <p class="text-info lead mb-3">
-          Files Already Uploaded.
+          {{ csv_files_count|apnumber|capfirst }} File{{ csv_files_count|pluralize }} Already Uploaded.
         </p>
       {% endif %}
       

@@ -48,6 +48,7 @@ from data.models import (
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
     RawCSVFiles,
+    Disease2BScanSegments,
     )
 
 from .forms import (
@@ -120,8 +121,8 @@ def download_data_view(request):
         elif name_valid:
             dataurl = f'http://nanostring-public-share.s3-website-us-west-2.amazonaws.com/GeoScriptHub/KidneyDataset/{name_of_data}'
             try:
-                with open(save_data_path, mode='w', newline=None) as resultsInTxt:
-                    with urllib.request.urlopen(dataurl) as nanostringData:
+                with urllib.request.urlopen(dataurl) as nanostringData:
+                    with open(save_data_path, mode='w', newline=None) as resultsInTxt:
                         theData = nanostringData.read()
                         text_data = theData.decode(encoding="utf-8", errors="strict").replace('\t', ',').replace('\r\n', '\n').strip()
                         resultsInTxt.write(text_data)
@@ -141,12 +142,47 @@ def download_data_view(request):
 
 
     context = {
-        'page_name': 'Download Data',
+        'page_name': 'Download/Rewrite Data',
         'download_form': download_form,
         'save_dir_path': save_dir_path,
     }
 
     return render(request, template_name, context)
+
+
+
+def spatial_data_view(request):
+
+    template_name = 'pages/spatial_data.html'
+
+    disease2BScanSegments = Disease2BScanSegments.objects.filter(id=3)
+
+    data = Disease2BScanSegments.objects.get(id=3).geom
+
+    disease2BScanSegments_geojson = serialize(
+        'geojson',
+        disease2BScanSegments,
+        # geometry_field='geom',
+        fields =['geom']
+    )
+
+    dataG = disease2BScanSegments_geojson
+    print(disease2BScanSegments_geojson)
+    # all_lons = [float(i.geom[0]) for i in sample_annotations]
+    # all_lats = [float(i.geom[1]) for i in sample_annotations]
+
+    # map_lon = float(sum(all_lons)/len(all_lons))
+    # map_lat = float(sum(all_lats)/len(all_lats))
+    # map_zoom = float(40)
+
+    context = {
+        'page_name': 'Cell Spatial Data',
+        'data': data,
+        'dataG': dataG,
+    }
+
+    return render(request, template_name, context)
+
 
 
 def analyses_tables(
@@ -208,6 +244,7 @@ def analyses_tables(
         'quantile_search_percentage': quantile_search_percentage,
         'quantile_search_table': quantile_search_table,
     }
+
 
 
 
@@ -482,11 +519,13 @@ def upload_csvs_view(request):
                 messages.success(request, f'Updated existing {uploaded_file.name}')
                 return redirect('pages:messages_page', 'upload-csvs')
 
+    csv_files_count = all_raw_csv_files.count()
 
     context = {
         'page_name': 'Upload CSV files',
         'uploadForm': uploadForm,
-        'all_raw_csv_files': all_raw_csv_files,
+        'all_raw_csv_files': all_raw_csv_files.order_by('file_name'),
+        'csv_files_count': csv_files_count,
     }
 
     return render(request, template_name, context)
@@ -566,16 +605,6 @@ def messages_view(request, prev_name=None):
 
     return render(request, template_name, context)
 
-
-
-def about_page_view(request):
-    template_name = 'pages/about_nanostring.html'
-
-    context = {
-        'page_name': 'About',
-    }
-
-    return render(request, template_name, context)
 
 
 
@@ -699,7 +728,7 @@ def update_sample_annotations_view(request, id_value):
 
 def sample_annotations_analysis_view(request):
     template_name = 'pages/sample_annotation_analysis.html'
-    sample_annotations = Kidney_Sample_Annotations.objects.all()
+    sample_annotations = Kidney_Sample_Annotations.objects.order_by('id')
     search_count = sample_annotations.count()
 
     sample_annotations_data = pandas.read_sql_query(
@@ -707,9 +736,19 @@ def sample_annotations_analysis_view(request):
         connection
     )
 
-    sample_annotations_DF = DataFrame(sample_annotations_data, columns=['disease_status', 'segment_display_name'])
+    num_cols = [
+        'roi_label',
+        'aoi_surface_area',
+        'aoi_nuclei_count',
+        'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
+        'stitched_reads', 'aligned_reads', 'duplicated_reads', 'sequencing_saturation',
+        'umiq_30', 'rtsq_30'
+    ]
+
+    # sample_annotations_DF = DataFrame(sample_annotations_data, columns=['disease_status', 'segment_display_name'])
+    sample_annotations_DF = DataFrame(sample_annotations_data)
     
-    data_DF_describe_table = DataFrame(sample_annotations_data).describe().to_html(
+    data_DF_describe_table = DataFrame(sample_annotations_data)[num_cols].describe().to_html(
         justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
     )
 
@@ -797,7 +836,7 @@ def sample_annotations_analysis_view(request):
 
     map_lon = float(sum(all_lons)/len(all_lons))
     map_lat = float(sum(all_lats)/len(all_lats))
-    map_zoom = float(40)
+    map_zoom = float(27.2)
 
     disease_status_group = sample_annotations_DF.groupby(['disease_status']).count()
 
@@ -813,22 +852,34 @@ def sample_annotations_analysis_view(request):
     disease_status_groups_CDS = ColumnDataSource(disease_status_group)
 
 
+    disease_status_group_describe_table = DataFrame(sample_annotations_data)[
+        [
+            'disease_status', 'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
+            'stitched_reads', 'aligned_reads', 'duplicated_reads', 'sequencing_saturation',
+            'umiq_30', 'rtsq_30'
+        ]
+    ].groupby(['disease_status']).describe().to_html(
+        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+    )
+    
+
+
     sample_annotations_tooltips= [
             ('Disease Status', '@disease_status'),
             ('Proportion', f'@proportion out of {len(sample_annotations_DF)}'),
         ]
 
     sample_annotations_fig=figure(
-        title="Pie Chart showing Kidney Sample Annotations categorized by Disease Status",
-        plot_height=600,
-        plot_width=992,
+        title="Sample Annotations categorized by Disease Status",
+        # plot_height=600,
+        # plot_width=992,
         tooltips=sample_annotations_tooltips,
         )
 
     sample_annotations_fig.wedge(
         x=0,
         y=1,
-        radius=0.54,
+        radius=0.5,
         start_angle=cumsum('value', include_zero=True),
         end_angle=cumsum('value'),
         line_color="#ffffff",
@@ -846,7 +897,7 @@ def sample_annotations_analysis_view(request):
     sample_annotations_fig.legend.orientation = "vertical"
     sample_annotations_fig.legend.location = "right"
     
-    script, div = components(sample_annotations_fig)
+    script_pie_chart, div_pie_chart = components(sample_annotations_fig)
 
     quantile_search_table = None
     quantile_search_percentage = None
@@ -857,7 +908,7 @@ def sample_annotations_analysis_view(request):
         q_cd = quantile_search_form.cleaned_data
         quantile_search_value = float(q_cd['quantile_value'])
         quantile_search_percentage = quantile_search_value * 100
-        quantile_search_table = DataFrame(sample_annotations_data).quantile([quantile_search_value]).to_html(
+        quantile_search_table = DataFrame(sample_annotations_data)[num_cols].quantile([quantile_search_value]).to_html(
             justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
         )
 
@@ -870,6 +921,7 @@ def sample_annotations_analysis_view(request):
             'Color',
             'aoi_surface_area',
             'aoi_nuclei_count',
+            'segment_display_name',
         ]
     )
     
@@ -907,6 +959,7 @@ def sample_annotations_analysis_view(request):
 
     star_tooltips=[
         (('Status'), ('@disease_status')),
+        (('Segment Display Name'), ('@segment_display_name')),
         (('Nuclei Count'), ('@aoi_nuclei_count')),
         (('Surface Area'), ('@aoi_surface_area')),
     ]
@@ -935,9 +988,10 @@ def sample_annotations_analysis_view(request):
         'map_lon': map_lon,
         'map_lat': map_lat,
         'map_zoom': map_zoom,
-        'script': script,
-        'div': div,
+        'script_pie_chart': script_pie_chart,
+        'div_pie_chart': div_pie_chart,
         'data_DF_describe_table': data_DF_describe_table,
+        'disease_status_group_describe_table': disease_status_group_describe_table,
         # 'quantiles_1_2_3': quantiles_1_2_3,
         'quantile_search_percentage': quantile_search_percentage,
         'quantile_search_table': quantile_search_table,

@@ -108,3 +108,11 @@ class RawCSVFiles(models.Model):
         
 
     def __str__(self): return self.file_name
+
+
+class Disease2BScanSegments(models.Model):
+    dn = models.IntegerField()
+    name = models.CharField(max_length=125, null=True, blank=True)
+    geom = models.MultiPolygonField(srid=3857, null=True, blank=True)
+
+    def __str__(self): return str(self.id)

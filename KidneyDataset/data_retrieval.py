@@ -40,12 +40,16 @@ def nanostringData(text_name):
     elif name_valid:
         dataurl = f'http://nanostring-public-share.s3-website-us-west-2.amazonaws.com/GeoScriptHub/KidneyDataset/{text_name}'
 
-        with open(outputname, mode='w', newline=None) as resultsInTxt:
+        try:
             with urllib.request.urlopen(dataurl) as nanostringData:
-                theData = nanostringData.read()
-                # text_data = theData.decode(encoding="utf-8", errors="strict").expandtabs().replace('\r\n', '\n').strip()
-                text_data = theData.decode(encoding="utf-8", errors="strict").replace('\t', ',').replace('\r\n', '\n').strip()
-                resultsInTxt.write(text_data)
+                with open(outputname, mode='w', newline=None) as resultsInTxt:
+                    theData = nanostringData.read()
+                    text_data = theData.decode(encoding="utf-8", errors="strict").replace('\t', ',').replace('\r\n', '\n').strip()
+                    resultsInTxt.write(text_data)
+
+        except urllib.error.URLError:
+            print("URLError is raised because there is no network connection.")
+
 
         if Path(outputname).exists:
             print(f"Text file {outputname} is successfully created.")

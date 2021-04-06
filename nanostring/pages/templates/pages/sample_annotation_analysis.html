@@ -4,7 +4,7 @@
 
 {% block docmeta %}
 <link rel="stylesheet" type="text/css" href="{% static 'pages/css/sample_annotation_map.css' %}">
-{{ script|safe }}
+{{ script_pie_chart|safe }}
 {{ script_scatter|safe }}
 {{ script_star_plot|safe }}
 {% endblock %}
@@ -120,8 +120,14 @@
                 
                 <div class="row my-sm-5">
                     <div class="mx-auto mb-5" style="overflow: auto;">
-                        {{ div|safe }}
+                        {{ div_pie_chart|safe }}
                     </div>
+                </div>
+
+                
+                <div class="shadow-sm table-responsive border my-sm-5 p-4">
+                    <p class="text-success text-center lead">Stats Summary When Grouped by Disease Status</p>
+                    {{ disease_status_group_describe_table|safe }}
                 </div>
 
                 <div class="row my-sm-5">

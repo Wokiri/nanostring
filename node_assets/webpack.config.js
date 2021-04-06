@@ -9,8 +9,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: {
     bootstrapStyling: "./src/js/bootstrapStyling.js",
-    sample_annotation_map: "./src/js/sample_annotation_map.js",
-    testing: "./src/js/annotation_map.js",
+    nanocells_data: "./src/js/nanocells_data.js",
+    testing_dev_mode: "./src/js/test.js",
   },
   output: {
     publicPath: "",

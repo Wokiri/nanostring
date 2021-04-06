@@ -6,10 +6,17 @@
   background-color: #efffff;
 }
 
-#sampleannotation_map {
+#sampleannotation_map, #cell_spatial_map {
   margin: 0;
   width: 100%;
   height: 500px;
   font-family: sans-serif;
+}
+
+#sampleannotation_map{
   background-color: rgb(230, 250, 255);
+}
+
+#cell_spatial_map{
+  background-color: rgb(255, 248, 230);
 }
