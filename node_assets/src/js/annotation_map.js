@@ -9,7 +9,7 @@ import sync from "ol-hashed";
 
 import ZoomSlider from "ol/control/ZoomSlider";
 
-const sampleAnnotationsVectorGeoson = require('./test.json')
+const sampleAnnotationsVectorGeoson = require('./annotation.json')
 const sampleannotation_map = document.querySelector("#sampleannotation_map");
 const mapcontent = document.getElementById("mapcontent");
 

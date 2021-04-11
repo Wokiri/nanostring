@@ -9,12 +9,13 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: {
     bootstrapStyling: "./src/js/bootstrapStyling.js",
-    nanocells_data: "./src/js/nanocells_data.js",
-    testing_dev_mode: "./src/js/test.js",
+    nanostringStyling: "./src/js/nanostringStyling.js",
+    // nanocells_data: "./src/js/nanocells_data.js",
+    nanocells_data: "./src/js/test.js",
   },
   output: {
     publicPath: "",
-    path: path.resolve(__dirname, "sample_annotation"),
+    path: path.resolve(__dirname, "cell_spatial_data"),
     filename: "js/[name].js",
   },
   devServer: {

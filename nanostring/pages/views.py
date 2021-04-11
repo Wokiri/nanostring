@@ -1,20 +1,21 @@
 import csv, io
 from pathlib import Path, PurePath
 import urllib
+import json
 
 
 
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, get_list_or_404
 from django.core.paginator import Paginator
 from django.contrib  import messages
 from django.contrib.gis.db.models import Q
 from django.contrib.gis.geos import Point
+from django.contrib.gis.gdal import OGRGeometry
 from django.db import connection
 from django.views.generic import ListView
 from django.core.serializers import serialize
 
 from math import pi, floor
-from numpy import source
 
 
 from pandas import DataFrame
@@ -48,7 +49,8 @@ from data.models import (
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
     RawCSVFiles,
-    Disease2BScanSegments,
+    Disease2BScanVectorized,
+    Disease1BScanVector,
     )
 
 from .forms import (
@@ -115,7 +117,7 @@ def download_data_view(request):
         
         if name_valid and Path(save_data_path).exists():
             nanostringtextdata_tocsvdata(name_of_data)
-            messages.warning(request, f"Text file {save_data_path} EXISTS. It has been used to write {name_of_data.replace('txt', 'csv')}.")
+            messages.info(request, f"Text file {save_data_path} EXISTS. It has been used to write {name_of_data.replace('txt', 'csv')}.")
             return redirect('pages:messages_page', 'download-data')
 
         elif name_valid:
@@ -155,30 +157,22 @@ def spatial_data_view(request):
 
     template_name = 'pages/spatial_data.html'
 
-    disease2BScanSegments = Disease2BScanSegments.objects.filter(id=3)
+    disease2BScanVectorized = Disease2BScanVectorized.objects.filter(id=100)
 
-    data = Disease2BScanSegments.objects.get(id=3).geom
-
-    disease2BScanSegments_geojson = serialize(
+    disease2BScanVectorized_geojson = serialize(
         'geojson',
-        disease2BScanSegments,
-        # geometry_field='geom',
-        fields =['geom']
+        disease2BScanVectorized,
     )
 
-    dataG = disease2BScanSegments_geojson
-    print(disease2BScanSegments_geojson)
-    # all_lons = [float(i.geom[0]) for i in sample_annotations]
-    # all_lats = [float(i.geom[1]) for i in sample_annotations]
+    print(disease2BScanVectorized_geojson)
 
-    # map_lon = float(sum(all_lons)/len(all_lons))
-    # map_lat = float(sum(all_lats)/len(all_lats))
-    # map_zoom = float(40)
+    # longs_sum = sum([list(item.geom.centroid.tuple)[0] for item in disease1BScanVector])
+
+    # lats_sum = sum([list(item.geom.centroid.tuple)[1] for item in disease1BScanVector])
 
     context = {
         'page_name': 'Cell Spatial Data',
-        'data': data,
-        'dataG': dataG,
+        'disease2BScanVectorized_geojson': disease2BScanVectorized_geojson,
     }
 
     return render(request, template_name, context)
@@ -265,10 +259,10 @@ def draw_bar_charts(
         title=df_title,
         x_axis_label=x_label,
         y_axis_label=y_label,
-        width = 992,
-        height = 600,
+        # width = 992,
+        # height = 600,
         tooltips = tooltips,
-        # x_range=sorted(cluster_id_list, key=lambda x: number_of_cells_list[cluster_id_list.index(x)], reverse=True),
+        # x_range=list(x_range),
         # plot_width=1200,
         # plot_height=500,
         # toolbar_location='below',
@@ -751,10 +745,7 @@ def sample_annotations_analysis_view(request):
     data_DF_describe_table = DataFrame(sample_annotations_data)[num_cols].describe().to_html(
         justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
     )
-
-    # quantiles_1_2_3 = DataFrame(sample_annotations_data).dropna().quantile([.25, .5, .75]).to_html(
-    #     justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
-    # )
+    
 
     sample_annotations_search_form = SearchSampleAnnotationsForm(request.GET or None)
     if sample_annotations_search_form.is_valid():
@@ -831,12 +822,18 @@ def sample_annotations_analysis_view(request):
         geometry_field='geom',
         fields=('disease_status','segment_display_name')
         )
-    all_lons = [float(i.geom[0]) for i in sample_annotations]
-    all_lats = [float(i.geom[1]) for i in sample_annotations]
+        
+    max_lon = max([float(i.geom[0]) for i in sample_annotations])
+    min_lon = min([float(i.geom[0]) for i in sample_annotations])
 
-    map_lon = float(sum(all_lons)/len(all_lons))
-    map_lat = float(sum(all_lats)/len(all_lats))
+
+    max_lat = max([float(i.geom[1]) for i in sample_annotations])
+    min_lat = min([float(i.geom[1]) for i in sample_annotations])
+
+    map_lon = float(sum([max_lon, min_lon])/2)
+    map_lat = float(sum([max_lat, min_lat])/2)
     map_zoom = float(27.2)
+    
 
     disease_status_group = sample_annotations_DF.groupby(['disease_status']).count()
 
