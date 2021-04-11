@@ -69,6 +69,7 @@ from .forms import (
     SearchNormalizedExpressionForm,
     SearchKidneyssGSEAForm,
     SearchAverageGeneExpressionForm,
+    Disease2BScanVectorizedModelForm,
     )
 
 all_cell_types = Cell_Types_for_Spatial_Decon.objects.all()
@@ -157,26 +158,85 @@ def spatial_data_view(request):
 
     template_name = 'pages/spatial_data.html'
 
-    disease2BScanVectorized = Disease2BScanVectorized.objects.filter(id=100)
+    disease2BScanVectorized = Disease2BScanVectorized.objects.all()
 
     disease2BScanVectorized_geojson = serialize(
         'geojson',
         disease2BScanVectorized,
     )
 
-    print(disease2BScanVectorized_geojson)
+    geojson_obj = json.loads(disease2BScanVectorized_geojson)
 
-    # longs_sum = sum([list(item.geom.centroid.tuple)[0] for item in disease1BScanVector])
 
-    # lats_sum = sum([list(item.geom.centroid.tuple)[1] for item in disease1BScanVector])
+    all_longs = []
+    all_lats = []
+
+    for key, val in enumerate(geojson_obj['features']):
+        all_longs.append(val['geometry']['coordinates'][0][0][0][0])
+        all_lats.append(val['geometry']['coordinates'][0][0][0][1])
+
+
+
+    max_lon = max(all_longs)
+    min_lon = min(all_longs)
+
+
+    max_lat = max(all_lats)
+    min_lat = min(all_lats)
+
+    map_lon = float(sum([max_lon, min_lon])/2)
+    map_lat = float(sum([max_lat, min_lat])/2)
+
+
 
     context = {
         'page_name': 'Cell Spatial Data',
         'disease2BScanVectorized_geojson': disease2BScanVectorized_geojson,
+        'map_lon': map_lon,
+        'map_lat': map_lat,
     }
 
     return render(request, template_name, context)
 
+
+
+def disease2bscan_update_view(request, scan_id):
+    template_name = 'pages/disease2bscan_update.html'
+
+    scan_to_update = get_object_or_404(Disease2BScanVectorized, id=scan_id)
+
+    scan_update_form = Disease2BScanVectorizedModelForm(request.POST or None, instance=scan_to_update)
+    if scan_update_form.is_valid():
+        scan_update_form.save()
+        messages.success(request, f'Disease2BScanVectorized of id {scan_to_update.id} successfully updated.')
+        return redirect('pages:messages_page', 'spatial-data')
+    
+    context = {
+        'page_name': 'Update Disease2BScanVector',
+        'scan_update_form': scan_update_form,
+        'scan_to_update': scan_to_update,
+    }
+
+    return render(request, template_name, context)
+
+
+
+def disease2bscan_delete_view(request, scan_id):
+    template_name = 'pages/disease2bscan_delete.html'
+
+    scan_to_delete = get_object_or_404(Disease2BScanVectorized, id=scan_id)
+
+    if request.method == 'POST':
+        scan_to_delete.delete()
+        messages.success(request, f'Disease2BScanVectorized of id {scan_to_delete.id} successfully deleted.')
+        return redirect('pages:messages_page', 'spatial-data')
+    
+    context = {
+        'page_name': 'Delete Disease2BScanVector',
+        'scan_to_delete': scan_to_delete,
+    }
+
+    return render(request, template_name, context)
 
 
 def analyses_tables(

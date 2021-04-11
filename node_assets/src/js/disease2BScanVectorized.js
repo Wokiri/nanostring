@@ -11,29 +11,28 @@ import ZoomSlider from "ol/control/ZoomSlider";
 
 import { geo_webMercator, roundoff } from "./parameters";
 
-const cellSpatial_map = document.getElementById("cell_spatial_map");
+const disease2BScan_map = document.getElementById("disease2BScan_map");
 const overlay_popup = document.getElementById("popup");
 const overlay_content = document.getElementById("popup-content");
 const closer = document.getElementById("popup-closer");
 
-const cell_spatial_geojson = require("./test.json");
 
-const cellRegionsTextLabel = (feature) => feature.get("name");
+// const cellRegionsTextLabel = (feature) => feature.get("name");
 
-const cellRegionsTextStyle = (feature) =>
-  new Text({
-    textAlign: "center",
-    textBaseline: "middle",
-    font: `bold 14px "Trebuchet MS", Helvetica, sans-serif`,
-    text: cellRegionsTextLabel(feature),
-    placement: "polygon",
-    fill: new Fill({
-      color: "rgb(25, 25, 77)",
-    }),
-  });
+// const cellRegionsTextStyle = (feature) =>
+//   new Text({
+//     textAlign: "center",
+//     textBaseline: "middle",
+//     font: `bold 14px "Trebuchet MS", Helvetica, sans-serif`,
+//     text: cellRegionsTextLabel(feature),
+//     placement: "polygon",
+//     fill: new Fill({
+//       color: "rgb(25, 25, 77)",
+//     }),
+//   });
 
-const cellsSpatialVector = new VectorSource({
-  features: new GeoJSON().readFeatures(cell_spatial_geojson, {
+const disease2BScanVector = new VectorSource({
+  features: new GeoJSON().readFeatures(disease2BScanVectorized_geojson, {
     extractGeometryName: true,
   }),
 });
@@ -48,13 +47,13 @@ const cellsSpatialFeatureStyle = (feature) => {
       color: "rgb(153, 255, 221)",
       width: 2,
     }),
-    text: cellRegionsTextStyle(feature),
+    // text: cellRegionsTextStyle(feature),
   });
 };
 
 // cellsSpatial layer
-const cellsSpatialLayer = new VectorLayer({
-  source: cellsSpatialVector,
+const disease2BScanLayer = new VectorLayer({
+  source: disease2BScanVector,
   style: cellsSpatialFeatureStyle,
 });
 
@@ -73,17 +72,13 @@ closer.onclick = () => {
 };
 
 const cellsSpatialMap = new Map({
-  target: cellSpatial_map,
-  layers: [cellsSpatialLayer],
+  target: disease2BScan_map,
+  layers: [disease2BScanLayer],
   overlays: [theOverlay],
   view: new View({
-    center: [parseFloat(77.31375), parseFloat(-49.4071)],
-    zoom: 28,
+    center: [mapLon, mapLat],
+    zoom: 20,
   }),
-  //   view: new View({
-  //     center: [mapLon, mapLat],
-  //     zoom: 28,
-  //   }),
 });
 
 cellsSpatialMap.addControl(new ZoomSlider());
@@ -91,29 +86,25 @@ cellsSpatialMap.addControl(new ZoomSlider());
 // If region is selected get feature info, don't otherwise
 const bringLayerPopupInfo = (theFeature) => {
   let layerAttributes = theFeature.getFeatures().array_[0];
-  
 
-  if(layerAttributes){
+  if (layerAttributes) {
     overlay_content.innerHTML = `
     <p class='text-center text-primary'>${layerAttributes.values_.name}</p>
-    <a class="btn btn-outline-info my-0" href='/edit-cells/${layerAttributes.values_.fid}'>Edit</a>
-    <a class="btn btn-outline-danger my-0" href='/delete-cells/${layerAttributes.values_.fid}'>Delete</a>
+    <a class="btn btn-outline-info my-0" href='/edit-disease2bscan-vector/${layerAttributes.values_.pk}'>Edit</a>
+    <a class="btn btn-outline-danger my-0" href='/delete-disease2bscan-vector/${layerAttributes.values_.pk}'>Delete</a>
     `;
   }
-
-  
 };
 
 // sampleAnnotations selection option
 const singleMapClick = new Select({
-  layers: [cellsSpatialLayer],
+  layers: [disease2BScanLayer],
 }); //By default, this is module:ol/events/condition~singleClick. Other defaults are exactly what I need
 
 cellsSpatialMap.addInteraction(singleMapClick);
 
 singleMapClick.on("select", (elem) => {
   bringLayerPopupInfo(elem.target);
-  
 });
 
 cellsSpatialMap.on("singleclick", (evt) => {
@@ -124,7 +115,10 @@ cellsSpatialMap.on("singleclick", (evt) => {
   let coords_webmercator = geo_webMercator(lon, lat);
   let x_coords = coords_webmercator[0] / 1000; // I had georeferenced the image by expanding extents by 1000
   let y_coords = coords_webmercator[1] / 1000;
-  overlay_content.innerHTML = `<p>${roundoff(x_coords, 2)}, ${roundoff(y_coords, 2)}</p>`;
+  overlay_content.innerHTML = `<p>${roundoff(x_coords, 2)}, ${roundoff(
+    y_coords,
+    2
+  )}</p>`;
 });
 
 sync(cellsSpatialMap);

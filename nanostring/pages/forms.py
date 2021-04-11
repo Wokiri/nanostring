@@ -28,6 +28,7 @@ from data.models import (
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
     RawCSVFiles,
+    Disease2BScanVectorized,
     )
 
 class UploadCellTypesForm(forms.Form):
@@ -151,3 +152,14 @@ class SearchAverageGeneExpressionForm(forms.Form):
             attrs={'class':'form-control mr-sm-1'}
             ))
 
+
+class Disease2BScanVectorizedModelForm(forms.ModelForm):
+
+    name = forms.CharField(label='Update the NAME of Disease2BScanVectorized', max_length=254, required=False,
+        widget=forms.TextInput(
+            attrs={'class':'form-control mr-sm-1'}
+        ))
+
+    class Meta:
+        model = Disease2BScanVectorized
+        fields = ['name']

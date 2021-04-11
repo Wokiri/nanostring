@@ -10,8 +10,8 @@ module.exports = {
   entry: {
     bootstrapStyling: "./src/js/bootstrapStyling.js",
     nanostringStyling: "./src/js/nanostringStyling.js",
-    // nanocells_data: "./src/js/nanocells_data.js",
-    nanocells_data: "./src/js/test.js",
+    disease2BScanVectorized: "./src/js/disease2BScanVectorized.js",
+    // nanocells_data: "./src/js/test.js",
   },
   output: {
     publicPath: "",

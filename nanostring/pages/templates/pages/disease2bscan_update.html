@@ -1,0 +1,26 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+<div class="container p-sm-4 mb-sm-5">
+  <div class="shadow-lg rounded-lg my-sm-2 p-sm-4">
+    <p class="lead mb-3">Disease2BScanVectorized (ID.{{ scan_to_update.id }}) Update form</p>
+    <form method="post">
+    {% csrf_token %}
+    <div class="row">
+    {% for form in scan_update_form %}
+        <div class="col-6">
+            <p class="mt-0">{{ form.errors }}</p>
+            <p class="mb-0">{{ form.label_tag }}</p>
+            <p class="mb-2">{{ form }}</p>
+        </div>
+    {% endfor %}
+    </div>
+        <div class="my-2 p-2">
+            <button class="btn btn-info" type="submit">Update</button>
+            <a class="btn btn-secondary" href="{% url 'pages:spatial_data_page' %}">Back to Map</a>
+        </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

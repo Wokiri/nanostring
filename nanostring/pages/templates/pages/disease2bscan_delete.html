@@ -1,0 +1,16 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+<div class="container p-sm-4 mb-sm-5">
+  <div class="shadow-lg rounded-lg my-sm-2 p-sm-4">
+    <p class="text-danger lead mb-3">Delete Disease2BScanVectorized (ID.{{ scan_to_delete.id }})?</p>
+    <form method="post">
+    {% csrf_token %}
+        <div class="my-2 p-2">
+            <button class="btn btn-danger" type="submit">Delete</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
