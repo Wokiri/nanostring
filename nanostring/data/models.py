@@ -1,7 +1,12 @@
 from django.contrib.gis.db import models
 
 class Category(models.Model):
-    name = models.CharField('Name of category', max_length=25, null=True, blank=True)
+    CATEGORY_NAMES = [
+        ('cell_deconvolution', 'Cell Deconvolution'),
+        ('gene_set_enrichment_analysis', 'Gene Set Enrichment Analysis'),
+        ('expressions', 'Expressions'),
+    ]
+    name = models.CharField('Name of category', max_length=100, null=True, blank=True, choices=CATEGORY_NAMES)
     description = models.CharField('Brief description about the category', max_length=125, null=True, blank=True)
     class Meta:
         verbose_name = 'category'

@@ -31,11 +31,9 @@
 <body>
 
     <div class="container">
-        <div>
-            {% include 'pages/mainNavigation.html' %}
-        </div>
-        {% block content %}{% endblock %}
+        {% include 'pages/mainNavigation.html' %}
     </div>
+    {% block content %}{% endblock %}
     <script src="{% static 'pages/js/bootstrapStyling.js' %}"></script>
 </body>
 
