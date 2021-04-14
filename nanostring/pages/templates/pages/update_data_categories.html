@@ -1,0 +1,17 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+<div class="container">
+  <div class="mt-sm-4 mb-sm-2 pt-sm-4">
+    <form method="post">
+      {% csrf_token %} {% for form in category_form %}
+      <p class="text-danger">{{ form.errors }}</p>
+      <p>{{ form.label_tag }}</p>
+      <p>{{ form }}</p>
+      {% endfor %}
+      <button class="btn btn-info" type="submit">Update Category</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

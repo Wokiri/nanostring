@@ -1,0 +1,5 @@
+Dump data:
+py manage.py dumpdata data.Disease2BScanVectorized --indent 1 > ./db_resources/disease2b_scan_vector.json
+
+Load data to DB:
+py manage.py loaddata ./db_resources/disease2b_scan_vector.json

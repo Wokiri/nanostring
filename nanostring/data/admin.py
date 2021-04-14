@@ -1,8 +1,18 @@
 from django.contrib.gis import admin
 from .models import (
+    Category,
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
+    RawCSVFiles,
     )
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description']
+
+admin.site.register(Category, CategoryAdmin)
+
+
 
 @admin.register(Cell_Types_for_Spatial_Decon)
 class Cell_Types_for_Spatial_DeconAdmin(admin.ModelAdmin):
@@ -19,3 +29,6 @@ class Kidney_Sample_Annotations(admin.ModelAdmin):
     ordering = ['roi_label', 'scan_name']
     search_fields = ['slide_name', 'scan_name', 'roi_label', 'segment_label',]
 
+
+
+admin.site.register(RawCSVFiles)

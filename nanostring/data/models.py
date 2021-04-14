@@ -6,12 +6,14 @@ class Category(models.Model):
         ('gene_set_enrichment_analysis', 'Gene Set Enrichment Analysis'),
         ('expressions', 'Expressions'),
     ]
-    name = models.CharField('Name of category', max_length=100, null=True, blank=True, choices=CATEGORY_NAMES)
+    name = models.CharField('Name of category', max_length=100, unique=True, choices=CATEGORY_NAMES)
     description = models.CharField('Brief description about the category', max_length=125, null=True, blank=True)
+
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
 
+    def __str__(self): return self.get_name_display()
 
 
 class Kidney_Sample_Annotations(models.Model):
@@ -91,16 +93,16 @@ class Cell_Types_for_Spatial_Decon(models.Model):
 
 class RawCSVFiles(models.Model):
     DATA_NAMES = [
-        ('KidneySampleAnnotations', 'Kidney_Sample_Annotations.csv'),
-        ('KidneyFeatureAnnotations', 'Kidney_Feature_Annotations.csv'),
-        ('KidneyRawBioProbeCountMatrix', 'Kidney_Raw_BioProbeCountMatrix.csv'),
-        ('KidneyRawTargetCountMatrix', 'Kidney_Raw_TargetCountMatrix.csv'),
-        ('KidneyQ3NormTargetCountMatrix', 'Kidney_Q3Norm_TargetCountMatrix.csv'),
-        ('CellTypesforSpatialDecon', 'Cell_Types_for_Spatial_Decon.csv'),
-        ('AverageGeneExpression', 'Young_kidney_cell_profile_matrix.csv'),
-        ('KidneyssGSEA', 'Kidney_ssGSEA.csv'),
+        ('Kidney_Sample_Annotations.csv', 'Kidney_Sample_Annotations.csv'),
+        ('Kidney_Feature_Annotations.csv', 'Kidney_Feature_Annotations.csv'),
+        ('Kidney_Raw_BioProbeCountMatrix.csv', 'Kidney_Raw_BioProbeCountMatrix.csv'),
+        ('Kidney_Raw_TargetCountMatrix.csv', 'Kidney_Raw_TargetCountMatrix.csv'),
+        ('Kidney_Q3Norm_TargetCountMatrix.csv', 'Kidney_Q3Norm_TargetCountMatrix.csv'),
+        ('Cell_Types_for_Spatial_Decon.csv', 'Cell_Types_for_Spatial_Decon.csv'),
+        ('Young_kidney_cell_profile_matrix.csv', 'Young_kidney_cell_profile_matrix.csv'),
+        ('Kidney_ssGSEA.csv', 'Kidney_ssGSEA.csv'),
     ]
-    file_name = models.CharField(max_length=125, null=True, blank=True, choices=DATA_NAMES)
+    file_name = models.CharField(max_length=125, choices=DATA_NAMES)
     file = models.FileField(upload_to='csv_uploads/')
 
     category = models.ForeignKey(
@@ -109,7 +111,7 @@ class RawCSVFiles(models.Model):
         blank=True,
         null=True,
         verbose_name="category of data"
-        )
+    )
         
 
     def __str__(self): return self.file_name

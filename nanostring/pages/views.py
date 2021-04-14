@@ -2,6 +2,7 @@ import csv, io
 from pathlib import Path, PurePath
 import urllib
 import json
+from bokeh.core.property.instance import Instance
 
 
 
@@ -46,15 +47,16 @@ from .foss_licences import (
 
 
 from data.models import (
+    Category,
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
     RawCSVFiles,
     Disease2BScanVectorized,
-    Disease1BScanVector,
     )
 
 from .forms import (
     DownloadDataForm,
+    CategoryModelForm,
     UploadCellTypesForm,
     SearchCellTypesForm,
     UpdateCellsTypeCSVsForm,
@@ -160,41 +162,45 @@ def spatial_data_view(request):
 
     disease2BScanVectorized = Disease2BScanVectorized.objects.all()
 
-    disease2BScanVectorized_geojson = serialize(
-        'geojson',
-        disease2BScanVectorized,
-    )
+    context = {'page_name': 'Cell Spatial Data',}
 
-    geojson_obj = json.loads(disease2BScanVectorized_geojson)
+    if disease2BScanVectorized:
 
+        disease2BScanVectorized_geojson = serialize(
+            'geojson',
+            disease2BScanVectorized,
+        )
 
-    all_longs = []
-    all_lats = []
-
-    for key, val in enumerate(geojson_obj['features']):
-        all_longs.append(val['geometry']['coordinates'][0][0][0][0])
-        all_lats.append(val['geometry']['coordinates'][0][0][0][1])
+        geojson_obj = json.loads(disease2BScanVectorized_geojson)
 
 
+        all_longs = []
+        all_lats = []
 
-    max_lon = max(all_longs)
-    min_lon = min(all_longs)
-
-
-    max_lat = max(all_lats)
-    min_lat = min(all_lats)
-
-    map_lon = float(sum([max_lon, min_lon])/2)
-    map_lat = float(sum([max_lat, min_lat])/2)
+        for key, val in enumerate(geojson_obj['features']):
+            all_longs.append(val['geometry']['coordinates'][0][0][0][0])
+            all_lats.append(val['geometry']['coordinates'][0][0][0][1])
 
 
 
-    context = {
-        'page_name': 'Cell Spatial Data',
-        'disease2BScanVectorized_geojson': disease2BScanVectorized_geojson,
-        'map_lon': map_lon,
-        'map_lat': map_lat,
-    }
+        max_lon = max(all_longs)
+        min_lon = min(all_longs)
+
+
+        max_lat = max(all_lats)
+        min_lat = min(all_lats)
+
+        map_lon = float(sum([max_lon, min_lon])/2)
+        map_lat = float(sum([max_lat, min_lat])/2)
+
+
+
+        context = {
+            'page_name': 'Cell Spatial Data',
+            'disease2BScanVectorized_geojson': disease2BScanVectorized_geojson,
+            'map_lon': map_lon,
+            'map_lat': map_lat,
+        }
 
     return render(request, template_name, context)
 
@@ -237,6 +243,7 @@ def disease2bscan_delete_view(request, scan_id):
     }
 
     return render(request, template_name, context)
+
 
 
 def analyses_tables(
@@ -298,7 +305,6 @@ def analyses_tables(
         'quantile_search_percentage': quantile_search_percentage,
         'quantile_search_table': quantile_search_table,
     }
-
 
 
 
@@ -546,6 +552,49 @@ def draw_star(
 
 
 
+class CategoryList(ListView):
+    model = Category
+
+
+def set_categories_view(request):
+    template_name = 'pages/set_data_categories.html'
+
+    category_form = CategoryModelForm(request.POST or None)
+    if category_form.is_valid() and 'name' in request.POST:
+        category_form.save()
+        added_category = Category.objects.get(name=category_form.cleaned_data['name'])
+        messages.success(request, f'{added_category.get_name_display().upper()} has been Added')
+        return redirect('pages:messages_page', 'set-data-categories')
+
+    context = {
+        'page_name': 'Add Data Categories',
+        'category_form': category_form,
+    }
+
+    return render(request, template_name, context)
+
+
+
+def update_category_view(request, obj_name):
+    template_name = 'pages/update_data_categories.html'
+    category = get_object_or_404(Category, name=obj_name)
+
+    category_form = CategoryModelForm(request.POST or None, instance=category)
+    if category_form.is_valid() and 'name' in request.POST:
+        category_form.save()
+        added_category = Category.objects.get(name=category_form.cleaned_data['name'])
+        messages.success(request, f'{added_category.get_name_display().upper()} has been Updated')
+        return redirect('pages:messages_page', 'data-categories')
+
+    context = {
+        'page_name': 'Data Categories',
+        'category_form': category_form,
+    }
+
+    return render(request, template_name, context)
+
+
+
 def upload_csvs_view(request):
     template_name = 'pages/upload_csvs.html'
     uploadForm = UploadRawCSVFilesModelForm()
@@ -553,12 +602,17 @@ def upload_csvs_view(request):
     if request.method == 'POST':
         uploadForm = UploadRawCSVFilesModelForm(request.POST or None, request.FILES)
     
-        if uploadForm.is_valid:
+        if uploadForm.is_valid() and 'file_name' in request.POST:
             uploaded_file = request.FILES['file']
 
             # check if its csv
             if not uploaded_file.name.endswith('.csv'):
                 messages.error(request, 'Uploaded file is not a csv!')
+                return redirect('pages:messages_page', 'upload-csvs')
+
+            # check if name of csv and file matches
+            if not uploaded_file.name == uploadForm.cleaned_data['file_name']:
+                messages.error(request, 'Stated and Uploaded csv names do not match!')
                 return redirect('pages:messages_page', 'upload-csvs')
             
             new_data, created = RawCSVFiles.objects.update_or_create(
@@ -589,7 +643,6 @@ def upload_csvs_view(request):
 def home_page_view(request):
     template_name = 'pages/homepage.html'
     
-
     feature_annotations_dataframe = None
     if feature_annotations_DF() is not None:
         feature_annotations_dataframe = feature_annotations_DF().head().to_html(
@@ -632,13 +685,13 @@ def home_page_view(request):
         'page_name': 'Home',
         'cell_types': all_cell_types[0:3],
         'sample_annotations': all_sample_annotations_types[0:3],
-        'Kidney_Feature_Annotations': all_raw_csv_files.filter(file_name='KidneyFeatureAnnotations'),
+        'Kidney_Feature_Annotations': all_raw_csv_files.filter(file_name='Kidney_Feature_Annotations.csv'),
         'feature_annotations_dataframe': feature_annotations_dataframe,
-        'kidney_raw_bioProbeCountMatrix': all_raw_csv_files.filter(file_name='KidneyRawBioProbeCountMatrix'),
+        'kidney_raw_bioProbeCountMatrix': all_raw_csv_files.filter(file_name='Kidney_Raw_BioProbeCountMatrix.csv'),
         'probe_expression_dataframe': probe_expression_dataframe,
-        'kidney_raw_target_count_matrix': all_raw_csv_files.filter(file_name='KidneyRawTargetCountMatrix'),
+        'kidney_raw_target_count_matrix': all_raw_csv_files.filter(file_name='Kidney_Raw_TargetCountMatrix.csv'),
         'target_expression_dataframe': target_expression_dataframe,
-        'kidney_q3_norm_target_count_matrix': all_raw_csv_files.filter(file_name='KidneyQ3NormTargetCountMatrix'),
+        'kidney_q3_norm_target_count_matrix': all_raw_csv_files.filter(file_name='Kidney_Q3Norm_TargetCountMatrix.csv'),
         'normalized_expression_dataframe': normalized_expression_dataframe,
         'Kidneyss_GSEA': all_raw_csv_files.filter(file_name='KidneyssGSEA'),
         'single_sample_gsea_results_dataframe': single_sample_gsea_results_dataframe,
@@ -694,7 +747,7 @@ def kidney_sample_annotations_uploader_view(request):
 
     if request.method == 'POST':
         sample_annotations_form = UploadSampleAnnotationsForm(request.POST, request.FILES)
-        if sample_annotations_form.is_valid:
+        if sample_annotations_form.is_valid():
             uploaded_file = request.FILES['file']
 
             # check if its csv
@@ -1070,7 +1123,7 @@ def cell_types_for_spatial_decon_uploader_view(request):
 
     if request.method == 'POST':
         cell_types_form = UploadCellTypesForm(request.POST, request.FILES)
-        if cell_types_form.is_valid:
+        if cell_types_form.is_valid():
             uploaded_file = request.FILES['file']
 
             # check if its csv
@@ -1336,7 +1389,7 @@ def cell_types_analysis_view(request):
 def feature_annotation_analysis_view(request):
     
     template_name = 'pages/kidney_feature_annotations_analysis.html'
-    csv_obj = RawCSVFiles.objects.get(file_name='KidneyFeatureAnnotations')
+    csv_obj = RawCSVFiles.objects.get(file_name='Kidney_Feature_Annotations.csv')
     data_DF = feature_annotations_DF()
     
 
@@ -1459,7 +1512,7 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
     try:
         analysis_context = analyses_tables(
             request,
-            'KidneyRawBioProbeCountMatrix',
+            'Kidney_Raw_BioProbeCountMatrix.csv',
             probe_expression_DF,
             SearchProbeExpressionForm,
             QuantileSearchForm,
@@ -1683,4 +1736,3 @@ def average_gene_expression_analysis_view(request):
         search_value = SearchProbeExpressionForm(request.GET).data['search_value']
         messages.error(request, f'No KidneyssGSEA matches: <h1 class="display-4">{search_value}</h1>')
         return redirect('pages:messages_page', 'average-gene-expression-analysis')
-

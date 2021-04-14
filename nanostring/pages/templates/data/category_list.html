@@ -1,0 +1,26 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block content %}
+
+<div class="container p-4 shadow-lg rounded lg">
+    
+
+    <div class="container row">
+    {% for item in object_list %}
+        <div class="list-group my-sm-2 col-sm-4">
+            <p class="font-weight-bold text-info">{{ forloop.counter }}. {{ item.get_name_display }}</p>
+            <p class="text-info">{{ item.description }}</p>
+            <a class="btn btn-outline-primary" href="{% url 'pages:update_data_categories_page' item.name %}">
+                Edit
+            </a>
+        </div>
+    {% empty %}
+        <h2 class="text-warning">No Categories yet!</h2>
+    {% endfor %}
+    </div>
+
+    <div class="w-75 mx-auto py-5">
+        <a href="{% url 'pages:set_data_categories_page' %}">Add new Category</a>
+    </div>
+</div>
+
+{% endblock %}

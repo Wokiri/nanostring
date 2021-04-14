@@ -9,7 +9,7 @@ all_raw_csv_files = RawCSVFiles.objects.all()
 
 
 def feature_annotations_DF():
-    if all_raw_csv_files.filter(file_name='KidneyFeatureAnnotations'):
+    if all_raw_csv_files.filter(file_name='Kidney_Feature_Annotations.csv'):
         file_name = PurePath(settings.MEDIA_ROOT, 'csv_uploads', 'Kidney_Feature_Annotations.csv')
         if Path(file_name).exists:
             return pandas.read_csv(
@@ -23,7 +23,7 @@ def feature_annotations_DF():
 
 
 def probe_expression_DF():
-    if all_raw_csv_files.filter(file_name='KidneyRawBioProbeCountMatrix'):
+    if all_raw_csv_files.filter(file_name='Kidney_Raw_BioProbeCountMatrix.csv'):
         file_name = PurePath(settings.MEDIA_ROOT, 'csv_uploads', 'Kidney_Raw_BioProbeCountMatrix.csv')
         if Path(file_name).exists:
             return pandas.read_csv(
@@ -37,7 +37,7 @@ def probe_expression_DF():
 
 
 def target_expression_DF():
-    if all_raw_csv_files.filter(file_name='KidneyRawTargetCountMatrix'):
+    if all_raw_csv_files.filter(file_name='Kidney_Raw_TargetCountMatrix.csv'):
         file_name = PurePath(settings.MEDIA_ROOT, 'csv_uploads', 'Kidney_Raw_TargetCountMatrix.csv')
         if Path(file_name).exists:
             return pandas.read_csv(
@@ -51,7 +51,7 @@ def target_expression_DF():
 
 
 def normalized_expression_DF():
-    if all_raw_csv_files.filter(file_name='KidneyQ3NormTargetCountMatrix'):
+    if all_raw_csv_files.filter(file_name='Kidney_Q3Norm_TargetCountMatrix.csv'):
         file_name = PurePath(settings.MEDIA_ROOT, 'csv_uploads', 'Kidney_Q3Norm_TargetCountMatrix.csv')
         if Path(file_name).exists:
             return pandas.read_csv(
@@ -65,7 +65,7 @@ def normalized_expression_DF():
 
 
 def ssGSEA_expression_DF():
-    if all_raw_csv_files.filter(file_name='KidneyssGSEA'):
+    if all_raw_csv_files.filter(file_name='Kidney_ssGSEA.csv'):
         file_name = PurePath(settings.MEDIA_ROOT, 'csv_uploads', 'Kidney_ssGSEA.csv')
         if Path(file_name).exists:
             return pandas.read_csv(
@@ -79,7 +79,7 @@ def ssGSEA_expression_DF():
 
 
 def average_gene_expression_DF():
-    if all_raw_csv_files.filter(file_name='AverageGeneExpression'):
+    if all_raw_csv_files.filter(file_name='Young_kidney_cell_profile_matrix.csv'):
         file_name = PurePath(settings.MEDIA_ROOT, 'csv_uploads', 'Young_kidney_cell_profile_matrix.csv')
         if Path(file_name).exists:
             return pandas.read_csv(

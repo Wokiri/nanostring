@@ -25,22 +25,43 @@ class DownloadDataForm(forms.Form):
 
 
 from data.models import (
+    Category,
     Cell_Types_for_Spatial_Decon,
     Kidney_Sample_Annotations,
     RawCSVFiles,
     Disease2BScanVectorized,
     )
 
-class UploadCellTypesForm(forms.Form):
-    file = forms.FileField(
-        label='Browse to Cell_Types_for_Spatial_Decon.csv file:'
+
+class CategoryModelForm(forms.ModelForm):
+
+    description = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class':'form-control mr-sm-1',
+                'cols':80,
+                'rows':20
+            }
         )
+    )
+
+    class Meta:
+        model = Category
+        fields = ['name', 'description']
+
+
+
+class UploadCellTypesForm(forms.Form):
+    file = forms.FileField(label='Browse to Cell_Types_for_Spatial_Decon.csv file:')
+
 
 class SearchSampleAnnotationsForm(forms.Form):
-    search_value = forms.CharField(label='Search Kidney Sample Annotations', max_length=125, required=False,
-    widget=forms.TextInput(
-        attrs={'class':'form-control mr-sm-1'}
-        ))
+    search_value = forms.CharField(
+        label='Search Kidney Sample Annotations', max_length=125, required=False,
+        widget=forms.TextInput(
+            attrs={'class':'form-control mr-sm-1'}
+        )
+    )
 
 class SearchCellTypesForm(forms.Form):
     search_value = forms.CharField(label='Search Cell Annotations', max_length=125, required=False,

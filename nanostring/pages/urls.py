@@ -3,6 +3,9 @@ from django.urls import path
 
 from .views import (
     home_page_view,
+    set_categories_view,
+    update_category_view,
+    CategoryList,
     download_data_view,
     spatial_data_view,
     disease2bscan_update_view,
@@ -30,6 +33,9 @@ app_name = 'pages'
 
 urlpatterns = [
     path('', home_page_view, name='home_page'),
+    path('set-data-categories/', set_categories_view, name='set_data_categories_page'),
+    path('update-data-category/<str:obj_name>', update_category_view, name='update_data_categories_page'),
+    path('data-categories/', CategoryList.as_view(), name='data_categories_page'),
     path('download-data/', download_data_view, name='download_data_page'),
     path('spatial-data/', spatial_data_view, name='spatial_data_page'),
     path('edit-disease2bscan-vector/<int:scan_id>/', disease2bscan_update_view, name='disease2bscan_update_page'),
@@ -39,6 +45,7 @@ urlpatterns = [
     path('sampleannotation-upload/', kidney_sample_annotations_uploader_view, name='upload_sampleannotation_page'),
     path('cell-types-analysis/', cell_types_analysis_view, name='cell-types-analysis_page'),
     path('sample-annotations-analysis/', sample_annotations_analysis_view, name='sample_annotations_analysis_page'),
+    path('messages/', messages_view, name='messages_page'),
     path('<slug:prev_name>/messages/', messages_view, name='messages_page'),
     path('cell-type-list/', CellTypeList.as_view(), name='list_cell_type_page'),
     path('update-cell-type/<slug:clusterid>/', update_cell_type_view, name='update_cell_type_page'),
