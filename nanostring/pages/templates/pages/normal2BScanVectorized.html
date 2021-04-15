@@ -1,0 +1,50 @@
+{% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
+{% block docmeta %}
+<link rel="stylesheet" type="text/css" href="{% static 'pages/css/normal2BScanVectorized.css' %}"/>
+{% endblock %}
+{% block content %}
+
+<div class="container border shadow-sm mb-5" style="overflow: auto">
+	<h1 class="text-center text-info lead m-1 font-weight-bolder">Normal2BScan</h1>
+
+	<div class="row media mx-auto">
+		<div class="col pt-4 mx-1 px-0">
+			<img src="{% static 'pages/pics/normal2bscan_raw.png' %}" class="align-self-center" style="width: 100%" alt="normal2bscan_raw" />
+			<div class="media-body my-0 pt-0 pb-2">
+				<p class="text-center text-info lead my-0 py-0">georeferenced normal2bscan image</p>
+			</div>
+		</div>
+		<div class="col pt-4 mx-1 px-0">
+			<img src="{% static 'pages/pics/normal2bscan_singleband.png' %}" class="align-self-center" style="width: 100%" alt="normal2bscan_singleband" />
+			<div class="media-body my-0 pt-0 pb-2">
+				<p class="text-center text-info lead my-0 py-0">singleband of normal2bscan image</p>
+			</div>
+		</div>
+		<div class="col pt-4 mx-1 px-0">
+			<img src="{% static 'pages/pics/normal2bscan_aoi.png' %}" class="align-self-center" style="width: 100%" alt="normal2bscan_aoi" />
+			<div class="media-body my-0 pt-0 pb-2">
+				<p class="text-center text-info lead my-0 py-0">AOI singled out for normal2bscan image</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="normal2BScan_map" class="mx-auto my-0"></div>
+	<p class="text-center text-info lead my-0 py-0">Vecterized normal2bscan image showing generated AOI regions</p>
+	<div id="normal2Bpopup" class="normal2Bpopup_popup">
+		<p id="normal2Bpopupcloser" class="normal2B_popup_closer font-weight-bold"></p>
+		<div id="normal2BPopupContent"></div>
+	</div>
+</div>
+
+
+
+<script>
+	const normal2BScanVectorized_geojson = '{{ normal2BScanVectorized_geojson|escapejs }}'
+	const normal2BmapLon = '{{ normal2Bmap_lon }}'
+	const normal2BmapLat = '{{ normal2Bmap_lat }}'
+</script>
+<script src="{% static 'pages/js/normal2BScanVectorized.js' %}"></script>
+
+
+
+{% endblock %}

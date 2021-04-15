@@ -27,6 +27,7 @@ nanostring_hackathon.pdf
 
 *.vscode
 
+*/imageScanVectorized/
 */media/
 */graphics/
 */prod/

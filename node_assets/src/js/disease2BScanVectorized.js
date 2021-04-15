@@ -71,17 +71,17 @@ closer.onclick = () => {
   return false;
 };
 
-const cellsSpatialMap = new Map({
-  target: disease2BScan_map,
-  layers: [disease2BScanLayer],
-  overlays: [theOverlay],
-  view: new View({
-    center: [mapLon, mapLat],
-    zoom: 20,
-  }),
-});
+const disease2bscanMap = new Map({
+	target: disease2BScan_map,
+	layers: [disease2BScanLayer],
+	overlays: [theOverlay],
+	view: new View({
+		center: [disease2BmapLon, disease2BmapLat],
+		zoom: 20,
+	}),
+})
 
-cellsSpatialMap.addControl(new ZoomSlider());
+disease2bscanMap.addControl(new ZoomSlider());
 
 // If region is selected get feature info, don't otherwise
 const bringLayerPopupInfo = (theFeature) => {
@@ -89,10 +89,10 @@ const bringLayerPopupInfo = (theFeature) => {
 
   if (layerAttributes) {
     overlay_content.innerHTML = `
-    <p class='text-center text-primary'>${layerAttributes.values_.name}</p>
+    <p class='text-center'>Name: <span class='text-primary lead'>${layerAttributes.values_.name}</span></p>
     <a class="btn btn-outline-info my-0" href='/edit-disease2bscan-vector/${layerAttributes.values_.pk}'>Edit</a>
     <a class="btn btn-outline-danger my-0" href='/delete-disease2bscan-vector/${layerAttributes.values_.pk}'>Delete</a>
-    `;
+    `
   }
 };
 
@@ -101,13 +101,13 @@ const singleMapClick = new Select({
   layers: [disease2BScanLayer],
 }); //By default, this is module:ol/events/condition~singleClick. Other defaults are exactly what I need
 
-cellsSpatialMap.addInteraction(singleMapClick);
+disease2bscanMap.addInteraction(singleMapClick);
 
 singleMapClick.on("select", (elem) => {
   bringLayerPopupInfo(elem.target);
 });
 
-cellsSpatialMap.on("singleclick", (evt) => {
+disease2bscanMap.on("singleclick", (evt) => {
   let click_coords = evt.coordinate;
   theOverlay.setPosition(click_coords);
   let lon = click_coords[0];
@@ -121,4 +121,4 @@ cellsSpatialMap.on("singleclick", (evt) => {
   )}</p>`;
 });
 
-sync(cellsSpatialMap);
+sync(disease2bscanMap);

@@ -14,8 +14,15 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'pages:upload_csvs_page' %}">Upload CSVs</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'pages:spatial_data_page' %}">Spatial Data</a>
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+            Spatial Data
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'pages:disease2b_scan_page' %}">Disease 2B Scan</a>
+            <a class="dropdown-item" href="{% url 'pages:normal2b_scan_page' %}">Normal 2B Scan</a>
+          </div>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'pages:data_categories_page' %}">Categories</a>

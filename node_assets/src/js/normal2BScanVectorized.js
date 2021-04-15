@@ -1,17 +1,15 @@
-import "ol/ol.css";
-import GeoJSON from "ol/format/GeoJSON";
-import VectorSource from "ol/source/Vector";
-import { Style, Fill, Text, Stroke } from "ol/style";
-import VectorLayer from "ol/layer/Vector";
-import { Map, View } from "ol";
-import Select from "ol/interaction/Select";
-import Overlay from "ol/Overlay";
-import sync from "ol-hashed";
-import ZoomSlider from "ol/control/ZoomSlider";
+import 'ol/ol.css'
+import GeoJSON from 'ol/format/GeoJSON'
+import VectorSource from 'ol/source/Vector'
+import { Style, Fill, Text, Stroke } from 'ol/style'
+import VectorLayer from 'ol/layer/Vector'
+import { Map, View } from 'ol'
+import Select from 'ol/interaction/Select'
+import Overlay from 'ol/Overlay'
+import sync from 'ol-hashed'
+import ZoomSlider from 'ol/control/ZoomSlider'
 
-import { geo_webMercator, roundoff } from "./parameters";
-const normal2BScanVectorized_geojson = require('./normal2B_scan_AOI_vectorized.json')
-
+import { geo_webMercator, roundoff } from './parameters'
 
 const normal2BScan_map = document.getElementById('normal2BScan_map')
 const normal2Bpopup = document.getElementById('normal2Bpopup')
@@ -77,8 +75,7 @@ const normal2BscanMap = new Map({
 	layers: [normal2BScanLayer],
 	overlays: [theOverlay],
 	view: new View({
-		center: [7.467392023311596, -30.491796601714732],
-		// center: [mapLon, mapLat],
+		center: [normal2BmapLon, normal2BmapLat],
 		zoom: 20,
 	}),
 })

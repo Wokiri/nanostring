@@ -52,6 +52,7 @@ from data.models import (
     Kidney_Sample_Annotations,
     RawCSVFiles,
     Disease2BScanVectorized,
+    Normal2BScanVectorized,
     )
 
 from .forms import (
@@ -156,13 +157,13 @@ def download_data_view(request):
 
 
 
-def spatial_data_view(request):
+def disease2BScanVectorized_view(request):
 
-    template_name = 'pages/spatial_data.html'
+    template_name = 'pages/disease2BScanVectorized.html'
 
     disease2BScanVectorized = Disease2BScanVectorized.objects.all()
 
-    context = {'page_name': 'Cell Spatial Data',}
+    context = {'page_name': 'Disease2BScanVectorized Data',}
 
     if disease2BScanVectorized:
 
@@ -170,36 +171,83 @@ def spatial_data_view(request):
             'geojson',
             disease2BScanVectorized,
         )
-
-        geojson_obj = json.loads(disease2BScanVectorized_geojson)
-
-
-        all_longs = []
-        all_lats = []
-
-        for key, val in enumerate(geojson_obj['features']):
-            all_longs.append(val['geometry']['coordinates'][0][0][0][0])
-            all_lats.append(val['geometry']['coordinates'][0][0][0][1])
+        disease2BScan_geojson_obj = json.loads(disease2BScanVectorized_geojson)
+        
 
 
+        all_disease_longs = []
+        all_disease_lats = []
 
-        max_lon = max(all_longs)
-        min_lon = min(all_longs)
 
+        for key, val in enumerate(disease2BScan_geojson_obj['features']):
+            all_disease_longs.append(val['geometry']['coordinates'][0][0][0][0])
+            all_disease_lats.append(val['geometry']['coordinates'][0][0][0][1])
 
-        max_lat = max(all_lats)
-        min_lat = min(all_lats)
+        max_disease_lon = max(all_disease_longs)
+        min_disease_lon = min(all_disease_longs)
 
-        map_lon = float(sum([max_lon, min_lon])/2)
-        map_lat = float(sum([max_lat, min_lat])/2)
+        max_disease_lat = max(all_disease_lats)
+        min_disease_lat = min(all_disease_lats)
 
+        disease2BmapLon = float(sum([max_disease_lon, min_disease_lon])/2)
+        disease2BmapLat = float(sum([max_disease_lat, min_disease_lat])/2)
+        
 
 
         context = {
-            'page_name': 'Cell Spatial Data',
+            'page_name': 'Disease2BScanVectorized Data',
             'disease2BScanVectorized_geojson': disease2BScanVectorized_geojson,
-            'map_lon': map_lon,
-            'map_lat': map_lat,
+            'disease2BmapLon': disease2BmapLon,
+            'disease2BmapLat': disease2BmapLat,
+        }
+
+    return render(request, template_name, context)
+
+
+
+
+def normal2BScanVectorized_view(request):
+
+    template_name = 'pages/normal2BScanVectorized.html'
+
+    normal2BScanVectorized = Normal2BScanVectorized.objects.all()
+
+    context = {'page_name': 'Normal2BScanVectorized Data',}
+
+    if normal2BScanVectorized:
+
+        normal2BScanVectorized_geojson = serialize(
+            'geojson',
+            normal2BScanVectorized,
+        )
+        normal2BScan_geojson_obj = json.loads(normal2BScanVectorized_geojson)
+        
+
+
+        all_normal_longs = []
+        all_normal_lats = []
+
+        for key, val in enumerate(normal2BScan_geojson_obj['features']):
+            all_normal_longs.append(val['geometry']['coordinates'][0][0][0][0])
+            all_normal_lats.append(val['geometry']['coordinates'][0][0][0][1])
+
+
+        max_normal_lon = max(all_normal_longs)
+        min_normal_lon = min(all_normal_longs)
+
+        max_normal_lat = max(all_normal_lats)
+        min_normal_lat = min(all_normal_lats)
+
+
+        normal2BmapLon = float(sum([max_normal_lon, min_normal_lon])/2)
+        normal2BmapLat = float(sum([max_normal_lat, min_normal_lat])/2)
+
+
+        context = {
+            'page_name': 'Normal2BScanVectorized Spatial Data',
+            'normal2BScanVectorized_geojson': normal2BScanVectorized_geojson,
+            'normal2BmapLon': normal2BmapLon,
+            'normal2BmapLat': normal2BmapLat,
         }
 
     return render(request, template_name, context)
