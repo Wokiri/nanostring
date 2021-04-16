@@ -6,7 +6,7 @@
 
 
 
-<div class="container border shadow-sm mb-5" style="overflow: auto">
+<div class="container border shadow-sm my-5" style="overflow: auto">
 	<h1 class="text-center text-info lead m-1 font-weight-bolder">Disease2BScan</h1>
 
 	<div class="row media mx-auto">
@@ -42,6 +42,7 @@
 	const disease2BScanVectorized_geojson = '{{ disease2BScanVectorized_geojson|escapejs }}'
 	const disease2BmapLon = '{{ disease2Bmap_lon }}'
 	const disease2BmapLat = '{{ disease2Bmap_lat }}'
+	const disease2BmapZoom = '{{ disease2BmapZoom }}'
 </script>
 <script src="{% static 'pages/js/disease2BScanVectorized.js' %}"></script>
 

@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
 
-<div class="container border shadow-sm mb-5" style="overflow: auto">
+<div class="container border shadow-sm my-5" style="overflow: auto">
 	<h1 class="text-center text-info lead m-1 font-weight-bolder">Normal2BScan</h1>
 
 	<div class="row media mx-auto">
@@ -42,6 +42,7 @@
 	const normal2BScanVectorized_geojson = '{{ normal2BScanVectorized_geojson|escapejs }}'
 	const normal2BmapLon = '{{ normal2Bmap_lon }}'
 	const normal2BmapLat = '{{ normal2Bmap_lat }}'
+	const normal2BmapZoom = '{{ normal2BmapZoom }}'
 </script>
 <script src="{% static 'pages/js/normal2BScanVectorized.js' %}"></script>
 

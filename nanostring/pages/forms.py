@@ -30,6 +30,7 @@ from data.models import (
     Kidney_Sample_Annotations,
     RawCSVFiles,
     Disease2BScanVectorized,
+    Normal2BScanVectorized,
     )
 
 
@@ -183,4 +184,16 @@ class Disease2BScanVectorizedModelForm(forms.ModelForm):
 
     class Meta:
         model = Disease2BScanVectorized
+        fields = ['name']
+
+
+class Normal2BScanVectorizedModelForm(forms.ModelForm):
+
+    name = forms.CharField(label='Update the NAME of Normal2BScanVectorized', max_length=254, required=False,
+        widget=forms.TextInput(
+            attrs={'class':'form-control mr-sm-1'}
+        ))
+
+    class Meta:
+        model = Normal2BScanVectorized
         fields = ['name']

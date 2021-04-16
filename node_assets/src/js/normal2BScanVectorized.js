@@ -1,7 +1,7 @@
 import 'ol/ol.css'
 import GeoJSON from 'ol/format/GeoJSON'
 import VectorSource from 'ol/source/Vector'
-import { Style, Fill, Text, Stroke } from 'ol/style'
+import { Style, Fill, Stroke } from 'ol/style'
 import VectorLayer from 'ol/layer/Vector'
 import { Map, View } from 'ol'
 import Select from 'ol/interaction/Select'
@@ -16,19 +16,6 @@ const normal2Bpopup = document.getElementById('normal2Bpopup')
 const normal2BPopupContent = document.getElementById('normal2BPopupContent')
 const normal2Bpopupcloser = document.getElementById('normal2Bpopupcloser')
 
-// const cellRegionsTextLabel = (feature) => feature.get("name");
-
-// const cellRegionsTextStyle = (feature) =>
-//   new Text({
-//     textAlign: "center",
-//     textBaseline: "middle",
-//     font: `bold 14px "Trebuchet MS", Helvetica, sans-serif`,
-//     text: cellRegionsTextLabel(feature),
-//     placement: "polygon",
-//     fill: new Fill({
-//       color: "rgb(25, 25, 77)",
-//     }),
-//   });
 
 const normal2BScanVector = new VectorSource({
 	features: new GeoJSON().readFeatures(normal2BScanVectorized_geojson, {
@@ -36,7 +23,7 @@ const normal2BScanVector = new VectorSource({
 	}),
 })
 
-// cellsSpatial visual style
+// normal2BScanVectorized visual style
 const normal2BScanFeatureStyle = feature => {
 	return new Style({
 		fill: new Fill({
@@ -50,12 +37,13 @@ const normal2BScanFeatureStyle = feature => {
 	})
 }
 
-// cellsSpatial layer
+// normal2BScanVectorized layer
 const normal2BScanLayer = new VectorLayer({
 	source: normal2BScanVector,
 	style: normal2BScanFeatureStyle,
 })
 
+// normal2BScanVectorized Overlay
 const theOverlay = new Overlay({
 	element: normal2Bpopup,
 	autoPan: true,
@@ -76,7 +64,7 @@ const normal2BscanMap = new Map({
 	overlays: [theOverlay],
 	view: new View({
 		center: [normal2BmapLon, normal2BmapLat],
-		zoom: 20,
+		zoom: parseFloat(normal2BmapZoom),
 	}),
 })
 

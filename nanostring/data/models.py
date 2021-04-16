@@ -135,3 +135,4 @@ class Normal2BScanVectorized(models.Model):
     geom = models.MultiPolygonField(srid=4326)
 
     def __str__(self): return str(self.id)
+

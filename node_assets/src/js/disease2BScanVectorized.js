@@ -1,7 +1,7 @@
 import "ol/ol.css";
 import GeoJSON from "ol/format/GeoJSON";
 import VectorSource from "ol/source/Vector";
-import { Style, Fill, Text, Stroke } from "ol/style";
+import { Style, Fill, Stroke } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import { Map, View } from "ol";
 import Select from "ol/interaction/Select";
@@ -16,28 +16,7 @@ const overlay_popup = document.getElementById("popup");
 const overlay_content = document.getElementById("popup-content");
 const closer = document.getElementById("popup-closer");
 
-
-// const cellRegionsTextLabel = (feature) => feature.get("name");
-
-// const cellRegionsTextStyle = (feature) =>
-//   new Text({
-//     textAlign: "center",
-//     textBaseline: "middle",
-//     font: `bold 14px "Trebuchet MS", Helvetica, sans-serif`,
-//     text: cellRegionsTextLabel(feature),
-//     placement: "polygon",
-//     fill: new Fill({
-//       color: "rgb(25, 25, 77)",
-//     }),
-//   });
-
-const disease2BScanVector = new VectorSource({
-  features: new GeoJSON().readFeatures(disease2BScanVectorized_geojson, {
-    extractGeometryName: true,
-  }),
-});
-
-// cellsSpatial visual style
+// disease2BScanVectorized visual style
 const cellsSpatialFeatureStyle = (feature) => {
   return new Style({
     fill: new Fill({
@@ -51,12 +30,21 @@ const cellsSpatialFeatureStyle = (feature) => {
   });
 };
 
-// cellsSpatial layer
+// disease2BScanVectorized vector
+const disease2BScanVector = new VectorSource({
+  features: new GeoJSON().readFeatures(disease2BScanVectorized_geojson, {
+    extractGeometryName: true,
+  }),
+});
+
+
+// disease2BScanVectorized layer
 const disease2BScanLayer = new VectorLayer({
   source: disease2BScanVector,
   style: cellsSpatialFeatureStyle,
 });
 
+// disease2BScanVectorized Overlay
 const theOverlay = new Overlay({
   element: overlay_popup,
   autoPan: true,
@@ -77,7 +65,7 @@ const disease2bscanMap = new Map({
 	overlays: [theOverlay],
 	view: new View({
 		center: [disease2BmapLon, disease2BmapLat],
-		zoom: 20,
+		zoom: parseFloat(disease2BmapZoom),
 	}),
 })
 
@@ -115,10 +103,7 @@ disease2bscanMap.on("singleclick", (evt) => {
   let coords_webmercator = geo_webMercator(lon, lat);
   let x_coords = coords_webmercator[0] / 1000; // I had georeferenced the image by expanding extents by 1000
   let y_coords = coords_webmercator[1] / 1000;
-  overlay_content.innerHTML = `<p>${roundoff(x_coords, 2)}, ${roundoff(
-    y_coords,
-    2
-  )}</p>`;
+  overlay_content.innerHTML = `<p>${roundoff(x_coords, 2)}, ${roundoff(y_coords, 2)}</p>`;
 });
 
 sync(disease2bscanMap);

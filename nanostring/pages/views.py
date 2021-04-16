@@ -42,6 +42,7 @@ from .foss_licences import (
     bokeh_license,
     bootstrap_license,
     django_license,
+    openlayers_license,
     python_license,
 )
 
@@ -73,6 +74,7 @@ from .forms import (
     SearchKidneyssGSEAForm,
     SearchAverageGeneExpressionForm,
     Disease2BScanVectorizedModelForm,
+    Normal2BScanVectorizedModelForm,
     )
 
 all_cell_types = Cell_Types_for_Spatial_Decon.objects.all()
@@ -191,6 +193,8 @@ def disease2BScanVectorized_view(request):
 
         disease2BmapLon = float(sum([max_disease_lon, min_disease_lon])/2)
         disease2BmapLat = float(sum([max_disease_lat, min_disease_lat])/2)
+
+        disease2BmapZoom = 18.5
         
 
 
@@ -199,10 +203,10 @@ def disease2BScanVectorized_view(request):
             'disease2BScanVectorized_geojson': disease2BScanVectorized_geojson,
             'disease2BmapLon': disease2BmapLon,
             'disease2BmapLat': disease2BmapLat,
+            'disease2BmapZoom': disease2BmapZoom,
         }
 
     return render(request, template_name, context)
-
 
 
 
@@ -242,12 +246,15 @@ def normal2BScanVectorized_view(request):
         normal2BmapLon = float(sum([max_normal_lon, min_normal_lon])/2)
         normal2BmapLat = float(sum([max_normal_lat, min_normal_lat])/2)
 
+        normal2BmapZoom = 18.5
+
 
         context = {
             'page_name': 'Normal2BScanVectorized Spatial Data',
             'normal2BScanVectorized_geojson': normal2BScanVectorized_geojson,
             'normal2BmapLon': normal2BmapLon,
             'normal2BmapLat': normal2BmapLat,
+            'normal2BmapZoom': normal2BmapZoom,
         }
 
     return render(request, template_name, context)
@@ -263,10 +270,32 @@ def disease2bscan_update_view(request, scan_id):
     if scan_update_form.is_valid():
         scan_update_form.save()
         messages.success(request, f'Disease2BScanVectorized of id {scan_to_update.id} successfully updated.')
-        return redirect('pages:messages_page', 'spatial-data')
+        return redirect('pages:messages_page', 'disease2b-scan')
     
     context = {
         'page_name': 'Update Disease2BScanVector',
+        'scan_update_form': scan_update_form,
+        'scan_to_update': scan_to_update,
+    }
+
+    return render(request, template_name, context)
+
+
+
+
+def normal2bscan_update_view(request, scan_id):
+    template_name = 'pages/normal2bscan_update.html'
+
+    scan_to_update = get_object_or_404(Normal2BScanVectorized, id=scan_id)
+
+    scan_update_form = Normal2BScanVectorizedModelForm(request.POST or None, instance=scan_to_update)
+    if scan_update_form.is_valid():
+        scan_update_form.save()
+        messages.success(request, f'Normal2BScanVectorized of id {scan_to_update.id} successfully updated.')
+        return redirect('pages:messages_page', 'normal2b-scan')
+    
+    context = {
+        'page_name': 'Update Normal2BScanVector',
         'scan_update_form': scan_update_form,
         'scan_to_update': scan_to_update,
     }
@@ -282,11 +311,31 @@ def disease2bscan_delete_view(request, scan_id):
 
     if request.method == 'POST':
         scan_to_delete.delete()
-        messages.success(request, f'Disease2BScanVectorized of id {scan_to_delete.id} successfully deleted.')
-        return redirect('pages:messages_page', 'spatial-data')
+        messages.success(request, f'Disease2BScanVectorized successfully deleted.')
+        return redirect('pages:messages_page', 'disease2b-scan')
     
     context = {
         'page_name': 'Delete Disease2BScanVector',
+        'scan_to_delete': scan_to_delete,
+    }
+
+    return render(request, template_name, context)
+
+
+
+
+def normal2bscan_delete_view(request, scan_id):
+    template_name = 'pages/normal2bscan_delete.html'
+
+    scan_to_delete = get_object_or_404(Normal2BScanVectorized, id=scan_id)
+
+    if request.method == 'POST':
+        scan_to_delete.delete()
+        messages.success(request, f'Normal2BScanVectorized successfully deleted.')
+        return redirect('pages:messages_page', 'normal2b-scan')
+    
+    context = {
+        'page_name': 'Delete Normal2BScanVector',
         'scan_to_delete': scan_to_delete,
     }
 
@@ -460,7 +509,7 @@ def draw_bar_nested(dataframe, n_bar_title):
 
 
 # find the outliers for each category
-def draw_boxplots(dataframe, outfliers_title):
+def draw_boxplots(dataframe, boxplot_title):
 
     # dataframe
     data_DF = dataframe()
@@ -488,7 +537,7 @@ def draw_boxplots(dataframe, outfliers_title):
 
     dataframe_cols = list(data_DF.columns)
     box_plot = figure(
-        title=outfliers_title,
+        title=boxplot_title,
         width=(60 * len(dataframe_cols)),
         height=800,
         tools="",
@@ -741,9 +790,9 @@ def home_page_view(request):
         'target_expression_dataframe': target_expression_dataframe,
         'kidney_q3_norm_target_count_matrix': all_raw_csv_files.filter(file_name='Kidney_Q3Norm_TargetCountMatrix.csv'),
         'normalized_expression_dataframe': normalized_expression_dataframe,
-        'Kidneyss_GSEA': all_raw_csv_files.filter(file_name='KidneyssGSEA'),
+        'Kidneyss_GSEA': all_raw_csv_files.filter(file_name='Kidney_ssGSEA.csv'),
         'single_sample_gsea_results_dataframe': single_sample_gsea_results_dataframe,
-        'average_gene_expression': all_raw_csv_files.filter(file_name='AverageGeneExpression'),
+        'average_gene_expression': all_raw_csv_files.filter(file_name='Young_kidney_cell_profile_matrix.csv'),
         'average_gene_dataframe': average_gene_dataframe,
     }
 
@@ -771,6 +820,7 @@ def foss_licenses_page_view(request):
         'bokeh_license': bokeh_license(),
         'bootstrap_license': bootstrap_license(),
         'django_license': django_license(),
+        'openlayers_license': openlayers_license(),
         'python_license': python_license(),
     }
 
@@ -1568,7 +1618,7 @@ def kidney_raw_bioProbeCountMatrix_analysis_view(request):
 
         
         template_name = 'pages/probe_expression_analysis.html'
-        box_plot = draw_boxplots(probe_expression_DF, 'Outfliers for Probe Expressions')
+        box_plot = draw_boxplots(probe_expression_DF, 'Boxplot for Probe Expressions')
         nested_bar = draw_bar_nested(probe_expression_DF, 'Nested Bar Plot for Probe Expressions')
 
         context = {
@@ -1660,7 +1710,7 @@ def KidneyQ3NormTargetCountMatrix_analysis_view(request):
 
         
         template_name = 'pages/normalized_expression_analysis.html'
-        box_plot = draw_boxplots(data_DF, 'Outfliers for Normalized Expressions')
+        box_plot = draw_boxplots(data_DF, 'Boxplot for Normalized Expressions')
         nested_bar = draw_bar_nested(data_DF, 'Nested Bar Plot for Normalized Expressions')
 
 
@@ -1707,7 +1757,7 @@ def kidneyssGSEA_analysis_view(request):
 
         
         template_name = 'pages/KidneyssGSEA_analysis.html'
-        box_plot = draw_boxplots(data_DF, 'Outfliers for KidneyssGSEA')
+        box_plot = draw_boxplots(data_DF, 'Boxplot for KidneyssGSEA')
         nested_bar = draw_bar_nested(data_DF, 'Nested Bar Plot for KidneyssGSEA')
 
 
@@ -1754,7 +1804,7 @@ def average_gene_expression_analysis_view(request):
 
         
         template_name = 'pages/average_gene_expression_analysis.html'
-        box_plot = draw_boxplots(data_DF, 'Outfliers for Average Gene Expression')
+        box_plot = draw_boxplots(data_DF, 'Boxplot for Average Gene Expression')
         nested_bar = draw_bar_nested(data_DF, 'Nested Bar Plot for Gene Expressions')
 
 
