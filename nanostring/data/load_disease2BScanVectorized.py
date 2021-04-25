@@ -12,7 +12,6 @@ disease2bscanvectorized_path = os.path.join(
 disease2bscanvectorized_mapping = {
     'fid': 'fid',
     'dn': 'DN',
-    'name': 'name',
     'geom': 'MULTIPOLYGON',
 }
 
@@ -22,6 +21,6 @@ def run(verbose=True):
         Disease2BScanVectorized,
         disease2bscanvectorized_path,
         disease2bscanvectorized_mapping,
-        transform=False #the shapeﬁle is already in WGS84 (SRID=4326)
+        transform=False #the shapeﬁle is in web_mercator and we'd wish it to remain as such
     )
     layermap.save(strict=True,verbose=verbose)

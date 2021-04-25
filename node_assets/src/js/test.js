@@ -1,45 +1,55 @@
-import "ol/ol.css";
-import GeoJSON from "ol/format/GeoJSON";
-import VectorSource from "ol/source/Vector";
-import { Style, Fill, Text, Stroke } from "ol/style";
-import VectorLayer from "ol/layer/Vector";
-import { Map, View } from "ol";
-import Select from "ol/interaction/Select";
-import Overlay from "ol/Overlay";
-import sync from "ol-hashed";
-import ZoomSlider from "ol/control/ZoomSlider";
+import 'ol/ol.css'
+import GeoJSON from 'ol/format/GeoJSON'
+import VectorSource from 'ol/source/Vector'
+import { Text, Style, Fill, Stroke } from 'ol/style'
+import VectorLayer from 'ol/layer/Vector'
+import { Map, View } from 'ol'
+import Select from 'ol/interaction/Select'
+import Overlay from 'ol/Overlay'
+import sync from 'ol-hashed'
+import { Attribution, defaults as defaultControls, ZoomSlider } from 'ol/control'
 
-import { geo_webMercator, roundoff } from "./parameters";
-const normal2BScanVectorized_geojson = require('./normal2B_scan_AOI_vectorized.json')
+import { roundoff } from './parameters'
+
+const disease2BScan_map = document.getElementById('disease2BScan_map')
+const overlay_popup = document.getElementById('popup')
+const overlay_content = document.getElementById('popup-content')
+const closer = document.getElementById('popup-closer')
 
 
-const normal2BScan_map = document.getElementById('normal2BScan_map')
-const normal2Bpopup = document.getElementById('normal2Bpopup')
-const normal2BPopupContent = document.getElementById('normal2BPopupContent')
-const normal2Bpopupcloser = document.getElementById('normal2Bpopupcloser')
 
-// const cellRegionsTextLabel = (feature) => feature.get("name");
+const disease2BScanVectorized_geojson =require('./test.json')
 
-// const cellRegionsTextStyle = (feature) =>
-//   new Text({
-//     textAlign: "center",
-//     textBaseline: "middle",
-//     font: `bold 14px "Trebuchet MS", Helvetica, sans-serif`,
-//     text: cellRegionsTextLabel(feature),
-//     placement: "polygon",
-//     fill: new Fill({
-//       color: "rgb(25, 25, 77)",
-//     }),
-//   });
-
-const normal2BScanVector = new VectorSource({
-	features: new GeoJSON().readFeatures(normal2BScanVectorized_geojson, {
+// disease2BScanVectorized vector
+const disease2BScanVector = new VectorSource({
+	features: new GeoJSON().readFeatures(disease2BScanVectorized_geojson, {
+		dataProjection: 'EPSG:3857',
+		featureProjection: 'EPSG:3857',
 		extractGeometryName: true,
 	}),
 })
 
-// cellsSpatial visual style
-const normal2BScanFeatureStyle = feature => {
+// disease2BScanVectorized visual style
+
+const imageScanNameText = feature => `${feature.get('name')}`
+
+const imageScanTextStyle = feature => {
+	if (imageScanNameText(feature) !== 'undefined'){
+		return new Text({
+			textAlign: 'center',
+			textBaseline: 'middle',
+			font: `18px "Trebuchet MS", Helvetica, sans-serif`,
+			text: imageScanNameText(feature),
+			placement: 'polygon',
+			fill: new Fill({
+				color: 'rgb(0, 0, 0)',
+			}),
+		})
+	}
+}
+	
+
+const cellsSpatialFeatureStyle = feature => {
 	return new Style({
 		fill: new Fill({
 			color: 'rgb(255, 255, 255)',
@@ -48,76 +58,109 @@ const normal2BScanFeatureStyle = feature => {
 			color: 'rgb(153, 255, 221)',
 			width: 2,
 		}),
-		// text: cellRegionsTextStyle(feature),
+		text: imageScanTextStyle(feature),
 	})
 }
 
-// cellsSpatial layer
-const normal2BScanLayer = new VectorLayer({
-	source: normal2BScanVector,
-	style: normal2BScanFeatureStyle,
+// disease2BScanVectorized layer
+const disease2BScanLayer = new VectorLayer({
+	source: disease2BScanVector,
+	style: cellsSpatialFeatureStyle,
 })
 
+// disease2BScanVectorized Overlay
 const theOverlay = new Overlay({
-	element: normal2Bpopup,
+	element: overlay_popup,
 	autoPan: true,
 	autoPanAnimation: {
 		duration: 250,
 	},
 })
 
-normal2Bpopupcloser.onclick = () => {
+closer.onclick = () => {
 	theOverlay.setPosition(undefined)
-	normal2Bpopupcloser.blur()
+	closer.blur()
 	return false
 }
 
-const normal2BscanMap = new Map({
-	target: normal2BScan_map,
-	layers: [normal2BScanLayer],
+let expandedAttribution = new Attribution({
+	collapsible: false,
+})
+
+const disease2bscanMap = new Map({
+	controls: defaultControls({ attribution: false }).extend([expandedAttribution, new ZoomSlider()]),
+	target: disease2BScan_map,
+	layers: [disease2BScanLayer],
 	overlays: [theOverlay],
 	view: new View({
-		center: [7.467392023311596, -30.491796601714732],
-		// center: [mapLon, mapLat],
-		zoom: 20,
+		maxZoom: 40,
+		minZoom: 10,
 	}),
 })
 
-normal2BscanMap.addControl(new ZoomSlider())
+const mapExtent = disease2BScanLayer.getSource().getExtent()
+disease2bscanMap.getView().fit(mapExtent, disease2bscanMap.getSize())
 
-// If region is selected get feature info, don't otherwise
-const bringLayerPopupInfo = theFeature => {
-	let layerAttributes = theFeature.getFeatures().array_[0]
 
-	if (layerAttributes) {
-		normal2BPopupContent.innerHTML = `
-    <p class='text-center'>Name: <span class='text-primary lead'>${layerAttributes.values_.name}</span></p>
-    <a class="btn btn-outline-info my-0" href='/edit-normal2Bscan-vector/${layerAttributes.values_.pk}'>Edit</a>
-    <a class="btn btn-outline-danger my-0" href='/delete-normal2Bscan-vector/${layerAttributes.values_.pk}'>Delete</a>
-    `
-	}
+let checkSize = () => {
+	let isLess600 = disease2bscanMap.getSize()[0] < 600
+	expandedAttribution.setCollapsible(isLess600)
+	expandedAttribution.setCollapsed(isLess600)
 }
+checkSize()
+window.addEventListener('resize', checkSize)
 
-// sampleAnnotations selection option
+
+
+// If cell is selected get feature info, don't otherwise
+const populate_PopupContent = theFeature => {
+  overlay_content.innerHTML = `
+    <p class='text-center'>Name: <span class='text-primary lead'>${theFeature.name}</span></p>
+    <a class="btn btn-outline-info my-0" href='/edit-disease2bscan-vector/${parseInt(theFeature.fid)}'>Edit</a>
+    <a class="btn btn-outline-danger my-0" href='/delete-disease2bscan-vector/${parseInt(theFeature.fid)}'>Delete</a>
+    `
+};
+
+// Disease2Bscan selection option
 const singleMapClick = new Select({
-	layers: [normal2BScanLayer],
+	layers: [disease2BScanLayer],
 }) //By default, this is module:ol/events/condition~singleClick. Other defaults are exactly what I need
 
-normal2BscanMap.addInteraction(singleMapClick)
+disease2bscanMap.addInteraction(singleMapClick)
 
-singleMapClick.on('select', elem => {
-	bringLayerPopupInfo(elem.target)
+
+let selected = null
+disease2bscanMap.on('singleclick', evt => {
+	disease2bscanMap.forEachFeatureAtPixel(evt.pixel, layer => {
+		selected = layer
+	})
+
+	if (selected) {
+		let click_coords = evt.coordinate
+		theOverlay.setPosition(click_coords)
+		populate_PopupContent(selected.getProperties())
+		selected = null
+	} else {
+		theOverlay.setPosition(undefined)
+		closer.blur()
+	}
 })
 
-normal2BscanMap.on('singleclick', evt => {
-	let click_coords = evt.coordinate
-	theOverlay.setPosition(click_coords)
-	let lon = click_coords[0]
-	let lat = click_coords[1]
-	let coords_webmercator = geo_webMercator(lon, lat)
-	let x_coords = coords_webmercator[0] / 1000 // I had georeferenced the image by expanding extents by 1000
-	let y_coords = coords_webmercator[1] / 1000
-	normal2BPopupContent.innerHTML = `<p>${roundoff(x_coords, 2)}, ${roundoff(y_coords, 2)}</p>`
+
+let attributionComplete = false
+disease2bscanMap.on('rendercomplete', () => {
+	if (!attributionComplete) {
+		let attribution = document.getElementsByClassName('ol-attribution')[0]
+		let attributionList = attribution.getElementsByTagName('ul')[0]
+		let firstLayerAttribution = attributionList.getElementsByTagName('li')[0]
+	let olAttribution = document.createElement('li')
+	olAttribution.innerHTML = '<a href="https://openlayers.org/">OpenLayers Docs</a> &#x2503; '
+		let joe_twitter = document.createElement('li')
+		joe_twitter.innerHTML = '<a href="https://twitter.com/JWokiri">@JWokiri</a> &#x2503; '
+	attributionList.insertBefore(olAttribution, firstLayerAttribution)
+		attributionList.insertBefore(joe_twitter, firstLayerAttribution)
+		attributionComplete = true
+	}
 })
 
-sync(normal2BscanMap)
+sync(disease2bscanMap)

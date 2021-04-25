@@ -29,13 +29,13 @@
 
                 {% if search_count %}
                 <div class="container">
-                    <p class="text-info font-weight-bold lead">
+                    <p class="text-info lead">
                         Found {{ search_count|apnumber }} record{{ search_count|pluralize }}
                     </p>
                 </div>
                 {% endif %}
 
-                <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
+                <div class="shadow-sm table-responsive border my-sm-5 p-4" style="max-height: 40vh;">
                     <table class="table table-bordered table-striped">
                         <thead class="text-center text-success">
                             <tr>
@@ -158,14 +158,9 @@
                     </div>
                 </div>
 
-                
-                
-                
 
             </div>
 
-
-            
         </div>
     {% else %}
         <div class="py-sm-2">
@@ -175,9 +170,6 @@
 
 <script>
   const sampleAnnotationsVectorGeoson = "{{ sample_annotations_vector_geoson|escapejs }}";
-  const mapLon = "{{ map_lon }}";
-  const mapLat = "{{ map_lat }}";
-  const mapZoom = "{{ map_zoom }}";
 </script>
 <script src="{% static 'pages/js/sample_annotation_map.js' %}"></script>
 <script src="{% static 'pages/bokeh/bokeh-2.3.0.min.js' %}"></script>

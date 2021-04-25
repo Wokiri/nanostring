@@ -105,4 +105,18 @@ normal2BscanMap.on('singleclick', evt => {
 	normal2BPopupContent.innerHTML = `<p>${roundoff(x_coords, 2)}, ${roundoff(y_coords, 2)}</p>`
 })
 
+let attributionComplete = false;
+normal2BscanMap.on("rendercomplete", function (evt) {
+  if (!attributionComplete) {
+    let attribution = document.getElementsByClassName("ol-attribution")[0];
+    let attributionList = attribution.getElementsByTagName("ul")[0];
+    let firstLayerAttribution = attributionList.getElementsByTagName("li")[0];
+    let joe_twitter = document.createElement("li");
+    joe_twitter.innerHTML =
+      '<a href="https://twitter.com/JWokiri">@JWokiri</a> &middot; ';
+    attributionList.insertBefore(joe_twitter, firstLayerAttribution);
+    attributionComplete = true;
+  }
+});
+
 sync(normal2BscanMap)

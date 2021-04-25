@@ -7,7 +7,7 @@
 
 
 <div class="container border shadow-sm my-5" style="overflow: auto">
-	<h1 class="text-center text-info lead m-1 font-weight-bolder">Disease2BScan</h1>
+	<h1 class="text-center text-info lead my-2 font-weight-bolder">Disease2BScan</h1>
 
 	<div class="row media mx-auto">
 		<div class="col pt-4 mx-1 px-0">
@@ -31,7 +31,7 @@
 	</div>
 
 	<div id="disease2BScan_map" class="mx-auto my-0"></div>
-	<p class="text-center text-info lead my-0 py-0">Vecterized disease2bscan image showing generated AOI regions</p>
+	<p class="text-center text-info lead my-0 py-0">Vectorized Disease2BScan image showing generated AOIs</p>
 	<div id="popup" class="ol-popup">
 		<p class="ol-popup-closer font-weight-bold" id="popup-closer"></p>
 		<div id="popup-content"></div>
@@ -40,9 +40,6 @@
 
 <script>
 	const disease2BScanVectorized_geojson = '{{ disease2BScanVectorized_geojson|escapejs }}'
-	const disease2BmapLon = '{{ disease2Bmap_lon }}'
-	const disease2BmapLat = '{{ disease2Bmap_lat }}'
-	const disease2BmapZoom = '{{ disease2BmapZoom }}'
 </script>
 <script src="{% static 'pages/js/disease2BScanVectorized.js' %}"></script>
 

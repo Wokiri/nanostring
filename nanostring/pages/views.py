@@ -148,7 +148,6 @@ def download_data_view(request):
                 return redirect('pages:messages_page', 'download-data')
 
 
-
     context = {
         'page_name': 'Download/Rewrite Data',
         'download_form': download_form,
@@ -163,47 +162,22 @@ def disease2BScanVectorized_view(request):
 
     template_name = 'pages/disease2BScanVectorized.html'
 
-    disease2BScanVectorized = Disease2BScanVectorized.objects.all()
+    disease2BScanVectorized = Disease2BScanVectorized.objects.order_by('fid')
 
     context = {'page_name': 'Disease2BScanVectorized Data',}
+
 
     if disease2BScanVectorized:
 
         disease2BScanVectorized_geojson = serialize(
             'geojson',
             disease2BScanVectorized,
+            srid=3857,
         )
-        disease2BScan_geojson_obj = json.loads(disease2BScanVectorized_geojson)
-        
-
-
-        all_disease_longs = []
-        all_disease_lats = []
-
-
-        for key, val in enumerate(disease2BScan_geojson_obj['features']):
-            all_disease_longs.append(val['geometry']['coordinates'][0][0][0][0])
-            all_disease_lats.append(val['geometry']['coordinates'][0][0][0][1])
-
-        max_disease_lon = max(all_disease_longs)
-        min_disease_lon = min(all_disease_longs)
-
-        max_disease_lat = max(all_disease_lats)
-        min_disease_lat = min(all_disease_lats)
-
-        disease2BmapLon = float(sum([max_disease_lon, min_disease_lon])/2)
-        disease2BmapLat = float(sum([max_disease_lat, min_disease_lat])/2)
-
-        disease2BmapZoom = 18.5
-        
-
 
         context = {
             'page_name': 'Disease2BScanVectorized Data',
             'disease2BScanVectorized_geojson': disease2BScanVectorized_geojson,
-            'disease2BmapLon': disease2BmapLon,
-            'disease2BmapLat': disease2BmapLat,
-            'disease2BmapZoom': disease2BmapZoom,
         }
 
     return render(request, template_name, context)
@@ -261,15 +235,15 @@ def normal2BScanVectorized_view(request):
 
 
 
-def disease2bscan_update_view(request, scan_id):
+def disease2bscan_update_view(request, scan_fid):
     template_name = 'pages/disease2bscan_update.html'
 
-    scan_to_update = get_object_or_404(Disease2BScanVectorized, id=scan_id)
+    scan_to_update = get_object_or_404(Disease2BScanVectorized, fid=scan_fid)
 
     scan_update_form = Disease2BScanVectorizedModelForm(request.POST or None, instance=scan_to_update)
     if scan_update_form.is_valid():
         scan_update_form.save()
-        messages.success(request, f'Disease2BScanVectorized of id {scan_to_update.id} successfully updated.')
+        messages.success(request, f'Disease2BScan Vectorized Image of fid {scan_to_update.fid} successfully updated.')
         return redirect('pages:messages_page', 'disease2b-scan')
     
     context = {
@@ -283,15 +257,15 @@ def disease2bscan_update_view(request, scan_id):
 
 
 
-def normal2bscan_update_view(request, scan_id):
+def normal2bscan_update_view(request, scan_fid):
     template_name = 'pages/normal2bscan_update.html'
 
-    scan_to_update = get_object_or_404(Normal2BScanVectorized, id=scan_id)
+    scan_to_update = get_object_or_404(Normal2BScanVectorized, fid=scan_fid)
 
     scan_update_form = Normal2BScanVectorizedModelForm(request.POST or None, instance=scan_to_update)
     if scan_update_form.is_valid():
         scan_update_form.save()
-        messages.success(request, f'Normal2BScanVectorized of id {scan_to_update.id} successfully updated.')
+        messages.success(request, f'Normal2BScanVectorized of id {scan_to_update.fid} successfully updated.')
         return redirect('pages:messages_page', 'normal2b-scan')
     
     context = {
@@ -304,10 +278,10 @@ def normal2bscan_update_view(request, scan_id):
 
 
 
-def disease2bscan_delete_view(request, scan_id):
+def disease2bscan_delete_view(request, scan_fid):
     template_name = 'pages/disease2bscan_delete.html'
 
-    scan_to_delete = get_object_or_404(Disease2BScanVectorized, id=scan_id)
+    scan_to_delete = get_object_or_404(Disease2BScanVectorized, fid=scan_fid)
 
     if request.method == 'POST':
         scan_to_delete.delete()
@@ -324,10 +298,10 @@ def disease2bscan_delete_view(request, scan_id):
 
 
 
-def normal2bscan_delete_view(request, scan_id):
+def normal2bscan_delete_view(request, scan_fid):
     template_name = 'pages/normal2bscan_delete.html'
 
-    scan_to_delete = get_object_or_404(Normal2BScanVectorized, id=scan_id)
+    scan_to_delete = get_object_or_404(Normal2BScanVectorized, fid=scan_fid)
 
     if request.method == 'POST':
         scan_to_delete.delete()
@@ -935,25 +909,13 @@ def sample_annotations_analysis_view(request):
     template_name = 'pages/sample_annotation_analysis.html'
     sample_annotations = Kidney_Sample_Annotations.objects.order_by('id')
     search_count = sample_annotations.count()
-
-    sample_annotations_data = pandas.read_sql_query(
-        str(Kidney_Sample_Annotations.objects.all().query),
-        connection
-    )
-
-    num_cols = [
-        'roi_label',
-        'aoi_surface_area',
-        'aoi_nuclei_count',
-        'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
-        'stitched_reads', 'aligned_reads', 'duplicated_reads', 'sequencing_saturation',
-        'umiq_30', 'rtsq_30'
-    ]
+    
 
     # sample_annotations_DF = DataFrame(sample_annotations_data, columns=['disease_status', 'segment_display_name'])
-    sample_annotations_DF = DataFrame(sample_annotations_data)
+    sample_annotations_DF = DataFrame(sample_annotations.values())
     
-    data_DF_describe_table = DataFrame(sample_annotations_data)[num_cols].describe().to_html(
+    
+    data_DF_describe_table = sample_annotations_DF.describe().to_html(
         justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
     )
     
@@ -989,36 +951,7 @@ def sample_annotations_analysis_view(request):
             Q(normalization_factor__icontains=search_value)
         )
 
-        sql_search_query = '''
-        SELECT * FROM data_kidney_sample_annotations WHERE
-        CAST (id AS TEXT) ILIKE %(search_value)s OR
-        slide_name ILIKE %(search_value)s OR
-        scan_name ILIKE %(search_value)s OR
-        CAST (roi_label AS TEXT) ILIKE %(search_value)s OR
-        segment_label ILIKE %(search_value)s OR
-        segment_display_name ILIKE %(search_value)s OR
-        sample_id ILIKE %(search_value)s OR
-        CAST (aoi_surface_area AS TEXT) ILIKE %(search_value)s OR
-        CAST (aoi_nuclei_count AS TEXT) ILIKE %(search_value)s OR
-        CAST (roi_coordinate_x AS TEXT) ILIKE %(search_value)s OR
-        CAST (roi_coordinate_y AS TEXT) ILIKE %(search_value)s OR
-        CAST (raw_reads AS TEXT) ILIKE %(search_value)s OR
-        CAST (trimmed_reads AS TEXT) ILIKE %(search_value)s OR
-        CAST (stitched_reads AS TEXT) ILIKE %(search_value)s OR
-        CAST (aligned_reads AS TEXT) ILIKE %(search_value)s OR
-        CAST (duplicated_reads AS TEXT) ILIKE %(search_value)s OR
-        CAST (sequencing_saturation AS TEXT) ILIKE %(search_value)s OR
-        CAST (umiq_30 AS TEXT) ILIKE %(search_value)s OR
-        CAST (rtsq_30 AS TEXT) ILIKE %(search_value)s OR
-        disease_status ILIKE %(search_value)s OR
-        pathology ILIKE %(search_value)s OR
-        region ILIKE %(search_value)s OR
-        CAST (loq AS TEXT) ILIKE %(search_value)s OR
-        CAST (normalization_factor AS TEXT) ILIKE %(search_value)s
-        '''
-
-        sample_annotations_data = pandas.read_sql_query(sql_search_query, connection, params={'search_value':f'%{search_value}%'})
-        sample_annotations_DF = DataFrame(sample_annotations_data, columns=['disease_status', 'segment_display_name'])
+        sample_annotations_DF = DataFrame(sample_annotations.values())
 
         if sample_annotations.count() == 0:
             messages.error(request, f'No Sample Annotations matches: "{search_value}".')
@@ -1031,20 +964,10 @@ def sample_annotations_analysis_view(request):
         'geojson',
         sample_annotations,
         geometry_field='geom',
+        srid=3857,
         fields=('disease_status','segment_display_name')
         )
         
-    max_lon = max([float(i.geom[0]) for i in sample_annotations])
-    min_lon = min([float(i.geom[0]) for i in sample_annotations])
-
-
-    max_lat = max([float(i.geom[1]) for i in sample_annotations])
-    min_lat = min([float(i.geom[1]) for i in sample_annotations])
-
-    map_lon = float(sum([max_lon, min_lon])/2)
-    map_lat = float(sum([max_lat, min_lat])/2)
-    map_zoom = float(27.2)
-    
 
     disease_status_group = sample_annotations_DF.groupby(['disease_status']).count()
 
@@ -1060,7 +983,7 @@ def sample_annotations_analysis_view(request):
     disease_status_groups_CDS = ColumnDataSource(disease_status_group)
 
 
-    disease_status_group_describe_table = DataFrame(sample_annotations_data)[
+    disease_status_group_describe_table = sample_annotations_DF[
         [
             'disease_status', 'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
             'stitched_reads', 'aligned_reads', 'duplicated_reads', 'sequencing_saturation',
@@ -1111,17 +1034,26 @@ def sample_annotations_analysis_view(request):
     quantile_search_percentage = None
     quantile_search_value = None
     quantile_search_form = QuantileSearchForm(request.GET or None)
+
+    numerical_cols = [
+        'roi_label',
+        'aoi_surface_area',
+        'aoi_nuclei_count',
+        'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
+        'stitched_reads', 'aligned_reads', 'duplicated_reads', 'sequencing_saturation',
+        'umiq_30', 'rtsq_30'
+    ]
     
     if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
         q_cd = quantile_search_form.cleaned_data
         quantile_search_value = float(q_cd['quantile_value'])
         quantile_search_percentage = quantile_search_value * 100
-        quantile_search_table = DataFrame(sample_annotations_data)[num_cols].quantile([quantile_search_value]).to_html(
+        quantile_search_table = sample_annotations_DF[numerical_cols].quantile([quantile_search_value]).to_html(
             justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
         )
 
     coords_DF = DataFrame(
-        sample_annotations_data,
+        sample_annotations_DF,
         columns=[
             'roi_coordinate_x',
             'roi_coordinate_y',
@@ -1193,9 +1125,6 @@ def sample_annotations_analysis_view(request):
         'sample_annotations_search_form': sample_annotations_search_form,
         'search_count': search_count,
         'sample_annotations_vector_geoson': sample_annotations_vector_geoson,
-        'map_lon': map_lon,
-        'map_lat': map_lat,
-        'map_zoom': map_zoom,
         'script_pie_chart': script_pie_chart,
         'div_pie_chart': div_pie_chart,
         'data_DF_describe_table': data_DF_describe_table,

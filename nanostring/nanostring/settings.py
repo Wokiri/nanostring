@@ -26,6 +26,7 @@ if os.name == 'nt':
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = 'k1m$l)!+rlt3@v+w=jk3i)-qz2u%o2l=e=22xxh8cr$lue5%*='
 SECRET_KEY = os.environ.get('SECRET_KEY'),
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -98,12 +99,12 @@ WSGI_APPLICATION = 'nanostring.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE':os.environ.get('DB_ENGINE'),
-        'NAME': os.environ.get('NANOSTRING_DB'),
-        'USER': os.environ.get('DB_USER'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'nanostring_DB',
+        'USER': 'postgres',
         'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

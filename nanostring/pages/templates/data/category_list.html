@@ -9,6 +9,13 @@
         <div class="list-group my-sm-2 col-sm-4">
             <p class="font-weight-bold text-info">{{ forloop.counter }}. {{ item.get_name_display }}</p>
             <p class="text-info">{{ item.description }}</p>
+            {% for spec_item in item.rawcsvfiles_set.all %}
+            <div class="bg-light" style="min-height: 50px; max-height: 50px; overflow-x:scroll; overflow-y:scroll;">
+                <p class="font-weight-bold text-info">{{ forloop.counter }}. {{ spec_item.name }}</p>
+            </div>
+            {% empty %}
+                <p class="text-warning text-center">No CSVs data here yet!</p>
+            {% endfor %}
             <a class="btn btn-outline-primary" href="{% url 'pages:update_data_categories_page' item.name %}">
                 Edit
             </a>

@@ -5,7 +5,7 @@
 {% block content %}
 
 {% if messages %}
-    <div class="container my-4">
+    <div class="container py-4 alert-info">
         {% for message in messages %}
             <h4{% if message.tags %} class="text-{{ message.tags }}"{% endif %}>{{ message|safe }}</h4>
         {% endfor %}
@@ -13,11 +13,11 @@
 
 {% endif %}
 
-<div class="container my-4">
-    <a class="btn btn-outline-dark" href="../">
+<div class="container my-4 d-flex justify-content-center">
+    <a class="btn btn-outline-dark mx-2" href="../">
         Previous Page
     </a>
-    <a class="btn btn-outline-dark" href="{% url 'pages:home_page' %}">
+    <a class="btn btn-outline-dark mx-2" href="{% url 'pages:home_page' %}">
         Home Page
     </a>
 </div>
