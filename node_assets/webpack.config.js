@@ -6,15 +6,15 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-save_dir = 'sample_annotations'
+save_dir = 'normal_scan'
 
 module.exports = {
 	entry: {
 		// bootstrapStyling: './src/js/bootstrapStyling.js',
 		// nanostringStyling: './src/js/nanostringStyling.js',
 		// disease2BScanVectorized: './src/js/disease2BScanVectorized.js',
-		sample_annotation_map: './src/js/sample_annotation_map.js',
-		// normal2BScanVectorized: './src/js/normal2BScanVectorized.js',
+		// sample_annotation_map: './src/js/sample_annotation_map.js',
+		normal2BScanVectorized: './src/js/normal2BScanVectorized.js',
 		// testing_js: './src/js/test.js',
 	},
 	output: {

@@ -44,6 +44,7 @@ from .foss_licences import (
     django_license,
     openlayers_license,
     python_license,
+    qgis_license,
 )
 
 
@@ -188,7 +189,7 @@ def normal2BScanVectorized_view(request):
 
     template_name = 'pages/normal2BScanVectorized.html'
 
-    normal2BScanVectorized = Normal2BScanVectorized.objects.all()
+    normal2BScanVectorized = Normal2BScanVectorized.objects.order_by('fid')
 
     context = {'page_name': 'Normal2BScanVectorized Data',}
 
@@ -197,38 +198,13 @@ def normal2BScanVectorized_view(request):
         normal2BScanVectorized_geojson = serialize(
             'geojson',
             normal2BScanVectorized,
+            srid=3857,
         )
-        normal2BScan_geojson_obj = json.loads(normal2BScanVectorized_geojson)
-        
-
-
-        all_normal_longs = []
-        all_normal_lats = []
-
-        for key, val in enumerate(normal2BScan_geojson_obj['features']):
-            all_normal_longs.append(val['geometry']['coordinates'][0][0][0][0])
-            all_normal_lats.append(val['geometry']['coordinates'][0][0][0][1])
-
-
-        max_normal_lon = max(all_normal_longs)
-        min_normal_lon = min(all_normal_longs)
-
-        max_normal_lat = max(all_normal_lats)
-        min_normal_lat = min(all_normal_lats)
-
-
-        normal2BmapLon = float(sum([max_normal_lon, min_normal_lon])/2)
-        normal2BmapLat = float(sum([max_normal_lat, min_normal_lat])/2)
-
-        normal2BmapZoom = 18.5
-
+        print(normal2BScanVectorized_geojson)
 
         context = {
             'page_name': 'Normal2BScanVectorized Spatial Data',
             'normal2BScanVectorized_geojson': normal2BScanVectorized_geojson,
-            'normal2BmapLon': normal2BmapLon,
-            'normal2BmapLat': normal2BmapLat,
-            'normal2BmapZoom': normal2BmapZoom,
         }
 
     return render(request, template_name, context)
@@ -358,7 +334,7 @@ def analyses_tables(
     if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
         q_cd = quantile_search_form.cleaned_data
         quantile_search_value = float(q_cd['quantile_value'])
-        quantile_search_percentage = quantile_search_value * 100
+        quantile_search_percentage = round(quantile_search_value * 100, 2)
         quantile_search_table = data_DF.quantile([quantile_search_value]).to_html(
             justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
         )
@@ -519,7 +495,10 @@ def draw_boxplots(dataframe, boxplot_title):
         x_range=dataframe_cols,
         toolbar_location=None
     )
-    box_plot.xaxis.major_label_orientation = pi/2.4
+    box_plot.xaxis.major_label_orientation = pi/2
+    box_plot.xaxis.major_label_text_color = "#663366"
+    box_plot.xaxis.major_label_text_font_style = 'bold'
+    box_plot.xaxis.major_label_text_font_size = "14px"
     box_plot.title.align = "left"
     box_plot.title.text_color = "#009999"
     box_plot.title.text_font_size = "18px"
@@ -538,8 +517,8 @@ def draw_boxplots(dataframe, boxplot_title):
     box_plot.segment(dataframe_cols, lower, dataframe_cols, q1, line_color="#660066")
 
     # boxes
-    box_plot.vbar(dataframe_cols, 0.7, q2, q3, fill_color="#ff99ff", line_color="#ff4dff")
-    box_plot.vbar(dataframe_cols, 0.7, q1, q2, fill_color="#00e6e6", line_color="#00b3b3")
+    box_plot.vbar(dataframe_cols, 0.7, q2, q3, fill_color="#996600", line_color="#999999")
+    box_plot.vbar(dataframe_cols, 0.7, q1, q2, fill_color="#009966", line_color="#666666")
 
     # whiskers (almost-0 height rects simpler than segments)
     box_plot.rect(dataframe_cols, lower, 0.2, 0.01, line_color="black")
@@ -796,6 +775,7 @@ def foss_licenses_page_view(request):
         'django_license': django_license(),
         'openlayers_license': openlayers_license(),
         'python_license': python_license(),
+        'qgis_license': qgis_license(),
     }
 
     return render(request, template_name, context)
@@ -978,7 +958,7 @@ def sample_annotations_analysis_view(request):
     disease_status_group['proportion'] = (
         disease_status_group['segment_display_name']
         )
-    disease_status_group['color'] = ['#009933', '#ff3300'][:len(disease_status_group)]
+    disease_status_group['color'] = ['#ff3300', '#009933'][:len(disease_status_group)]
     
     disease_status_groups_CDS = ColumnDataSource(disease_status_group)
 
@@ -994,18 +974,15 @@ def sample_annotations_analysis_view(request):
     )
     
 
-
-    sample_annotations_tooltips= [
-            ('Disease Status', '@disease_status'),
-            ('Proportion', f'@proportion out of {len(sample_annotations_DF)}'),
-        ]
-
     sample_annotations_fig=figure(
         title="Sample Annotations categorized by Disease Status",
         # plot_height=600,
-        # plot_width=992,
-        tooltips=sample_annotations_tooltips,
-        )
+        plot_width=800,
+        tooltips=[
+            ('Disease Status', '@disease_status'),
+            ('Proportion', f'@proportion out of {len(sample_annotations_DF)}'),
+        ],
+    )
 
     sample_annotations_fig.wedge(
         x=0,
@@ -1047,7 +1024,7 @@ def sample_annotations_analysis_view(request):
     if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
         q_cd = quantile_search_form.cleaned_data
         quantile_search_value = float(q_cd['quantile_value'])
-        quantile_search_percentage = quantile_search_value * 100
+        quantile_search_percentage = round(quantile_search_value * 100, 2)
         quantile_search_table = sample_annotations_DF[numerical_cols].quantile([quantile_search_value]).to_html(
             justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
         )
@@ -1074,6 +1051,7 @@ def sample_annotations_analysis_view(request):
 
     scatter = figure(
         title='Scatter Plot for Sample Annotations',
+        plot_width=800,
         x_axis_label='X Coordinates',
         y_axis_label='Y Coordinates',
         tools=TOOLS,

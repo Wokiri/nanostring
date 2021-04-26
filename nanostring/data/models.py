@@ -129,7 +129,7 @@ class Disease2BScanVectorized(models.Model):
 
 
 class Normal2BScanVectorized(models.Model):
-    fid = models.FloatField()
+    fid = models.BigIntegerField()
     dn = models.BigIntegerField()
     name = models.CharField(max_length=254, null=True, blank=True)
     geom = models.MultiPolygonField(srid=3857)

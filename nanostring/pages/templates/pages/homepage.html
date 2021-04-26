@@ -2,9 +2,9 @@
 
 <div class="container-fluid my-sm-5 py-sm-4 shadow-sm">
 	<div class="data_sections py-5">
-		<h3 class="text-center my-0 py-0">Sample Annotations</h3>
+		<h3 class="text-center my-0 py-0 text-barlow-light text-barlow-light">Sample Annotations</h3>
 		<div class="row my-sm-0 py-sm-0">
-			<div class="col-sm-4 p-sm-5 d-flex align-items-center">
+			<div class="col-sm-4 p-sm-5 d-flex align-items-center d-flex align-items-center">
 				<p class="lead">DATA for the Annotations of ROIs (i.e. samples) in files 3-5.</p>
 			</div>
 
@@ -87,7 +87,7 @@
 				{% else %}
 				<div class="mt-sm-4 p-4">
 					<div class="pb-2 pb-sm-2">
-						<h3 class="text-info">Sample Annotations data not yet Uploaded!</h3>
+						<h3 class="text-info text-barlow-semibold">Sample Annotations data not yet Uploaded!</h3>
 					</div>
 					<div class="py-2 py-sm-2 my-2">
 						<a class="btn btn-outline-dark" href="{% url 'pages:upload_sampleannotation_page' %}"> Upload Sample Annotations </a>
@@ -101,8 +101,8 @@
 
 {% comment %}Probe Expression{% endcomment %}
 <div class="container-fluid my-sm-5 py-sm-4 shadow-sm">
-	<div class="data_sections py-3">
-		<h3 class="text-success text-center my-0 py-0">Probe Expression</h3>
+	<div class="data_sections py-5">
+		<h3 class="text-center my-0 py-0 text-barlow-light">Probe Expression</h3>
 		<div class="row my-sm-0 py-sm-0">
 			<div class="col-sm-8">
 				{% if kidney_raw_bioProbeCountMatrix %}
@@ -120,7 +120,7 @@
 				{% else %}
 				<div class="mt-sm-4 p-4">
 					<div class="pb-2 pb-sm-2">
-						<h3 class="text-info">Kidney Raw BioProbeCountMatrix data not yet Uploaded!</h3>
+						<h3 class="text-info text-barlow-semibold">Kidney Raw BioProbeCountMatrix data not yet Uploaded!</h3>
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
@@ -130,9 +130,8 @@
 				{% endif %}
 			</div>
 
-			<div class="col-sm-4 p-sm-5">
-				<p class="lead text-info">DATA of Raw counts of targets and negative probes.</p>
-				<p class="lead text-info">Rows are probes and columns are samples.</p>
+			<div class="col-sm-4 p-sm-5 d-flex align-items-center d-flex align-items-center">
+				<p class="lead">DATA of Raw counts of targets and negative probes.</p>
 			</div>
 		</div>
 	</div>
@@ -140,12 +139,11 @@
 
 {% comment 'Target Expressions' %}Target Expressions{% endcomment %}
 <div class="container-fluid my-sm-5 py-sm-4 shadow-sm">
-	<div class="data_sections">
-		<h3 class="text-success text-center my-0 py-0">Target Expression</h3>
+	<div class="data_sections py-5">
+		<h3 class="text-center my-0 py-0 text-barlow-light">Target Expression</h3>
 		<div class="row">
-			<div class="col-sm-4 p-sm-5">
-				<p class="lead text-info">In this panel, only the negative has multiple probes, and therefore is the only target count aggregated.</p>
-				<p class="lead text-info">Rows are targets and columns are samples.</p>
+			<div class="col-sm-4 p-sm-5 d-flex align-items-center d-flex align-items-center">
+				<p class="lead">In this panel, only the negative has multiple probes, and therefore is the only target count aggregated.</p>
 			</div>
 
 			<div class="col-sm-8">
@@ -164,7 +162,7 @@
 				{% else %}
 				<div class="mt-sm-4 p-4">
 					<div class="pb-2 pb-sm-2">
-						<h3 class="text-info">KidneyRawTargetCountMatrix data not yet Uploaded!</h3>
+						<h3 class="text-info text-barlow-semibold">Kidney Raw Target Count Matrix data not yet Uploaded!</h3>
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
@@ -179,8 +177,8 @@
 
 {% comment 'Normalized Expressions' %}Normalized Expressions{% endcomment %}
 <div class="container-fluid my-sm-5 py-sm-4 shadow-sm">
-	<div class="data_sections">
-		<h3 class="text-success text-center my-0 py-0">Normalized Expression</h3>
+	<div class="data_sections py-5">
+		<h3 class="text-center my-0 py-0 text-barlow-light">Normalized Expression</h3>
 		<div class="row">
 			<div class="col-sm-8">
 				{% if kidney_q3_norm_target_count_matrix %}
@@ -197,7 +195,7 @@
 				{% else %}
 				<div class="mt-sm-4 p-4">
 					<div class="pb-2 pb-sm-2">
-						<h3 class="text-info">KidneyQ3NormTargetCountMatrix data not yet Uploaded!</h3>
+						<h3 class="text-info text-barlow-semibold">Kidney Q3 Normalization Target Count Matrix data not yet Uploaded!</h3>
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
@@ -207,9 +205,8 @@
 				{% endif %}
 			</div>
 
-			<div class="col-sm-4 p-sm-5">
-				<p class="lead text-info">75th percentile normalized counts. Only ROIs and genes that passed QC are included.</p>
-				<p class="lead text-info">Rows are targets and columns are samples.</p>
+			<div class="col-sm-4 p-sm-5 d-flex align-items-center d-flex align-items-center">
+				<p class="lead">75th percentile normalized counts. Only ROIs and genes that passed QC are included.</p>
 			</div>
 		</div>
 	</div>
@@ -217,21 +214,19 @@
 
 {% comment %}Single Sample GSEA Results{% endcomment %}
 <div class="container-fluid my-sm-5 py-sm-4 shadow-sm">
-	<div class="data_sections">
-		<h3 class="text-success text-center my-0 py-0">Single Sample GSEA Results</h3>
+	<div class="data_sections py-5">
+		<h3 class="text-center my-0 py-0 text-barlow-light">Single Sample GSEA Results</h3>
 		<div class="row">
-			<div class="col-sm-4 p-sm-5">
-				<p class="lead text-info">
+			<div class="col-sm-4 p-sm-5 d-flex align-items-center d-flex align-items-center">
+				<p class="lead">
 					Known groups of genes that work concordantly to perform a biological function are surveyed for enrichment of over- or under-expressed genes within each sample.
 				</p>
-				<p class="lead text-info">Rows are known gene sets and columns are samples.</p>
-				<p class="lead text-info">Values are abundance scores of biological pathways in AOIs.</p>
 			</div>
 
 			<div class="col-sm-8">
 				{% if Kidneyss_GSEA %}
 				<h2 class="text-center">
-					<small class="lead">DataFrame Head for Kidneyss_GSEA data</small>
+					<small class="lead">DataFrame Head for Kidneyss GSEA data</small>
 				</h2>
 
 				<div class="mx-auto mb-sm-3 table-responsive" style="overflow: auto">{{ single_sample_gsea_results_dataframe|safe }}</div>
@@ -243,7 +238,7 @@
 				{% else %}
 				<div class="mt-sm-4 p-4">
 					<div class="pb-2 pb-sm-2">
-						<h3 class="text-info">Kidneyss_GSEA data not yet Uploaded!</h3>
+						<h3 class="text-info text-barlow-semibold">Kidneyss GSEA data not yet Uploaded!</h3>
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
@@ -258,8 +253,8 @@
 
 {% comment %}Feature Annotations{% endcomment %}
 <div class="container-fluid my-sm-5 py-sm-4 shadow-sm">
-	<div class="data_sections">
-		<h3 class="text-success text-center my-0 py-0">Feature Annotations</h3>
+	<div class="data_sections py-5">
+		<h3 class="text-center my-0 py-0 text-barlow-light">Feature Annotations</h3>
 
 		<div class="row">
 			<div class="col-sm-8">
@@ -277,7 +272,7 @@
 				{% else %}
 				<div class="mt-sm-4 p-4">
 					<div class="pb-2 pb-sm-2">
-						<h3 class="text-info">Kidney_Feature_Annotations.csv data not yet Uploaded!</h3>
+						<h3 class="text-info text-barlow-semibold">Kidney_Feature_Annotations.csv data not yet Uploaded!</h3>
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
@@ -287,8 +282,8 @@
 				{% endif %}
 			</div>
 
-			<div class="col-sm-4 p-sm-5">
-				<p class="lead text-info">Feature Annotations</p>
+			<div class="col-sm-4 p-sm-5 d-flex align-items-center d-flex align-items-center">
+				<p class="lead">Feature Annotations</p>
 			</div>
 		</div>
 	</div>
@@ -296,13 +291,11 @@
 
 {% comment %}Average Gene Expression{% endcomment %}
 <div class="container-fluid my-sm-5 py-sm-4 shadow-sm">
-	<div class="data_sections">
-		<h3 class="text-success text-center my-0 py-0">Average Gene Expression</h3>
+	<div class="data_sections py-5">
+		<h3 class="text-center my-0 py-0 text-barlow-light">Average Gene Expression</h3>
 		<div class="row">
-			<div class="col-sm-4 p-sm-5">
-				<p class="lead text-info">Average gene expression for each cell type cluster in #10.</p>
-				<p class="lead text-info">Rows are cell types and columns are samples.</p>
-				<p class="lead text-info">Values are gene counts expected in a cell type X.</p>
+			<div class="col-sm-4 p-sm-5 d-flex align-items-center d-flex align-items-center">
+				<p class="lead">Average gene expression for each cell type cluster in #10.</p>
 			</div>
 
 			<div class="col-sm-8">
@@ -320,7 +313,7 @@
 				{% else %}
 				<div class="mt-sm-4 p-4">
 					<div class="pb-2 pb-sm-2">
-						<h3 class="text-info">Young_kidney_cell_profile_matrix data not yet Uploaded!</h3>
+						<h3 class="text-info text-barlow-semibold">Young Kidney Cell Profile Matrix data not yet Uploaded!</h3>
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
@@ -335,8 +328,8 @@
 
 {% comment %}Cell Deconvolution{% endcomment %}
 <div class="container-fluid my-sm-5 py-sm-4 shadow-sm">
-	<div class="data_sections">
-		<h3 class="text-success text-center my-0 py-0">Cell Deconvolution</h3>
+	<div class="data_sections py-5">
+		<h3 class="text-center my-0 py-0 text-barlow-light">Cell Deconvolution</h3>
 
 		<div class="row">
 			<div class="col-sm-8">
@@ -393,7 +386,7 @@
 				{% else %}
 				<div class="mt-sm-4 p-4">
 					<div class="pb-2 pb-sm-2">
-						<h3 class="text-info">Cell Annotations data not yet Uploaded!</h3>
+						<h3 class="text-info text-barlow-semibold">Cell Annotations data not yet Uploaded!</h3>
 					</div>
 					<div class="py-2 py-sm-2">
 						<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}"> Upload Cell Types </a>
@@ -402,10 +395,8 @@
 				{% endif %}
 			</div>
 
-			<div class="col-sm-4 p-sm-5">
-				<p class="lead text-info">Cell matrix expression in #11 was used to estimate the cell populations and abundance within an AOI.</p>
-				<p class="lead text-info">Rows are cell types and columns are samples.</p>
-				<p class="lead text-info">Values are abundance scores of cell types in AOIs.</p>
+			<div class="col-sm-4 p-sm-5 d-flex align-items-center d-flex align-items-center">
+				<p class="lead">Cell matrix expression in #11 was used to estimate the cell populations and abundance within an AOI.</p>
 			</div>
 		</div>
 	</div>

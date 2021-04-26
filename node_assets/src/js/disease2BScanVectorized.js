@@ -1,7 +1,7 @@
 import 'ol/ol.css'
 import GeoJSON from 'ol/format/GeoJSON'
 import VectorSource from 'ol/source/Vector'
-import { Text, Style, Fill, Stroke } from 'ol/style'
+import { Style, Fill, Stroke } from 'ol/style'
 import VectorLayer from 'ol/layer/Vector'
 import { Map, View } from 'ol'
 import Select from 'ol/interaction/Select'

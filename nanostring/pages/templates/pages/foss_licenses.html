@@ -101,6 +101,37 @@
 
 
 
+    {% comment %}QGIS{% endcomment %}
+    <div class="my-sm-1">
+        <button type="button" class="btn btn-outline btn-outline-info px-sm-5" data-toggle="modal" data-target="#qgis" style="width: 180px;">
+        QGIS
+        </button>
+
+        <div class="modal" id="qgis">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                    <h4 class="modal-title">QGIS Licence</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                    {{ qgis_license|linebreaks }}
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     {% comment %}Django{% endcomment %}
     <div class="my-sm-1">
         <button type="button" class="btn btn-outline btn-outline-info px-sm-5" data-toggle="modal" data-target="#django" style="width: 180px;">
