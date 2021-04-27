@@ -200,7 +200,6 @@ def normal2BScanVectorized_view(request):
             normal2BScanVectorized,
             srid=3857,
         )
-        print(normal2BScanVectorized_geojson)
 
         context = {
             'page_name': 'Normal2BScanVectorized Spatial Data',

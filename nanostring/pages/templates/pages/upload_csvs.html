@@ -1,12 +1,12 @@
 {% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
 {% block content %}
 
-<div class="container">
+<div class="container shadow-lg rounded-lg bg-white">
   <div class="py-2 py-sm-4">
     <h3 class="text-center text-success">Upload CSV file</h3>
   </div>
 
-  <div class="row shadow-lg rounded-lg my-sm-2 p-sm-4">
+  <div class="row my-sm-2 p-sm-4">
 
     <div class="col-md-5 p-4 border border-info rounded-lg">
       {% if all_raw_csv_files %}

@@ -1,7 +1,7 @@
 {% extends 'pages/base_template.html' %} {% load static %} {% load humanize %}
 {% block content %}
 
-<div class="container">
+<div class="container rounded-lg bg-white py-5">
   <div class="mt-sm-4 mb-sm-2 pt-sm-4">
     <form method="post">
       {% csrf_token %} {% for form in category_form %}

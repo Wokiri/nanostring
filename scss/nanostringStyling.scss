@@ -24,6 +24,22 @@
 	font-display: swap;
 }
 
+* {
+  scroll-behavior: smooth;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body {
+  background-image: url("../pics/bluish_droplets_bg.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-clip: padding-box;
+}
+
+
 .text-error {
 	color: red;
 }
