@@ -71,6 +71,7 @@ from .forms import (
     SearchAverageGeneExpressionForm,
     Disease2BScanVectorizedModelForm,
     Normal2BScanVectorizedModelForm,
+    ClusterPointsForm,
     )
 
 all_cell_types = Cell_Types_for_Spatial_Decon.objects.all()
@@ -91,18 +92,34 @@ from .handle_uploaded_files import (
 def test_view(request):
     template_name = 'pages/test.html'
 
-    k_means = k_means_clustering(
-        sample_annotations_DF,
-        'ROICoordinateX',
-        'ROICoordinateY'
-    )
+    if sample_annotations_DF() is not None:
+        k_means = k_means_clustering(
+            request,
+            sample_annotations_DF,
+            'ROICoordinateX',
+            'ROICoordinateY',
+            clusterPointsForm=ClusterPointsForm
+        )
 
-    context = {
+        context = {
+            'page_name': 'Test Page',
+            'elbow_script': k_means['elbow_script'],
+            'elbow_div': k_means['elbow_div'],
+            'cluster_points_form': k_means['cluster_points_form'],
+            'model_summary': k_means['model_summary'],
+            'cluster_script': k_means['cluster_script'],
+            'cluster_div': k_means['cluster_div'],
+        }
+
+
+        return render(request, template_name, context)
+
+    else:
+        context = {
         'page_name': 'Test Page',
-        'test': average_gene_expression_DF().tail(100).to_html()
-    }
+        }
 
-    return render(request, template_name, context)
+        return render(request, template_name, context)
 
 
 
@@ -597,239 +614,253 @@ def sample_annotations_analysis_view(request):
     search_count = sample_annotations.count()
     
 
-    # sample_annotations_DF = DataFrame(sample_annotations_data, columns=['disease_status', 'segment_display_name'])
-    sample_annotations_DF = DataFrame(sample_annotations.values())
-    
-    
-    data_DF_describe_table = sample_annotations_DF.describe().to_html(
-        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
-    )
-    
+    sample_annotations_DF = None
 
-    sample_annotations_search_form = SearchSampleAnnotationsForm(request.GET or None)
-    if sample_annotations_search_form.is_valid():
-        cd = sample_annotations_search_form.cleaned_data
-        search_value = cd['search_value']
-        sample_annotations = Kidney_Sample_Annotations.objects.filter(
-            Q(id__icontains=search_value) |
-            Q(slide_name__icontains=search_value) |
-            Q(scan_name__icontains=search_value) |
-            Q(roi_label__icontains=search_value) |
-            Q(segment_label__icontains=search_value) |
-            Q(segment_display_name__icontains=search_value) |
-            Q(sample_id__icontains=search_value) |
-            Q(aoi_surface_area__icontains=search_value) |
-            Q(aoi_nuclei_count__icontains=search_value) |
-            Q(roi_coordinate_x__icontains=search_value) |
-            Q(roi_coordinate_y__icontains=search_value) |
-            Q(raw_reads__icontains=search_value) |
-            Q(trimmed_reads__icontains=search_value) |
-            Q(stitched_reads__icontains=search_value) |
-            Q(aligned_reads__icontains=search_value) |
-            Q(duplicated_reads__icontains=search_value) |
-            Q(sequencing_saturation__icontains=search_value) |
-            Q(umiq_30__icontains=search_value) |
-            Q(rtsq_30__icontains=search_value) |
-            Q(disease_status__icontains=search_value) |
-            Q(pathology__icontains=search_value) |
-            Q(region__icontains=search_value) |
-            Q(loq__icontains=search_value) |
-            Q(normalization_factor__icontains=search_value)
-        )
-
+    if sample_annotations:
         sample_annotations_DF = DataFrame(sample_annotations.values())
+    
+    
+        data_DF_describe_table = sample_annotations_DF.describe().to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+        )
+    
 
-        if sample_annotations.count() == 0:
-            messages.error(request, f'No Sample Annotations matches: "{search_value}".')
-            return redirect('pages:messages_page', 'sample-annotations-analysis')
-        else:
-            search_count = sample_annotations.count()
+        sample_annotations_search_form = SearchSampleAnnotationsForm(request.GET or None)
+        if sample_annotations_search_form.is_valid():
+            cd = sample_annotations_search_form.cleaned_data
+            search_value = cd['search_value']
+            sample_annotations = Kidney_Sample_Annotations.objects.filter(
+                Q(id__icontains=search_value) |
+                Q(slide_name__icontains=search_value) |
+                Q(scan_name__icontains=search_value) |
+                Q(roi_label__icontains=search_value) |
+                Q(segment_label__icontains=search_value) |
+                Q(segment_display_name__icontains=search_value) |
+                Q(sample_id__icontains=search_value) |
+                Q(aoi_surface_area__icontains=search_value) |
+                Q(aoi_nuclei_count__icontains=search_value) |
+                Q(roi_coordinate_x__icontains=search_value) |
+                Q(roi_coordinate_y__icontains=search_value) |
+                Q(raw_reads__icontains=search_value) |
+                Q(trimmed_reads__icontains=search_value) |
+                Q(stitched_reads__icontains=search_value) |
+                Q(aligned_reads__icontains=search_value) |
+                Q(duplicated_reads__icontains=search_value) |
+                Q(sequencing_saturation__icontains=search_value) |
+                Q(umiq_30__icontains=search_value) |
+                Q(rtsq_30__icontains=search_value) |
+                Q(disease_status__icontains=search_value) |
+                Q(pathology__icontains=search_value) |
+                Q(region__icontains=search_value) |
+                Q(loq__icontains=search_value) |
+                Q(normalization_factor__icontains=search_value)
+            )
+
+            sample_annotations_DF = DataFrame(sample_annotations.values())
+
+            if sample_annotations.count() == 0:
+                messages.error(request, f'No Sample Annotations matches: "{search_value}".')
+                return redirect('pages:messages_page', 'sample-annotations-analysis')
+            else:
+                search_count = sample_annotations.count()
 
 
-    sample_annotations_vector_geoson = serialize(
-        'geojson',
-        sample_annotations,
-        geometry_field='geom',
-        srid=3857,
-        fields=('disease_status','segment_display_name')
+        sample_annotations_vector_geoson = serialize(
+            'geojson',
+            sample_annotations,
+            geometry_field='geom',
+            srid=3857,
+            fields=('disease_status','segment_display_name')
+            )
+            
+
+        disease_status_group = sample_annotations_DF.groupby(['disease_status']).count()
+
+        # Create value column to be used for piechart angles
+        disease_status_group.loc[:,'value'] = (
+            disease_status_group['segment_display_name']/len(sample_annotations_DF) * 2*pi
+            )
+        disease_status_group.loc[:,'proportion'] = (
+            disease_status_group['segment_display_name']
+            )
+        disease_status_group.loc[:,'color'] = ['#ff3300', '#009933'][:len(disease_status_group)]
+        
+        disease_status_groups_CDS = ColumnDataSource(disease_status_group)
+
+
+        disease_status_group_describe_table = sample_annotations_DF[
+            [
+                'disease_status', 'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
+                'stitched_reads', 'aligned_reads', 'duplicated_reads', 'sequencing_saturation',
+                'umiq_30', 'rtsq_30'
+            ]
+        ].groupby(['disease_status']).describe().to_html(
+            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
         )
         
 
-    disease_status_group = sample_annotations_DF.groupby(['disease_status']).count()
-
-    # Create value column to be used for piechart angles
-    disease_status_group['value'] = (
-        disease_status_group['segment_display_name']/len(sample_annotations_DF) * 2*pi
+        sample_annotations_fig=figure(
+            title="Sample Annotations categorized by Disease Status",
+            # plot_height=600,
+            plot_width=800,
+            tooltips=[
+                ('Disease Status', '@disease_status'),
+                ('Proportion', f'@proportion out of {len(sample_annotations_DF)}'),
+            ],
         )
-    disease_status_group['proportion'] = (
-        disease_status_group['segment_display_name']
-        )
-    disease_status_group['color'] = ['#ff3300', '#009933'][:len(disease_status_group)]
-    
-    disease_status_groups_CDS = ColumnDataSource(disease_status_group)
 
+        sample_annotations_fig.wedge(
+            x=0,
+            y=1,
+            radius=0.5,
+            start_angle=cumsum('value', include_zero=True),
+            end_angle=cumsum('value'),
+            line_color="#ffffff",
+            fill_color='color',
+            source=disease_status_groups_CDS,
+            legend_field='disease_status',
+            )
 
-    disease_status_group_describe_table = sample_annotations_DF[
-        [
-            'disease_status', 'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
+        sample_annotations_fig.axis.visible=False
+        sample_annotations_fig.axis.axis_line_color=None
+        sample_annotations_fig.toolbar.active_drag = None
+        sample_annotations_fig.title.align = "center"
+        sample_annotations_fig.title.text_color = "DarkSlateBlue"
+        sample_annotations_fig.title.text_font_size = "18px"
+        sample_annotations_fig.legend.orientation = "vertical"
+        sample_annotations_fig.legend.location = "right"
+        
+        script_pie_chart, div_pie_chart = components(sample_annotations_fig)
+
+        quantile_search_table = None
+        quantile_search_percentage = None
+        quantile_search_value = None
+        quantile_search_form = QuantileSearchForm(request.GET or None)
+
+        numerical_cols = [
+            'roi_label',
+            'aoi_surface_area',
+            'aoi_nuclei_count',
+            'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
             'stitched_reads', 'aligned_reads', 'duplicated_reads', 'sequencing_saturation',
             'umiq_30', 'rtsq_30'
         ]
-    ].groupby(['disease_status']).describe().to_html(
-        justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
-    )
-    
+        
+        if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
+            q_cd = quantile_search_form.cleaned_data
+            quantile_search_value = float(q_cd['quantile_value'])
+            quantile_search_percentage = round(quantile_search_value * 100, 2)
+            quantile_search_table = sample_annotations_DF[numerical_cols].quantile([quantile_search_value]).to_html(
+                justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+            )
 
-    sample_annotations_fig=figure(
-        title="Sample Annotations categorized by Disease Status",
-        # plot_height=600,
-        plot_width=800,
-        tooltips=[
-            ('Disease Status', '@disease_status'),
-            ('Proportion', f'@proportion out of {len(sample_annotations_DF)}'),
-        ],
-    )
-
-    sample_annotations_fig.wedge(
-        x=0,
-        y=1,
-        radius=0.5,
-        start_angle=cumsum('value', include_zero=True),
-        end_angle=cumsum('value'),
-        line_color="#ffffff",
-        fill_color='color',
-        source=disease_status_groups_CDS,
-        legend_field='disease_status',
+        coords_DF = DataFrame(
+            sample_annotations_DF,
+            columns=[
+                'roi_coordinate_x',
+                'roi_coordinate_y',
+                'disease_status',
+                'Color',
+                'aoi_surface_area',
+                'aoi_nuclei_count',
+                'segment_display_name',
+            ]
         )
+        
+        coords_DF.loc[coords_DF['disease_status'] == 'normal', 'Color'] = 'green'
+        coords_DF.loc[coords_DF['disease_status'] == 'DKD', 'Color'] = 'red'
+        
+        coords_CDS = ColumnDataSource(coords_DF)
 
-    sample_annotations_fig.axis.visible=False
-    sample_annotations_fig.axis.axis_line_color=None
-    sample_annotations_fig.toolbar.active_drag = None
-    sample_annotations_fig.title.align = "center"
-    sample_annotations_fig.title.text_color = "DarkSlateBlue"
-    sample_annotations_fig.title.text_font_size = "18px"
-    sample_annotations_fig.legend.orientation = "vertical"
-    sample_annotations_fig.legend.location = "right"
-    
-    script_pie_chart, div_pie_chart = components(sample_annotations_fig)
+        TOOLS = TOOLS="hover,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,reset,tap,save,box_select,poly_select,"
 
-    quantile_search_table = None
-    quantile_search_percentage = None
-    quantile_search_value = None
-    quantile_search_form = QuantileSearchForm(request.GET or None)
-
-    numerical_cols = [
-        'roi_label',
-        'aoi_surface_area',
-        'aoi_nuclei_count',
-        'loq', 'normalization_factor', 'raw_reads', 'trimmed_reads',
-        'stitched_reads', 'aligned_reads', 'duplicated_reads', 'sequencing_saturation',
-        'umiq_30', 'rtsq_30'
-    ]
-    
-    if quantile_search_form.is_valid() and 'quantile_value' in request.GET:
-        q_cd = quantile_search_form.cleaned_data
-        quantile_search_value = float(q_cd['quantile_value'])
-        quantile_search_percentage = round(quantile_search_value * 100, 2)
-        quantile_search_table = sample_annotations_DF[numerical_cols].quantile([quantile_search_value]).to_html(
-            justify='center', show_dimensions=True, classes=['table', 'table-bordered', 'table-striped']
+        scatter = figure(
+            title='Scatter Plot for Sample Annotations',
+            plot_width=800,
+            x_axis_label='X Coordinates',
+            y_axis_label='Y Coordinates',
+            tools=TOOLS,
         )
-
-    coords_DF = DataFrame(
-        sample_annotations_DF,
-        columns=[
+        scatter.scatter(
             'roi_coordinate_x',
             'roi_coordinate_y',
-            'disease_status',
-            'Color',
-            'aoi_surface_area',
-            'aoi_nuclei_count',
-            'segment_display_name',
+            size=8,
+            marker="circle",
+            fill_color='Color',
+            line_color=None,
+            source=coords_CDS
+        )
+        scatter.title.align = "center"
+        scatter.title.text_color = "#003300"
+        scatter.title.text_font_size = "18px"
+        scatter.toolbar.active_drag = None
+        
+
+        script_scatter, div_scatter = components(scatter)
+        
+        
+
+        star_tooltips=[
+            (('Status'), ('@disease_status')),
+            (('Segment Display Name'), ('@segment_display_name')),
+            (('Nuclei Count'), ('@aoi_nuclei_count')),
+            (('Surface Area'), ('@aoi_surface_area')),
         ]
-    )
-    
-    coords_DF.loc[coords_DF['disease_status'] == 'normal', 'Color'] = 'green'
-    coords_DF.loc[coords_DF['disease_status'] == 'DKD', 'Color'] = 'red'
-    
-    coords_CDS = ColumnDataSource(coords_DF)
 
-    TOOLS = TOOLS="hover,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,reset,tap,save,box_select,poly_select,"
+        star_graph = draw_star(
+            coords_DF,
+            'Relationship between AOI Surface Area with AOI Nuclei Count',
+            'aoi_nuclei_count',
+            'aoi_surface_area',
+            'Color',
+            star_tooltips,
+            'disease_status',
+            'Nuclei Count',
+            'Surface Area'
+        )
 
-    scatter = figure(
-        title='Scatter Plot for Sample Annotations',
-        plot_width=800,
-        x_axis_label='X Coordinates',
-        y_axis_label='Y Coordinates',
-        tools=TOOLS,
-    )
-    scatter.scatter(
-        'roi_coordinate_x',
-        'roi_coordinate_y',
-        size=8,
-        marker="circle",
-        fill_color='Color',
-        line_color=None,
-        source=coords_CDS
-    )
-    scatter.title.align = "center"
-    scatter.title.text_color = "#003300"
-    scatter.title.text_font_size = "18px"
-    scatter.toolbar.active_drag = None
-    
+        k_means = k_means_clustering(
+            request,
+            sample_annotations_DF,
+            'roi_coordinate_x',
+            'roi_coordinate_y',
+            clusterPointsForm=ClusterPointsForm
+        )
 
-    script_scatter, div_scatter = components(scatter)
-    
-    
+        context = {
+            'page_name': 'Sample Annotations Analysis',
+            'sample_annotations': sample_annotations,
+            'sample_annotations_search_form': sample_annotations_search_form,
+            'search_count': search_count,
+            'sample_annotations_vector_geoson': sample_annotations_vector_geoson,
+            'script_pie_chart': script_pie_chart,
+            'div_pie_chart': div_pie_chart,
+            'data_DF_describe_table': data_DF_describe_table,
+            'disease_status_group_describe_table': disease_status_group_describe_table,
+            # 'quantiles_1_2_3': quantiles_1_2_3,
+            'quantile_search_percentage': quantile_search_percentage,
+            'quantile_search_table': quantile_search_table,
+            'quantile_search_value': quantile_search_value,
+            'quantile_search_form': quantile_search_form,
+            'script_scatter': script_scatter,
+            'div_scatter': div_scatter,
+            'script_star_plot': star_graph['script_star_plot'],
+            'div_star_plot': star_graph['div_star_plot'],
+            'elbow_script': k_means['elbow_script'],
+            'elbow_div': k_means['elbow_div'],
+            'cluster_points_form': k_means['cluster_points_form'],
+            'model_summary': k_means['model_summary'],
+            'cluster_script': k_means['cluster_script'],
+            'cluster_div': k_means['cluster_div'],
+        }
 
-    star_tooltips=[
-        (('Status'), ('@disease_status')),
-        (('Segment Display Name'), ('@segment_display_name')),
-        (('Nuclei Count'), ('@aoi_nuclei_count')),
-        (('Surface Area'), ('@aoi_surface_area')),
-    ]
+        return render(request, template_name, context)
 
-    star_graph = draw_star(
-        coords_DF,
-        'Relationship between AOI Surface Area with AOI Nuclei Count',
-        'aoi_nuclei_count',
-        'aoi_surface_area',
-        'Color',
-        star_tooltips,
-        'disease_status',
-        'Nuclei Count',
-        'Surface Area'
-    )
-
-    k_means = k_means_clustering(
-        sample_annotations_DF,
-        'roi_coordinate_x',
-        'roi_coordinate_y',
-    )
-
-    context = {
-        'page_name': 'Sample Annotations Analysis',
-        'sample_annotations': sample_annotations,
-        'sample_annotations_search_form': sample_annotations_search_form,
-        'search_count': search_count,
-        'sample_annotations_vector_geoson': sample_annotations_vector_geoson,
-        'script_pie_chart': script_pie_chart,
-        'div_pie_chart': div_pie_chart,
-        'data_DF_describe_table': data_DF_describe_table,
-        'disease_status_group_describe_table': disease_status_group_describe_table,
-        # 'quantiles_1_2_3': quantiles_1_2_3,
-        'quantile_search_percentage': quantile_search_percentage,
-        'quantile_search_table': quantile_search_table,
-        'quantile_search_value': quantile_search_value,
-        'quantile_search_form': quantile_search_form,
-        'script_scatter': script_scatter,
-        'div_scatter': div_scatter,
-        'script_star_plot': star_graph['script_star_plot'],
-        'div_star_plot': star_graph['div_star_plot'],
-        'elbow_script': k_means['elbow_script'],
-        'elbow_div': k_means['elbow_div'],
-    }
-
-    return render(request, template_name, context)
+    else:
+        context = {
+            'page_name': 'Sample Annotations Analysis',
+        }
+        return render(request, template_name, context)
 
 
 
@@ -914,16 +945,7 @@ def cell_types_analysis_view(request):
     template_name = 'pages/cell_types_analysis.html'
     cell_types = Cell_Types_for_Spatial_Decon.objects.order_by('-number_of_cells')
     search_count = cell_types.count()
-
-    DF_columns=[
-        'cluster_id',
-        'number_of_cells',
-        'alias',
-        'data_set',
-        'cell_type_specific',
-        'cell_type_general',
-        ]
-
+    
     # cells_type_DF = DataFrame(cell_types.values(), columns=DF_columns)
     cells_type_DF = DataFrame(cell_types.values())
     

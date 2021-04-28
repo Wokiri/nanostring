@@ -15,7 +15,11 @@ from data.models import RawCSVFiles
 
 
 def k_means_clustering(
-    dataframe, x_axis, y_axis
+    request,
+    dataframe,
+    x_axis,
+    y_axis,
+    clusterPointsForm=None
 ):
 
     try:
@@ -25,6 +29,8 @@ def k_means_clustering(
 
     # Number of clusters to use, identify between a range of from 1 to 10
     # WCSS (Within Cluster Sum of Squares)
+    cluster_script = ''
+    cluster_div = ''
 
     WCSS = []
     k_opts = list(range(1,10))
@@ -36,7 +42,7 @@ def k_means_clustering(
 
     elbow_data = {'k_opts':k_opts, 'WCSS':WCSS}
     elbowDF = DataFrame(data=elbow_data)
-    elbowDF['color'] = Spectral10[:len(elbowDF)]
+    elbowDF.loc[:,'color'] = Spectral10[:len(elbowDF)]
 
     elbowCDS = ColumnDataSource(elbowDF)
 
@@ -78,12 +84,102 @@ def k_means_clustering(
 
     elbow_script, elbow_div = components(k_cluster_elbow)
 
+    model_summary = ''
+    cluster_points_form = clusterPointsForm(request.GET or None)
+    if cluster_points_form.is_valid() and 'number_of_clusters' in request.GET:
+        number_of_clusters = cluster_points_form.cleaned_data['number_of_clusters']
+        the_model = KMeans(
+            n_clusters=number_of_clusters,
+            init='k-means++', # Smart initialization of centroids, alternative option 'random'
+            n_init=10, # Number of time the k-means algorithm will be run with different centroid seeds, default=10
+            max_iter=100, # maximum number of iterations to run default=300
+        )
+
+        cluster =  the_model.fit(data_DF)
+
+        # Model summary
+        model_summary = [{
+            'cluster_centers': cluster.cluster_centers_,
+            'inertia': cluster.inertia_,
+            'iterations': cluster.n_iter_,
+        }]
+
+        def applyColor(x):
+            return Spectral10[x]
+
+
+        data_DF.loc[:,'cluster'] = cluster.labels_
+        data_DF.loc[:,'color'] = data_DF['cluster'].apply(applyColor)
+        data_DF.loc[:,'x'] = data_DF[x_axis]
+        data_DF.loc[:,'y'] = data_DF[y_axis]
+        
+
+        cluster_CDS = ColumnDataSource(data_DF)
+
+        clusters_cluster_DF = DataFrame(data=cluster.cluster_centers_, columns=['x', 'y'])
+        
+        # clusters_cluster_DF['cluster'] = cluster.labels_
+        clusters_cluster_DF.loc[:,'color'] = Spectral10[:len(clusters_cluster_DF)]
+        cluster_centers_CDS = ColumnDataSource(data=clusters_cluster_DF)
+
+
+        tooltips = [
+            (('X'), ('@x')),
+            (('Y'), ('@y')),
+        ]
+
+        cluster = figure(
+            title='KMEANS Clustering',
+            plot_width=800,
+            x_axis_label='X Coordinates',
+            y_axis_label='Y Coordinates',
+            tooltips=tooltips,
+        )
+        cluster.scatter(
+            x = x_axis,
+            y = y_axis,
+            size=6,
+            marker="circle",
+            fill_color='color',
+            line_color=None,
+            source=cluster_CDS
+        )
+        cluster.star(
+            x = 'x',
+            y = 'y',
+            size=24,
+            marker="square_pin",
+            fill_color='color',
+            line_color=None,
+            source=cluster_centers_CDS,
+        )
+
+        cluster.toolbar.active_drag = None
+        cluster.title.text_font_size = "15px"
+        cluster.title.align = "center"
+
+        cluster.xaxis.major_label_text_color = '#145252'
+        cluster.xaxis.major_label_text_font_style = 'bold'
+        cluster.xaxis.axis_label_text_font_style = 'bold'
+
+        cluster.yaxis.major_label_text_color = '#145252'
+        cluster.yaxis.major_label_text_font_style = 'bold'
+        cluster.yaxis.axis_label_text_font_style = 'bold'
+
+        cluster_script, cluster_div = components(cluster)
+
+
     return {
         'elbow_script': elbow_script,
         'elbow_div': elbow_div,
+        'cluster_points_form': cluster_points_form,
+        'model_summary':model_summary,
+        'cluster_script': cluster_script,
+        'cluster_div': cluster_div,
     }
 
-    # return elbowDF.to_html()
+
+
 
 
 def analyses_tables(

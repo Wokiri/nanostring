@@ -197,3 +197,14 @@ class Normal2BScanVectorizedModelForm(forms.ModelForm):
     class Meta:
         model = Normal2BScanVectorized
         fields = ['name']
+
+
+class ClusterPointsForm(forms.Form):
+    number_of_clusters = forms.IntegerField(
+        label='Number of Clusters to Plot',
+        min_value=1,
+        max_value =10,
+        required=False,
+        widget=forms.NumberInput(
+            attrs={'class':'form-control mr-sm-1'}
+            ))

@@ -8,6 +8,7 @@
 {{ script_scatter|safe }}
 {{ script_star_plot|safe }}
 {{ elbow_script|safe }}
+{{ cluster_script|safe }}
 {% endblock %}
 
 
@@ -167,11 +168,42 @@
                 </div>
 
 
+                <div class="container mt-sm-4 mb-sm-2 p-5 bg-white">
+                    <form class="form-inline my-2 my-lg-0">
+                        {{ cluster_points_form }}
+                        <button class="btn btn-success my-2 my-sm-0" type="submit">Plot</button>
+                    </form>
+
+                    {% if model_summary %}
+                    <div class="p-2">
+                        <p class="text-info font-weight-bold">Model Summary</p>
+                        {% for summary in model_summary %}
+                            <p class="lead">
+                                <span class="font-weight-bold">Cluster Centers: </span>{{ summary.cluster_centers }}
+                            </p>
+                            <p class="lead">
+                                <span class="font-weight-bold">Inertia (WCSS): </span>{{ summary.inertia }}
+                            </p>
+                            <p class="lead">
+                                <span class="font-weight-bold">No. of iterations: </span>{{ summary.iterations }}
+                            </p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row my-sm-5">
+                    <div class="mx-auto mb-5" style="overflow: auto;">
+                        {{ cluster_div|safe }}
+                    </div>
+                </div>
+
+
             </div>
 
         </div>
     {% else %}
-        <div class="py-sm-2">
+        <div class="container py-sm-2 bg-white">
             <h3 class="text-center text-warning">No Sample Annotations records yet!</h3>
         </div>
     {% endif %}
