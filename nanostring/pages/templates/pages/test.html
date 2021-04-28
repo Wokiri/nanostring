@@ -1,0 +1,15 @@
+
+{% extends 'pages/base_template.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block docmeta %}
+{{ elbow_script|safe }}
+{% endblock %}
+
+{% block content %}
+
+{{ test|safe }}
+
+<script src="{% static 'pages/bokeh/bokeh-2.3.0.min.js' %}"></script>
+{% endblock %}

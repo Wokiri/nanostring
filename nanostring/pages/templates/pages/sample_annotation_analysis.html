@@ -7,13 +7,14 @@
 {{ script_pie_chart|safe }}
 {{ script_scatter|safe }}
 {{ script_star_plot|safe }}
+{{ elbow_script|safe }}
 {% endblock %}
 
 
 {% block content %}
     {% if sample_annotations %}
     
-        <div class="container shadow-lg rounded-lg my-sm-5 py-sm-2">
+        <div class="container shadow-lg rounded-lg my-sm-5 py-sm-2 bg-white">
             <div class="my-4">
 
                 <div class="py-sm-2">
@@ -155,6 +156,13 @@
                 <div class="row my-sm-5">
                     <div class="mx-auto mb-5" style="overflow: auto;">
                         {{ div_star_plot|safe }}
+                    </div>
+                </div>
+
+
+                <div class="row my-sm-5">
+                    <div class="mx-auto mb-5" style="overflow: auto;">
+                        {{ elbow_div|safe }}
                     </div>
                 </div>
 

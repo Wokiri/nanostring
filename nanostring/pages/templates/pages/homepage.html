@@ -80,9 +80,9 @@
 				</div>
 
 				<div class="py-2 py-sm-2">
-					<a class="btn btn-outline-success my-2" href="{% url 'pages:sample_annotations_analysis_page' %}"> Sample Annotations analysis </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:list_sample_annotation_page' %}"> Update Sample Annotations </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_sampleannotation_page' %}"> Re-Upload Sample Annotations </a>
+					<a class="btn btn-outline-success m-2" href="{% url 'pages:sample_annotations_analysis_page' %}"> Sample Annotations analysis </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:list_sample_annotation_page' %}"> Update Sample Annotations </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_sampleannotation_page' %}"> Re-Upload Sample Annotations </a>
 				</div>
 				{% else %}
 				<div class="mt-sm-4 p-4">
@@ -114,8 +114,8 @@
 				<div class="mx-auto mb-sm-3 table-responsive" style="overflow: auto">{{ probe_expression_dataframe|safe }}</div>
 
 				<div class="py-2 py-sm-2">
-					<a class="btn btn-outline-success my-2" href="{% url 'pages:probe_expression_analysis_page' %}"> Probe Expression analysis </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
+					<a class="btn btn-outline-success m-2" href="{% url 'pages:probe_expression_analysis_page' %}"> Probe Expression analysis </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
 				</div>
 				{% else %}
 				<div class="mt-sm-4 p-4">
@@ -124,7 +124,7 @@
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
-						<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
+						<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
 					</div>
 				</div>
 				{% endif %}
@@ -156,8 +156,8 @@
 				<div class="mx-auto mb-sm-3 table-responsive" style="overflow: auto">{{ target_expression_dataframe|safe }}</div>
 
 				<div class="py-2 py-sm-2">
-					<a class="btn btn-outline-success my-2" href="{% url 'pages:target_expression_analysis_page' %}"> Target Expression analysis </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
+					<a class="btn btn-outline-success m-2" href="{% url 'pages:target_expression_analysis_page' %}"> Target Expression analysis </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
 				</div>
 				{% else %}
 				<div class="mt-sm-4 p-4">
@@ -166,7 +166,7 @@
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
-						<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
+						<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
 					</div>
 				</div>
 				{% endif %}
@@ -189,8 +189,8 @@
 				<div class="mx-auto my-sm-3 table-responsive" style="overflow: auto">{{ normalized_expression_dataframe|safe }}</div>
 
 				<div class="py-2 py-sm-2">
-					<a class="btn btn-outline-success my-2" href="{% url 'pages:normalized_expression_analysis_page' %}"> Normalized Expression analysis </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
+					<a class="btn btn-outline-success m-2" href="{% url 'pages:normalized_expression_analysis_page' %}"> Normalized Expression analysis </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
 				</div>
 				{% else %}
 				<div class="mt-sm-4 p-4">
@@ -199,7 +199,7 @@
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
-						<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
+						<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
 					</div>
 				</div>
 				{% endif %}
@@ -232,8 +232,8 @@
 				<div class="mx-auto mb-sm-3 table-responsive" style="overflow: auto">{{ single_sample_gsea_results_dataframe|safe }}</div>
 
 				<div class="py-2 py-sm-2">
-					<a class="btn btn-outline-success my-2" href="{% url 'pages:kidneyssGSEA_analysis_page' %}">Kidneyss_GSEA Analysis</a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}">Re-Upload CSV data</a>
+					<a class="btn btn-outline-success m-2" href="{% url 'pages:kidneyssGSEA_analysis_page' %}">Kidneyss_GSEA Analysis</a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}">Re-Upload CSV data</a>
 				</div>
 				{% else %}
 				<div class="mt-sm-4 p-4">
@@ -242,7 +242,7 @@
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
-						<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
+						<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
 					</div>
 				</div>
 				{% endif %}
@@ -266,8 +266,8 @@
 				<div class="mx-auto mb-sm-3 table-responsive" style="overflow: auto">{{ feature_annotations_dataframe|safe }}</div>
 
 				<div class="py-2 py-sm-2">
-					<a class="btn btn-outline-success my-2" href="{% url 'pages:feature_annotations_analysis_page' %}"> Kidney Feature Annotations analysis </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
+					<a class="btn btn-outline-success m-2" href="{% url 'pages:feature_annotations_analysis_page' %}"> Kidney Feature Annotations analysis </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
 				</div>
 				{% else %}
 				<div class="mt-sm-4 p-4">
@@ -276,7 +276,7 @@
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
-						<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
+						<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
 					</div>
 				</div>
 				{% endif %}
@@ -307,8 +307,8 @@
 				<div class="mx-auto mb-sm-3 table-responsive" style="overflow: auto">{{ average_gene_dataframe|safe }}</div>
 
 				<div class="py-2 py-sm-2">
-					<a class="btn btn-outline-success my-2" href="{% url 'pages:average_gene_expression_analysis_page' %}"> AverageGeneExpression Analysis </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
+					<a class="btn btn-outline-success m-2" href="{% url 'pages:average_gene_expression_analysis_page' %}"> AverageGeneExpression Analysis </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Re-Upload CSV data </a>
 				</div>
 				{% else %}
 				<div class="mt-sm-4 p-4">
@@ -317,7 +317,7 @@
 						<p class="">The individual entries of this data will not be strored in the DB but the file as a whole.</p>
 					</div>
 					<div class="py-2 py-sm-2">
-						<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
+						<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_csvs_page' %}"> Upload CSV </a>
 					</div>
 				</div>
 				{% endif %}
@@ -379,9 +379,9 @@
 				</div>
 
 				<div class="py-2 py-sm-2">
-					<a class="btn btn-outline-success my-2" href="{% url 'pages:cell-types-analysis_page' %}"> Cell Types detailed statistical analysis </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:list_cell_type_page' %}"> Update Cell Types </a>
-					<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}"> Re-Upload Cell Types </a>
+					<a class="btn btn-outline-success m-2" href="{% url 'pages:cell-types-analysis_page' %}"> Cell Types detailed statistical analysis </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:list_cell_type_page' %}"> Update Cell Types </a>
+					<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_celltype_page' %}"> Re-Upload Cell Types </a>
 				</div>
 				{% else %}
 				<div class="mt-sm-4 p-4">
@@ -389,7 +389,7 @@
 						<h3 class="text-info text-barlow-semibold">Cell Annotations data not yet Uploaded!</h3>
 					</div>
 					<div class="py-2 py-sm-2">
-						<a class="btn btn-outline-dark my-2" href="{% url 'pages:upload_celltype_page' %}"> Upload Cell Types </a>
+						<a class="btn btn-outline-dark m-2" href="{% url 'pages:upload_celltype_page' %}"> Upload Cell Types </a>
 					</div>
 				</div>
 				{% endif %}

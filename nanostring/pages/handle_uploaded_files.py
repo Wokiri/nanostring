@@ -8,6 +8,17 @@ from data.models import RawCSVFiles
 all_raw_csv_files = RawCSVFiles.objects.all()
 
 
+def sample_annotations_DF():
+    if all_raw_csv_files.filter(file_name='Kidney_Sample_Annotations.csv'):
+        file_name = PurePath(settings.MEDIA_ROOT, 'csv_uploads', 'Kidney_Sample_Annotations.csv')
+        if Path(file_name).exists:
+            return pandas.read_csv(
+                file_name,
+                header=0,
+                delimiter=','
+            )
+
+
 def feature_annotations_DF():
     if all_raw_csv_files.filter(file_name='Kidney_Feature_Annotations.csv'):
         file_name = PurePath(settings.MEDIA_ROOT, 'csv_uploads', 'Kidney_Feature_Annotations.csv')
@@ -85,8 +96,8 @@ def average_gene_expression_DF():
             return pandas.read_csv(
                 file_name,
                 header=0,
-                # index_col='Unnamed: 0',
                 usecols=lambda x: x != 'Unnamed: 0',
+                # usecols=lambda x: x == 0,
                 delimiter=','
             )
 

@@ -2,6 +2,7 @@
 from django.urls import path
 
 from .views import (
+    test_view,
     home_page_view,
     set_categories_view,
     update_category_view,
@@ -35,6 +36,7 @@ from .views import (
 app_name = 'pages'
 
 urlpatterns = [
+    path('test/', test_view),
     path('', home_page_view, name='home_page'),
     path('set-data-categories/', set_categories_view, name='set_data_categories_page'),
     path('update-data-category/<str:obj_name>', update_category_view, name='update_data_categories_page'),

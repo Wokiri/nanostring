@@ -11,7 +11,7 @@
 {% block content %}
     {% if cell_types %}
     
-        <div class="container shadow-lg rounded-lg my-5">
+        <div class="container shadow-lg rounded-lg my-5 bg-light">
             <div class="my-4">
                 <div class="py-sm-2">
                    {{ div_intro }}
@@ -76,23 +76,24 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-sm-12 mx-auto mb-5" style="overflow: auto;">
-                    {{ div1|safe }}
+            <div class="my-5 pb-5">
+                <div class="row my-sm-5">
+                    <div class="mx-auto p-sm-2" style="overflow: auto;">
+                        {{ div1|safe }}
+                    </div>
                 </div>
 
-                <div class="mx-auto mb-5" style="overflow: auto;">
-                    {{ div2|safe }}
+                <div class="row my-sm-5">
+                    <div class="mx-auto p-sm-2" style="overflow: auto;">
+                        {{ div2|safe }}
+                    </div>
+                </div>
+
+                <div class="shadow-sm table-responsive border my-5 p-4 mx-auto w-75">
+                    <p class="text-success text-center lead">Numerical Statistics summary table:</p>
+                    {{ data_DF_describe_table|safe }}
                 </div>
                 
-                <div class="mx-auto mb-5" style="overflow: auto;">
-                    <div class="py-2 py-sm-2">
-                    <p class="lead">Numerical Statistics summary table:</p>            
-                    <div class="table-responsive border mb-sm-5" style="max-height: 40vh;">
-                        {{ data_DF_describe_table|safe }}
-                    </div>
-                    </div>
-                </div>
 
             </div>
             
@@ -104,5 +105,4 @@
     {% endif %}
 
     <script src="{% static 'pages/bokeh/bokeh-2.3.0.min.js' %}"></script>
-    <script src="{% static 'pages/bokeh/bokeh-widgets-2.3.0.min.js' %}"></script>
 {% endblock %}
