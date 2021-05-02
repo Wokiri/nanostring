@@ -26,13 +26,15 @@ You could create data analysis solutions that collect, interpret, and present da
 <br/>
 
 ### **What's Delivered**:
-Using softwares `distributed under a permissive open source license`, I have developed a web app that reads raw data from CSVs files, and for each file, represents the data therein in appropriate visual format (or fomarts) depending on the contents of the file and the expected analysis output, or in a manner I perceived suitable to give somewhat useful information.
+Using softwares `distributed under a permissive open source license`, I have developed a **web application** that
+- reads raw data from CSVs files, and for each file,
+- represents the data therein in appropriate formats, tabular or plots, depending on the contents of the file and the expected analysis output, or in ways suitable to present some useful information.
 
 ### These information might be relayed through:
 
 - Maps: For data with spatial attributes
-- Statistical Charts: For data with numerical records (e.g bar charts, pie charts, box plots, tabular records), and
-- Relationship Graphs: For data with possible cause-effect entries.
+- Statistical Charts: For data with numerical records (e.g bar charts, pie charts, box plots...)
+- Tabular summaries, e.g. descripription of a DataFrame, quantile tables, etc
 
 ## Screenshots of some of the outputs include:
 
@@ -81,7 +83,7 @@ Using softwares `distributed under a permissive open source license`, I have dev
 
 ## <p id="env_setup">1. Environment Setup</p>
 
-For a successful running of scripts in this project, and indeed a proper functioning of the the overall WebApp, it is highly recommended that all the packages listed in [requirements.txt]() be installed.
+For a successful running of scripts in this project, and indeed a proper functioning of the the overall WebApp, it is highly recommended that all the packages listed in [requirements.txt](./requirements.txt) be installed.
 
 At the core of these packages sits python which gives the 'base' platform upon which most of the others depend.
 
@@ -93,15 +95,9 @@ Some of the reliant packages include:
 Package            | Version
 ------------------- |---------
 bokeh               |2.3.0
-dj-rest-auth        |2.1.3
 Django              |3.1.4
-django-allauth      |0.44.0
-django-cors-headers |3.7.0
-djangorestframework |3.12.2
 GDAL                |3.1.4
 pandas              |1.2.3
-Pillow              |8.0.1
-pip                 |20.3.3
 psycopg2            |2.8.6
 ---------------------------
 
@@ -146,9 +142,9 @@ In so doing, it perfoms a few checks to minimize the possibilities of errors, i.
 <br/>
 
 
-### <p align='center'>GIF showing data download & writing using data_retrieval.py</p>
+### <p align='center'>Image showing file explorer when data has been been downloaded & writen using the [data-download url](http://127.0.0.1:8000/download-data/)</p>
 
-<p align='center'><img src="" width="1080" alt="Downloading & writing data"/></p>
+<p align='center'><img src="https://dub01pap001files.storage.live.com/y4mNVsDKmNgdK9sHC_q13TCRMa0GF-C27F4TP71BRlG45qUyJML8swaJOh7X4TLVwUl76q03kIToP9s6B1r10ktf_SMuIob3sPO7VVqpQFe9zMQymHBWybmfDygjas-ZfIOaKnNmfcMfOuxm02PdLYaO4o6_zqDJqqSQuB8oBrm0HWT-h8kFUXo1hbk1k8XifX8?width=1920&height=1080&cropmode=none" width="1920" alt="Downloading & writing data"/></p>
 
 <br/>
 
@@ -158,11 +154,15 @@ In so doing, it perfoms a few checks to minimize the possibilities of errors, i.
 
 With django's Object Relational Mapper, the various csv files contents are uploaded into a database either as individual records or as whole files. The smaller files (whose scheema is easy to make)  have been fed and stored in the database as individual records hence making use django's rich Queryset API functionalities.
 
-The larger csv files (with significantly large column records, hence a much more complex schema) are uploaded as a whole into a local storage but whose access is possible by django.
+The larger csv files (with significantly large column records, hence a much more complex schema) are uploaded as a whole into a local storage but whose access is possible by django, and manipulation and interactions achieved through pandas.
 
 <br/>
 
-### Raster Data:
+### Vector Spatial Data:
+
+A sample of Disease2BScan image and Normal2BScan image have been digitized by identifying the portions that are highlighted as AOIs.
+
+These digitized data which requires a database with geometry support, hence use of PostGIS, have been both stored into the database and reading made possible by use of openlayers javascript library. Openlayers is a free and open source platform that makes it possible to view spatial data and interact with them in a number of useful supported ways.
 
 <br/>
 
@@ -249,9 +249,6 @@ With a DataFrame made, or a Series, much information can be derived or manipulat
 
 Visualization of data analysis results is the means of communicating the findings from such analyses. **Bokeh**, a python library, offers a variety of nice interactive visual plots which can be rendered by html documents, hence a suitable choice.
 
-### <p align='center'>GIF showing some basic interactive options offered by Bokeh</p>
-
-<p align='center'><img src="" width="1080" alt="Bokeh interactive glyphs"/></p>
 
 Data from a csv or sql table, once read by pandas and a DataFrame made from it, can be collected by bokeh by passing it into a ColumnDataSource which then is a reliable data source for plottings with bokeh. 
 
@@ -268,6 +265,144 @@ I have, to the best of my knowledge, adhered to all stated guidelines stated for
 
 ## <p id="installation_procedure">9. Installations & Procedure</p>
 
+Download and Install git
+
+My choice terminal for use during set-up for this project is window's PowerShell (which is a cross platform app, and comes pre-installed in windows devices) and can be downloaded [here](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.1).
+
+
+Download this project:
+
+### Accessing the code:
+
+The code to this work is uploaded in GitHub in this repository address. It can be downloaded from the specified URL as a zip file or cloned using git. With your command prompt or PowerShell in your directory of choice, you can download the project with the command:
+
+```bash
+git clone --depth 1 https://github.com/Wokiri/nanostring.git
+```
+
+### Download and Create the needed database
+
+Download the install for your specific platform from the PostgreSQL Binary Download (http://www.postgresql.org/download/)
+
+Once PostgreSQL is installed, launch Application Stack Builder (happens automatically at times). Find a desired version of postgis from the spatial extensions, check it to install.
+
+In the settings.py file found inside nanostring directory, you will see we specified the PostGIS database called "nanostring_DB". We should create it. While still inside this file, modify the password part by replacing the **os.environ.get('DB_PASSWORD')**, with **“your-postgres-password”**
+
+Create the database. In PowerShell, (or simply access the database from postgresql bash) type:
+
+```bash
+psql -U postgres
+```
+
+When the authorization is successful, go ahead and type:
+
+```bash
+CREATE DATABASE “nanostring_DB”;
+```
+
+If the creation is successful, we can now prepare and link the project with the database. Type exit to leave the psql shell.
+
+
+### Create a python virtual environment:
+
+A virtual environment has its own Python binary (which matches the version of the binary that was used to create this environment) and can have its own independent set of installed Python packages in its site directories. This is important due to the fact that the installed packages for each virtual environment don’t interfere with each other, or, it prevents installed packages from affecting system services and other users of the machine. With your command prompt or PowerShell in your directory of choice, a virtual environment can then be created by running:
+
+```bash
+C:\Python38\python.exe -m venv nanostringvenv
+```
+
+NB:
+- This will work only if python is located in the address C:\Python38. If your python 3 isn’t residing in that path, just identify it and replace C:\Python38 with your right address.
+- Sometimes, this activation might not be allowed due to safety cautions. But, python is a trusted executable and so we will overide this safety policy by entering the following in the powershell.
+
+```bash
+Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope CurrentUser
+```
+
+### Activate the virtual environment
+
+```bash
+.\nanostringvenv\Scripts\activate
+```
+
+### Download the core needed libraries
+
+```bash
+python -m pip install django, pandas, bokeh, sklearn, psycopg2
+```
+
+NB:
+- If a **SSL: CERTIFICATE_VERIFY_FAILED** error arises, try using this instead:
+
+```bash
+python -m pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org django, pandas, bokeh, sklearn, psycopg2
+```
+
+Running this command will install these packages alongside their peer packages. They are all listed in the [requirements text file](./requirements.txt).
+
+**django** Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design.
+
+**pandas** pandas is a fast, powerful, flexible and easy to use open source data analysis and manipulation tool, built on top of the Python programming language.
+
+**bokeh** is a Python library for creating interactive visualizations for modern web browsers. It helps you build beautiful graphics, ranging from simple plots to complex dashboards with streaming datasets. With Bokeh, you can create JavaScript-powered visualizations without writing any JavaScript yourself.
+
+**sklearn**(formerly scikits.learn and also known as sklearn) is a free software machine learning library for the Python programming language.[3] It features various classification, regression and clustering algorithms including support vector machines, random forests, gradient boosting, k-means and DBSCAN, and is designed to interoperate with the Python numerical and scientific libraries NumPy and SciPy.
+
+**Psycopg** is the most popular PostgreSQL database adapter for the Python programming language. Psycopg 2 is both Unicode and Python 3 friendly.
+
+### Install OSGeo4W
+
+GDAL is a translator library for raster and vector geospatial data formats that is released under an X/MIT style Open Source License by the Open Source Geospatial Foundation.
+
+> OSGeo4W or Open Source Geospatial For Windows is a GIS package manager that downloads open source GIS programs and tools and ensures that all of the programs work well together as needed. This is the simplest way to download the libraries needed for GeoDjango.
+
+> Download the installer from https://trac.osgeo.org/osgeo4w/ and run the OSGeo4W Setup program. Select the **Express Web-GIS** Install Click "Next", select a download site for the programs (several servers host the data, try to select one that is geographically closest to you), select all of the options in the proceeding menus and agree to the terms of the licenses. The installation process could take a few minutes as there are several programs to download and install. Click finish once the download/installation process is complete. **https://www.pointsnorthgis.ca/blog/geodjango-gdal-setup-windows-10/**
+
+
+
+Then visit https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal
+
+From amongst the wide array of options, you want to chose a gdal version matching the python version used to make and activate your virtual environment, e.g for python 3.8 (as in my case) you download one with cp38 i.e. GDAL‑3.2.2‑cp38‑cp38‑win_amd64.whl; for python 3.7, download one with cp37 i.e. GDAL-3.1.4-cp37-cp37m-win_amd64; and so on and so forth.
+Put the downloaded gdal python wheel file in your working folder, then install it with:
+
+```bash
+python -m pip install GDAL‑3.2.2‑cp38‑cp38‑win_amd64.whl
+```
+
+Next, we will create a new text file called geodjango_setup. Right click on the geodjango.txt file and change the file extension to .bat. Follow these instructions if you are unsure how to change or view the file extensions of your documents.
+
+Open the geodjango_setup.bat file with your favorite text editor, such as Windows built in Notepad or my favorite Notepad++ and copy the code snippet from the Official GeoDjango Documentation or from the example below. You may have to change line 1 from set OSGEO4W_ROOT=C:\OSGeo4W to set OSGEO4W_ROOT=C:\OSGeo4W64, if you have a Windows 64-bit system. You will also have to change the python version in line 2 from set PYTHON_ROOT=C:\Python3X to whatever version of python 3 you have installed, such as set PYTHON_ROOT=C:\Python38 (Find the versions of OSGEO installed and Python installed and adjust the settings accordingly).
+
+e.g `set PYTHON_ROOT=C:\Python38` instead of `set PYTHON_ROOT=C:\Python3X`, or `set OSGEO4W_ROOT=C:\OSGeo4W64` instead of `set OSGEO4W_ROOT=C:\OSGeo4W`
+
+```bash
+set OSGEO4W_ROOT=C:\OSGeo4W
+set PYTHON_ROOT=C:\Python3X
+set GDAL_DATA=%OSGEO4W_ROOT%\share\gdal
+set PROJ_LIB=%OSGEO4W_ROOT%\share\proj
+set PATH=%PATH%;%PYTHON_ROOT%;%OSGEO4W_ROOT%\bin
+reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v Path /t REG_EXPAND_SZ /f /d "%PATH%"
+reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v GDAL_DATA /t REG_EXPAND_SZ /f /d "%GDAL_DATA%"
+reg ADD "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v PROJ_LIB /t REG_EXPAND_SZ /f /d "%PROJ_LIB%"
+```
+
+If successful, you can at this point confirm that gdal can be accessed by the python environment. In the powershell, type:
+
+
+```bash
+python
+```
+
+An active python shell will be open, try importing the packages:
+
+```
+(venv386) PS D:\Dev> py
+Python 3.8.6 (tags/v3.8.6:db45529, Sep 23 2020, 15:52:53) [MSC v.1927 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import ogr
+>>> import gdal
+>>>
+```
 
 
 <br/>
@@ -279,14 +414,14 @@ I have, to the best of my knowledge, adhered to all stated guidelines stated for
 **`Bokeh`**:
 
 Bokek is distributed under Berkeley Source Distribution (BSD) license.<br/>
-<a href="">View Bokeh Lisence</a><br/>
+<a href="https://github.com/bokeh/bokeh/blob/branch-2.4/LICENSE.txt">View Bokeh Lisence</a><br/>
 
 <br/>
 
 **`Django`**:
 
-Bokek hjkhhgggggggggg.<br/>
-<a href="">View Django Lisence</a><br/>
+Django licence<br/>
+<a href="https://github.com/django/django/blob/main/LICENSE">View Django Lisence</a><br/>
 
 <br/>
 
@@ -294,8 +429,8 @@ Bokek hjkhhgggggggggg.<br/>
 
 **`Python`**:
 
-Bokek hjkhhgggggggggg.<br/>
-<a href="">View Python Lisence</a><br/>
+Python History and License.<br/>
+<a href="https://docs.python.org/3/license.html">View Python Lisence</a><br/>
 
 <br/>
 
@@ -303,15 +438,19 @@ Bokek hjkhhgggggggggg.<br/>
 
 **`Pandas`**:
 
-Bokek hjkhhgggggggggg.<br/>
-<a href="">View Pandas Lisence</a><br/>
+pandas-dev/pandas is licensed under the BSD 3-Clause "New" or "Revised" License<br/>
+<a href="https://github.com/pandas-dev/pandas/blob/master/LICENSE">View Pandas Lisence</a><br/>
 
 <br/>
 
 <br/>
 
-<br/>
+**`openlayers`**:
 
+openlayers/openlayers is licensed under the BSD 2-Clause "Simplified" License<br/>
+<a href="https://github.com/pandas-dev/pandas/blob/master/LICENSE">View OL Lisence</a><br/>
+
+<br/>
 
 <br/>
 
