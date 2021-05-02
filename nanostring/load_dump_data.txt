@@ -1,5 +1,0 @@
-Dump data:
-py manage.py dumpdata data.Category data.Disease2BScanVectorized data.Normal2BScanVectorized data.Kidney_Sample_Annotations data.Cell_Types_for_Spatial_Decon --indent 2 > ./db_resources/data.json
-
-Load data to DB:
-py manage.py loaddata ./db_resources/data.json

@@ -102,7 +102,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'nanostring_DB',
         'USER': 'postgres',
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'PASSWORD': 'joe123456',
         'HOST': 'localhost',
         'PORT': '5432',
     }
