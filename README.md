@@ -390,7 +390,7 @@ If successful, you can at this point confirm that gdal can be accessed by the py
 
 
 ```bash
-python
+Python manage.py shell 
 ```
 
 An active python shell will be open, try importing the packages:
@@ -399,12 +399,49 @@ An active python shell will be open, try importing the packages:
 (venv386) PS D:\Dev> py
 Python 3.8.6 (tags/v3.8.6:db45529, Sep 23 2020, 15:52:53) [MSC v.1927 64 bit (AMD64)] on win32
 Type "help", "copyright", "credits" or "license" for more information.
->>> import ogr
->>> import gdal
+>>> from osgeo import ogr
+>>> from osgeo import gdal
 >>>
 ```
 
+If database creation was successful, we can now prepare to link the project with the database. Type exit() to leave the python shell. 
+Then create a migration:
 
+```bash
+py manage.py migrate
+```
+
+Various tables e.g. auth, amongst others will at this point be created in the database.
+Then make a migration, to create all the tables used in the project. 
+
+```bash
+py manage.py makemigrations
+```
+
+
+Effect the changes by running another migration:
+
+```bash
+py manage.py migrate
+```
+
+
+Your project is now ready. BUT, populate the database with the Digitized spatial data first.
+
+```bash
+py manage.py loaddata digitized_data.json
+```
+
+
+Start the server:
+
+```bash
+py manage.py runserver
+```
+
+
+In your browser of choice, go to the address:
+http://127.0.0.1:8000/
 <br/>
 
 ---
